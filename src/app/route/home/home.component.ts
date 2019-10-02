@@ -70,7 +70,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   setFeaturedPokemonOfTheDay() {
     const today = new Date();
-    const todaysIndex = (today.getMonth() * 100 + today.getDate()) % this.allPokemon.length;
+    const todaysIndex = (today.getDate() * 100 + today.getMonth()) % this.allPokemon.length;
     this.pokemonSvc.getDetails<IPokemon>(ListType.POKEMON, this.allPokemon[todaysIndex].id).subscribe(pokemon => {
       this.featuredPokemon = pokemon;
       this.images = Object.values(pokemon.sprites).filter(Boolean);
