@@ -10,62 +10,6 @@
 <div class="basic-details" *ngIf="pokemon">
   <pokedex-pokemon-card class="pokemon-card block margin-24" [pokemon]="pokemon">
   </pokedex-pokemon-card>
-  <!-- <mat-card class="pokemon-card">
-    <mat-card-title class="capitalize text-center ">{{meta.name}}</mat-card-title>
-    <img mat-card-image [src]="activeImage" *ngIf="images.length">
-    <mat-card-content>
-      <div class="text-center" *ngIf="images.length">
-        <button mat-icon-button *ngFor="let image of images" (click)="activeImage = image">
-          <mat-icon>{{activeImage === image ? 'radio_button_checked' : 'radio_button_unchecked'}}</mat-icon>
-        </button>
-      </div>
-      <div class="flex">
-        <mat-list>
-          <mat-list-item matTooltip="The height of this Pokémon in decimetres.">
-            <mat-icon matListIcon>height</mat-icon>
-            <h3 matLine> {{meta.height}} dam</h3>
-            <p matLine> Height </p>
-          </mat-list-item>
-          <mat-list-item matTooltip="Order for sorting. Almost national order, except families are grouped together.">
-            <mat-icon matListIcon>reorder</mat-icon>
-            <h3 matLine> {{meta.order}} </h3>
-            <p matLine> Order </p>
-          </mat-list-item>
-        </mat-list>
-        <mat-list>
-          <mat-list-item matTooltip="The weight of this Pokémon in hectograms.">
-            <mat-icon matListIcon>network_check</mat-icon>
-            <h3 matLine> {{meta.weight}} h </h3>
-            <p matLine> Weight </p>
-          </mat-list-item>
-          <mat-list-item matTooltip="Set for exactly one Pokémon used as the default for each species.">
-            <mat-icon matListIcon>{{meta.isDefault ? 'check' : 'close'}}</mat-icon>
-            <h3 matLine> {{meta.isDefault ? 'Yes' : 'No'}} </h3>
-            <p matLine> Is Default </p>
-          </mat-list-item>
-        </mat-list>
-      </div>
-      <mat-list>
-        <mat-list-item matTooltip="The species this Pokémon belongs to.">
-          <mat-icon matListIcon>pets</mat-icon>
-          <h3 matLine>
-            <a [routerLink]="meta?.species?.url | apiToAppUrl" class="capitalize">
-              {{meta?.species?.name}}
-            </a>
-          </h3>
-          <p matLine> Species </p>
-        </mat-list-item>
-        <mat-list-item matTooltip="The base experience gained for defeating this Pokémon.">
-          <mat-icon matListIcon>filter_9_plus</mat-icon>
-          <h3 matLine> {{meta.experience}} </h3>
-          <div matLine>
-            <mat-progress-bar mode="determinate" [value]="meta?.experience"></mat-progress-bar>
-          </div>
-          <p matLine> Base Experience </p>
-        </mat-list-item>
-      </mat-list>
-    </mat-card-content>
-  </mat-card> -->
 
   <mat-card class="meta-card margin-24">
     <mat-card-content>
@@ -77,7 +21,7 @@
           <span>{{chipsTypes.length}}</span>
         </h4>
         <p>
-          A list of items this Pokémon may be holding when encountered.
+          A list of details showing types this Pokémon has.
         </p>
         <pokedex-chips [chips]="chipsTypes" class="pokemon-chips">
         </pokedex-chips>

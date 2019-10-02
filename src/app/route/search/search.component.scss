@@ -1,7 +1,12 @@
 @import '~src/styles/mixins';
-
+:host {
+  display: block;
+}
 .secondary-toolbar {
   font-size: inherit;
+  position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 .stats-toolbar {
   font-size: inherit;
@@ -31,5 +36,26 @@
     @include breakpoint-xl {
       width: calc(20% - 24px);
     }
+  }
+}
+
+.load-more-container {
+  margin: 24px 24px 48px 24px;
+  text-align: center;
+}
+
+// Error section
+.error-helper-btn{
+  margin: 0px 12px;
+}
+.rotating {
+  animation: rotating 2s linear infinite;
+}
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
