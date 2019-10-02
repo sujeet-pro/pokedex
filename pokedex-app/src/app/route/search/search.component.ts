@@ -29,8 +29,9 @@ export class SearchComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    const q = this.activateRoute.snapshot.queryParamMap.get('q') || '';
+    this.searchQueryControl.setValue(q);
     this.routeDataSubscription = this.activateRoute.data.subscribe(data => {
-      console.log(data);
       if (data.pokemonList && data.pokemonList.data) {
         this.allPokemonList = data.pokemonList.data;
       }

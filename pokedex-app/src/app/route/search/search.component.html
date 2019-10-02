@@ -16,11 +16,40 @@
 </mat-toolbar>
 
 <div class="results">
-  <pokedex-pokemon-card-id [pokemonId]="pokemonUnit.name" class="result"
+  <pokedex-pokemon-card-id [pokemonId]="pokemonUnit?.name" class="result"
     *ngFor="let pokemonUnit of filteredPokemon | slice:0:showingCount">
   </pokedex-pokemon-card-id>
 </div>
 
-<button *ngIf="showingCount < filteredPokemon.length" (click)="showingCount= showingCount+ resultIncrementBy">
-  Load More
-</button>
+<div class="load-more-container" *ngIf="showingCount < filteredPokemon.length">
+  <button mat-raised-button color="primary" (click)="showingCount= showingCount+ resultIncrementBy">
+    Load Next {{resultIncrementBy}} of remaining {{filteredPokemon.length - showingCount}}
+  </button>
+</div>
+
+<!-- No content -->
+<div *ngIf="searchQueryControl.value && filteredPokemon.length === 0" class="margin-24 text-center">
+  <img src="/assets/pwa-icons/android-icon-192x192.png" class="margin-24 rotating">
+  <h1>No Pokémon Found</h1>
+  <p>
+    No pokémon matches your search criteria
+    <button mat-raised-button class="error-helper-btn" (click)="searchQueryControl.setValue('')">
+      {{searchQueryControl.value}}
+      <mat-icon>close</mat-icon>
+    </button>
+  </p>
+  <p>
+    You can change your search query or type
+    <button mat-raised-button (click)="searchQueryControl.setValue('all')" class="error-helper-btn">
+      all
+    </button>
+    to view all of the available pokémon.
+  </p>
+  <p>You can also visit
+    <a routerLink="/" mat-raised-button class="error-helper-btn">
+      home page
+    </a>
+    and select a pokemon from the dropdown options.</p>
+
+
+</div>
