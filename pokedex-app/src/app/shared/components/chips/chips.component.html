@@ -1,0 +1,10 @@
+<mat-chip-list>
+  <mat-chip *ngFor="let chip of renderedChips" [routerLink]="chip.url | apiToAppUrl" class="capitalize">
+    <mat-icon *ngIf="chip.icon" class="chip-icon">{{chip.icon}}</mat-icon>
+    {{chip.name}}
+  </mat-chip>
+  <mat-chip *ngIf="showAllRequired" (click)="toggleAll()" color="accent" selected>
+    <span [hidden]="showingAll">Show {{chips.length - renderedChips.length}} More</span>
+    <span [hidden]="!showingAll">Hide</span>
+  </mat-chip>
+</mat-chip-list>

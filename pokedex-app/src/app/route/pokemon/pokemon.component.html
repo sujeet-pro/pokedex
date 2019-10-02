@@ -1,0 +1,264 @@
+<div *ngIf="error">
+  <div [ngSwitch]="error.status">
+    <div *ngSwitchCase="404" class="text-center margin-24">
+      <img src="/assets/error/404-lite.svg" class="visible-on-day" />
+      <img src="/assets/error/404-dark.svg" class="visible-on-night" />
+      <h2>Invalid pokemon identifier</h2>
+    </div>
+  </div>
+</div>
+<div class="basic-details" *ngIf="pokemon">
+  <pokedex-pokemon-card class="pokemon-card block margin-24" [pokemon]="pokemon">
+  </pokedex-pokemon-card>
+  <!-- <mat-card class="pokemon-card">
+    <mat-card-title class="capitalize text-center ">{{meta.name}}</mat-card-title>
+    <img mat-card-image [src]="activeImage" *ngIf="images.length">
+    <mat-card-content>
+      <div class="text-center" *ngIf="images.length">
+        <button mat-icon-button *ngFor="let image of images" (click)="activeImage = image">
+          <mat-icon>{{activeImage === image ? 'radio_button_checked' : 'radio_button_unchecked'}}</mat-icon>
+        </button>
+      </div>
+      <div class="flex">
+        <mat-list>
+          <mat-list-item matTooltip="The height of this Pokémon in decimetres.">
+            <mat-icon matListIcon>height</mat-icon>
+            <h3 matLine> {{meta.height}} dam</h3>
+            <p matLine> Height </p>
+          </mat-list-item>
+          <mat-list-item matTooltip="Order for sorting. Almost national order, except families are grouped together.">
+            <mat-icon matListIcon>reorder</mat-icon>
+            <h3 matLine> {{meta.order}} </h3>
+            <p matLine> Order </p>
+          </mat-list-item>
+        </mat-list>
+        <mat-list>
+          <mat-list-item matTooltip="The weight of this Pokémon in hectograms.">
+            <mat-icon matListIcon>network_check</mat-icon>
+            <h3 matLine> {{meta.weight}} h </h3>
+            <p matLine> Weight </p>
+          </mat-list-item>
+          <mat-list-item matTooltip="Set for exactly one Pokémon used as the default for each species.">
+            <mat-icon matListIcon>{{meta.isDefault ? 'check' : 'close'}}</mat-icon>
+            <h3 matLine> {{meta.isDefault ? 'Yes' : 'No'}} </h3>
+            <p matLine> Is Default </p>
+          </mat-list-item>
+        </mat-list>
+      </div>
+      <mat-list>
+        <mat-list-item matTooltip="The species this Pokémon belongs to.">
+          <mat-icon matListIcon>pets</mat-icon>
+          <h3 matLine>
+            <a [routerLink]="meta?.species?.url | apiToAppUrl" class="capitalize">
+              {{meta?.species?.name}}
+            </a>
+          </h3>
+          <p matLine> Species </p>
+        </mat-list-item>
+        <mat-list-item matTooltip="The base experience gained for defeating this Pokémon.">
+          <mat-icon matListIcon>filter_9_plus</mat-icon>
+          <h3 matLine> {{meta.experience}} </h3>
+          <div matLine>
+            <mat-progress-bar mode="determinate" [value]="meta?.experience"></mat-progress-bar>
+          </div>
+          <p matLine> Base Experience </p>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+  </mat-card> -->
+
+  <mat-card class="meta-card margin-24">
+    <mat-card-content>
+      <div *ngIf="chipsTypes?.length">
+        <h4 class="onside-center">
+          <mat-icon class="margin-right-12">title</mat-icon>
+          <span>Types</span>
+          <span class="spacer"></span>
+          <span>{{chipsTypes.length}}</span>
+        </h4>
+        <p>
+          A list of items this Pokémon may be holding when encountered.
+        </p>
+        <pokedex-chips [chips]="chipsTypes" class="pokemon-chips">
+        </pokedex-chips>
+      </div>
+
+
+
+      <div *ngIf="chipsForm?.length">
+        <mat-divider class="mat-divider"></mat-divider>
+        <h4 class="onside-center">
+          <mat-icon class="margin-right-12">category</mat-icon>
+          <span>Forms</span>
+          <span class="spacer"></span>
+          <span>{{chipsForm.length}}</span>
+        </h4>
+        <p>
+          A list of forms this Pokémon can take on.
+        </p>
+        <pokedex-chips [chips]="chipsForm" class="pokemon-chips">
+        </pokedex-chips>
+      </div>
+
+
+      <div *ngIf="chipsItemHeld?.length">
+        <mat-divider class="mat-divider"></mat-divider>
+        <h4 class="onside-center">
+          <mat-icon class="margin-right-12">pan_tool</mat-icon>
+          <span>Held Items</span>
+          <span class="spacer"></span>
+          <span>{{chipsItemHeld.length}}</span>
+        </h4>
+        <p>
+          A list of items this Pokémon may be holding when encountered.
+        </p>
+        <pokedex-chips [chips]="chipsItemHeld" class="pokemon-chips">
+        </pokedex-chips>
+      </div>
+
+
+
+      <div *ngIf="chipsAbilities?.length">
+        <mat-divider class="mat-divider"></mat-divider>
+        <h4 class="onside-center">
+          <mat-icon class="margin-right-12">spellcheck</mat-icon>
+          <span>Abilities</span>
+          <span class="spacer"></span>
+          <span>{{chipsAbilities.length}}</span>
+        </h4>
+        <p>
+          A list of abilities this Pokémon could potentially have.
+        </p>
+        <pokedex-chips [chips]="chipsAbilities" class="pokemon-chips">
+        </pokedex-chips>
+      </div>
+
+
+
+      <div *ngIf="chipsMove?.length">
+        <mat-divider class="mat-divider"></mat-divider>
+        <h4 class="onside-center">
+          <mat-icon class="margin-right-12">open_with</mat-icon>
+          <span>Moves</span>
+          <span class="spacer"></span>
+          <span>{{chipsMove.length}}</span>
+        </h4>
+        <p>
+          List of moves this Pokémon could potentially have.
+        </p>
+        <pokedex-chips [chips]="chipsMove" class="pokemon-chips">
+        </pokedex-chips>
+      </div>
+
+      <div *ngIf="chipsGameIndices?.length">
+        <mat-divider class="mat-divider"></mat-divider>
+        <h4 class="onside-center">
+          <mat-icon class="margin-right-12">gamepad</mat-icon>
+          <span>Game Indices</span>
+          <span class="spacer"></span>
+          <span>{{chipsGameIndices.length}}</span>
+        </h4>
+        <p>
+          A list of game indices relevent to Pokémon item by generation.
+        </p>
+        <pokedex-chips [chips]="chipsGameIndices" class="pokemon-chips">
+        </pokedex-chips>
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+</div>
+
+
+
+
+<!-- Stats -->
+<mat-card class="stats-card" *ngIf="pokemon?.stats?.length">
+  <mat-card-title class="onside-center">
+    <mat-icon class="margin-right-12">bar_chart</mat-icon>
+    Stats
+  </mat-card-title>
+  <mat-card-content>
+    <mat-nav-list role="list">
+      <a mat-list-item *ngFor="let stat of pokemon.stats" class="onside-center"
+        [routerLink]="stat?.stat?.url | apiToAppUrl">
+        <span class="stats-text">{{stat.stat.name}}</span>
+        <mat-progress-bar mode="determinate" [value]="stat.base_stat"></mat-progress-bar>
+      </a>
+    </mat-nav-list>
+
+  </mat-card-content>
+</mat-card>
+
+<!-- Moves -->
+<mat-card class="margin-24" *ngIf="allMoves?.length">
+  <mat-card-title class="onside-center">
+    <button mat-icon-button (click)="activeMoveSlideStatus = !activeMoveSlideStatus">
+      <mat-icon>{{activeMoveSlideStatus ? 'menu_open' : 'menu'}}</mat-icon>
+    </button>
+    <span>Moves Details</span>
+    <span class="spacer"></span>
+    <span>{{allMoves.length}}</span>
+  </mat-card-title>
+  <mat-card-content>
+    <p>
+      A list of moves along with learn methods and level details pertaining to specific version groups.
+    </p>
+    <mat-drawer-container class="moves-drawer-container">
+      <mat-drawer mode="side" [opened]="activeMoveSlideStatus">
+        <mat-action-list>
+          <button mat-list-item *ngFor="let move of allMoves" (click)="activeMoveDetails=move" class="capitalize">
+            {{move?.move?.name}}
+            <span class="spacer"></span>
+            <mat-icon [color]="activeMoveDetails.move.name === move.move.name ? 'primary' : 'default'">chevron_right
+            </mat-icon>
+          </button>
+        </mat-action-list>
+      </mat-drawer>
+      <mat-drawer-content class="moves-drawer-content">
+
+        <h4 class="flex">
+          <a [routerLink]="activeMoveDetails?.move?.url | apiToAppUrl">
+            <span> {{activeMoveDetails.move.name}} </span>
+          </a>
+          <span class="spacer"></span>
+          <span>{{activeMoveDetails?.version_group_details?.length}}</span>
+        </h4>
+
+
+        <mat-table [dataSource]="activeMoveDetails?.version_group_details" class="">
+          <ng-container matColumnDef="level_learned_at">
+            <mat-header-cell *matHeaderCellDef> Level Learned At </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.level_learned_at}} </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="move_learn_method">
+            <mat-header-cell *matHeaderCellDef> Learning Method </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <a [routerLink]="element.move_learn_method.url | apiToAppUrl">
+                {{element.move_learn_method.name}}
+              </a>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="version_group">
+            <mat-header-cell *matHeaderCellDef> Version Group </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <a [routerLink]="element.version_group.url | apiToAppUrl">
+                {{element.version_group.name}}
+              </a>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="activeMoveCols">
+          </mat-header-row>
+          <mat-row *matRowDef="let row; columns: activeMoveCols;"></mat-row>
+        </mat-table>
+
+      </mat-drawer-content>
+    </mat-drawer-container>
+  </mat-card-content>
+</mat-card>
+
+
+<!-- <pre>{{details|json}}</pre> -->

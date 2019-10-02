@@ -1,0 +1,30 @@
+.pokemon-card {
+  height: 100%;
+  box-sizing: border-box;
+
+}
+.mat-card-image {
+  max-height: 250px;
+  object-fit: contain;
+}
+.mat-card-content {
+  position: relative;
+}
+.image-nav-dot-container {
+  position: absolute;
+  top: -16px;
+  transform: translateY(-100%) scale(0.7);
+  display: flex;
+  justify-content: center;
+  left: 0;
+  right: 0;
+}
+.pokemon-prop-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  .pokemon-prop {
+    // min-width: 150px;
+    width: auto;
+  }
+}

@@ -1,0 +1,73 @@
+@import '~src/styles/mixins';
+
+.mat-card {
+  margin: 24px;
+}
+
+@include breakpoint-gt-xs {
+
+  .basic-details {
+    display: flex;
+    justify-content: space-between;
+    margin: 24px;
+    .pokemon-card {
+      width: 360px;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    .meta-card {
+      width: calc(100% - 390px);
+      margin: 0;
+      box-sizing: border-box;
+    }
+  }
+}
+@include breakpoint-s {
+  .basic-details {
+    .pokemon-card {
+      width: 50%;
+      margin-right: 16px;
+    }
+    .meta-card {
+      width: 50%;
+    }
+  }
+}
+
+.mat-divider {
+  position: relative !important;
+  margin: 16px 0;
+}
+
+
+.onside-center {
+  display: flex;
+  align-items: center;
+}
+
+
+
+.moves-drawer-container {
+  text-transform: capitalize;
+  min-height: 400px;
+  .moves-drawer-content {
+    padding: 24px;
+  }
+}
+
+
+.stats-card {
+  .stats-text {
+    width: 150px;
+    margin-right: 12px;
+    text-transform: capitalize;
+  }
+  // .list-icon {
+  //   display: flex !important;
+  //     align-items: center;
+  //     .item-text {
+  //       margin-left: 16px
+  //     }
+  // }
+}
+
