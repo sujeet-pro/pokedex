@@ -1,0 +1,26 @@
+<mat-toolbar class="secondary-toolbar" color="accent">
+  <h1>Search</h1>
+  <span class="spacer"></span>
+  <mat-form-field class="">
+    <input matInput type="text" placeholder="Search ..." [formControl]="searchQueryControl" autocomplete="off">
+    <button mat-button *ngIf="searchQueryControl.value" matSuffix mat-icon-button aria-label="Clear"
+      (click)="searchQueryControl.setValue('')">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+</mat-toolbar>
+<mat-toolbar class="stats-toolbar">
+  Showing {{showingCount}} of {{filteredPokemon?.length}}
+  <span class="spacer"></span>
+  <span>Total: {{allPokemonList?.results?.length || 0}}</span>
+</mat-toolbar>
+
+<div class="results">
+  <pokedex-pokemon-card-id [pokemonId]="pokemonUnit.name" class="result"
+    *ngFor="let pokemonUnit of filteredPokemon | slice:0:showingCount">
+  </pokedex-pokemon-card-id>
+</div>
+
+<button *ngIf="showingCount < filteredPokemon.length" (click)="showingCount= showingCount+ resultIncrementBy">
+  Load More
+</button>

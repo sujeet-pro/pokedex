@@ -1,0 +1,12 @@
+<mat-toolbar>
+  <button mat-icon-button (click)="back()">
+    <mat-icon>arrow_back_ios</mat-icon>
+  </button>
+  Details for {{type}}/
+  <span *ngIf="!details?.name">/{{id}}</span>
+  <span *ngIf="details?.name"> {{details.name}}</span>
+</mat-toolbar>
+<div class="margin-24">
+  <ngx-json-viewer *ngIf="details" [json]="details" [expanded]="false"></ngx-json-viewer>
+  <ngx-json-viewer *ngIf="error" [json]="details"></ngx-json-viewer>
+</div>

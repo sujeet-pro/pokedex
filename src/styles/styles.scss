@@ -1,0 +1,55 @@
+
+
+
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.spacer {
+  flex: 1 1 auto;
+}
+.flex {
+  display: flex;
+}
+.block {
+  display: block;
+}
+.capitalize {
+  text-transform: capitalize;
+}
+.text-center {
+  text-align: center;
+}
+.margin-right-12 {
+  margin-right: 12px;
+}
+.margin-24 {
+  margin: 24px;
+}
+
+.clickable {
+  cursor: pointer;
+}
+a {
+  color: inherit;
+}
+
+.day-mode {
+  .visible-on-day {
+    display: initial;
+  }
+  .visible-on-night {
+    display: none;
+  }
+}
+.night-mode {
+  .visible-on-day {
+    display: none;
+  }
+  .visible-on-night {
+    display: initial;
+  }
+  .segment-key {
+    color: #deb887!important;
+  }
+}

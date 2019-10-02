@@ -1,0 +1,61 @@
+<mat-card class="pokemon-card" *ngIf="pokemon">
+  <mat-card-title class="capitalize text-center ">
+    <a *ngIf="allowNav" [routerLink]="'/pokemon/' + pokemon.name">
+      {{pokemon.name}}
+    </a>
+    <span *ngIf="!allowNav">
+      {{pokemon.name}}
+    </span>
+
+  </mat-card-title>
+  <img mat-card-image [src]="activeImage">
+  <mat-card-content>
+    <div class="image-nav-dot-container" *ngIf="images.length">
+      <button mat-icon-button *ngFor="let image of images" (click)="activeImage = image">
+        <mat-icon>{{activeImage === image ? 'radio_button_checked' : 'radio_button_unchecked'}}</mat-icon>
+      </button>
+    </div>
+    <mat-list class="pokemon-prop-list">
+      <mat-list-item matTooltip="The height of this Pokémon in foot & inches." class="pokemon-prop">
+        <mat-icon matListIcon>height</mat-icon>
+        <h3 matLine> {{height}}</h3>
+        <p matLine> Height </p>
+      </mat-list-item>
+      <mat-list-item class="pokemon-prop"
+        matTooltip="Order for sorting. Almost national order, except families are grouped together.">
+        <mat-icon matListIcon>reorder</mat-icon>
+        <h3 matLine> {{pokemon.order}} </h3>
+        <p matLine> Order </p>
+      </mat-list-item>
+      <mat-list-item class="pokemon-prop" matTooltip="The weight of this Pokémon in Kilograms.">
+        <mat-icon matListIcon>network_check</mat-icon>
+        <h3 matLine> {{pokemon.weight / 10}} Kg </h3>
+        <p matLine> Weight </p>
+      </mat-list-item>
+      <mat-list-item class="pokemon-prop"
+        matTooltip="Set for exactly one Pokémon used as the default for each species.">
+        <mat-icon matListIcon>{{pokemon.is_default ? 'check' : 'close'}}</mat-icon>
+        <h3 matLine> {{pokemon.is_default ? 'Yes' : 'No'}} </h3>
+        <p matLine> Is Default </p>
+      </mat-list-item>
+      <mat-list-item class="pokemon-prop" matTooltip="The species this Pokémon belongs to.">
+        <mat-icon matListIcon>pets</mat-icon>
+        <h3 matLine>
+          <a [routerLink]="pokemon?.species?.url | apiToAppUrl" class="capitalize">
+            {{pokemon?.species?.name}}
+          </a>
+        </h3>
+        <p matLine> Species </p>
+      </mat-list-item>
+      <mat-list-item matTooltip="The base experience gained for defeating this Pokémon.">
+        <mat-icon matListIcon>filter_9_plus</mat-icon>
+        <h3 matLine> {{pokemon.base_experience}} </h3>
+        <div matLine>
+          <mat-progress-bar mode="determinate" [value]="pokemon?.base_experience"></mat-progress-bar>
+        </div>
+        <p matLine> Base Experience </p>
+      </mat-list-item>
+      <pokedex-chips [chips]="chipsTypes" *ngIf="chipsTypes?.length"></pokedex-chips>
+    </mat-list>
+  </mat-card-content>
+</mat-card>

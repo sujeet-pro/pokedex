@@ -1,0 +1,27 @@
+<div class="logo-container">
+  <img src="/assets/logo.png" class="logo" />
+</div>
+<form class="pokemon-search-bar">
+  <mat-form-field class="search-field">
+    <input type="text" placeholder="Search Pokemon" aria-label="Search Pokemon " matInput
+      [formControl]="pokemonQueryControl" [matAutocomplete]="auto">
+    <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="onPokemonSelection($event)">
+      <mat-option [value]="searchPrefix + pokemonQueryControl.value">
+        {{pokemonQueryControl.value || 'All'}}
+      </mat-option>
+      <mat-option *ngFor="let pokemon of filteredPokemon | async" [value]="pokemon.id" class="capitalize">
+        {{pokemon.name}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+  <a mat-icon-button routerLink="/search" [queryParams]="{q: pokemonQueryControl.value}">
+    <mat-icon>search</mat-icon>
+  </a>
+</form>
+
+<section class="margin-24">
+  <h2>Pokémon of the day</h2>
+  <pokedex-pokemon-card [pokemon]="featuredPokemon" [allowNav]="true">
+  </pokedex-pokemon-card>
+
+</section>
