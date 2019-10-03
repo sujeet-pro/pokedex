@@ -12,6 +12,7 @@ export class PreferenceService {
   private prefOptions: IPreferenceOptions = environment.prefOptions;
 
   private elem = document.querySelector('html');
+  private headThemeColorElem = document.querySelector('#head-theme-color');
   private prefChangeNotifier = new ReplaySubject<IActivePreference>(1);
 
   constructor() { }
@@ -73,10 +74,14 @@ export class PreferenceService {
   private updateTheme(theme: ITheme) {
     this.elem.classList.remove(...this.prefOptions.themes.map(u => u.themeClass));
     this.elem.classList.add(theme.themeClass);
+    if (this.headThemeColorElem) {
+      this.headThemeColorElem.setAttribute('content', theme.color.primary);
+    }
   }
   private updateFont(font: IFont) {
     this.elem.classList.remove(...this.prefOptions.fonts.map(u => u.fontClass));
     this.elem.classList.add(font.fontClass);
+
   }
   private updateDarkMode(isDarkMode) {
     this.elem.classList.remove(this.prefOptions.darkMode.active, this.prefOptions.darkMode.inactive);
