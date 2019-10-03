@@ -124,10 +124,11 @@
   </mat-card-title>
   <mat-card-content>
     <mat-nav-list role="list">
-      <a mat-list-item *ngFor="let stat of pokemon.stats" class="onside-center"
-        [routerLink]="stat?.stat?.url | apiToAppUrl">
-        <span class="stats-text">{{stat.stat.name}}</span>
-        <mat-progress-bar mode="determinate" [value]="stat.base_stat"></mat-progress-bar>
+      <a mat-list-item *ngFor="let stat of pokemon.stats" [routerLink]="stat?.stat?.url | apiToAppUrl">
+        <div class="onside-center">
+          <span class="stats-text">{{stat.stat.name}}</span>
+          <mat-progress-bar mode="determinate" [value]="stat.base_stat"></mat-progress-bar>
+        </div>
       </a>
     </mat-nav-list>
 

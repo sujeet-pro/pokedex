@@ -3,14 +3,14 @@ import { IPreferenceOptions } from 'src/app/models/preference.model';
 export const prefOptions: IPreferenceOptions = {
   themes: [{
     color: {
-      primary: '#3c59a5',
+      primary: '#3463ad',
     },
     isDefault: true,
     themeClass: 'theme-blue',
     themeName: 'Blue theme'
   }, {
     color: {
-      primary: '#ffcc00',
+      primary: '#ffcb02',
     },
     isDefault: false,
     themeClass: 'theme-yellow',

@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { PokemonService } from 'src/app/services/pokemon.service';
 import { environment } from 'src/environments/environment';
+import { HttpErrorResponse } from '@angular/common/http';
 const validApiTypes = new Set(environment.validApiTypes);
 @Component({
   selector: 'pokedex-generic-data',
@@ -34,7 +35,11 @@ export class GenericDataComponent implements OnInit, OnDestroy {
       this.error = null;
     }, err => {
       this.details = null;
-      this.error = err;
+      if (err instanceof HttpErrorResponse && err.status === 404) {
+        this.error = `Invalid id: ${this.id} for the give ${this.type}`;
+      } else {
+        this.error = err;
+      }
     });
   }
 
