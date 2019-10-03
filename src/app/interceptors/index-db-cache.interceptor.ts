@@ -15,7 +15,6 @@ export class IndexDbCacheInterceptor implements HttpInterceptor {
     if (req.method !== 'GET' || !req.url.startsWith(environment.pokemonApiSlug)) {
       return next.handle(req);
     }
-    console.log('db interceptor', req.url);
     return from(localForage.getItem<HttpEvent<any>>(req.url)).pipe(
       switchMap(res => {
         if (res) {

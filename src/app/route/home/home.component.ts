@@ -75,7 +75,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.featuredPokemon = pokemon;
       this.images = Object.values(pokemon.sprites).filter(Boolean);
       this.activeImage = this.images[0];
-      console.log(this.images);
+
     });
   }
 }

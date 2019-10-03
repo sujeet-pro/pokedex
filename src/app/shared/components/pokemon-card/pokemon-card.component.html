@@ -8,7 +8,10 @@
     </span>
 
   </mat-card-title>
-  <img mat-card-image [src]="activeImage">
+  <a [routerLink]="'/pokemon/' + pokemon.name">
+    <img mat-card-image [src]="activeImage" (swiperight)="swipeImage($event.type)"
+      (swipeleft)="swipeImage($event.type)">
+  </a>
   <mat-card-content>
     <div class="image-nav-dot-container" *ngIf="images.length">
       <button mat-icon-button *ngFor="let image of images" (click)="activeImage = image">

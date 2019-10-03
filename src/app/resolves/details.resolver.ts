@@ -22,7 +22,7 @@ export class DetailsResolver implements Resolve<IResolveResponseAny> {
         .pipe(
           map(data => ({ data, error: null })),
           catchError((error) => of({ data: null, error })),
-          tap(console.log)
+          // tap(console.log)
         );
     }
     return {
