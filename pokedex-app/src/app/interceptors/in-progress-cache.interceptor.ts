@@ -24,7 +24,6 @@ export class InProgressCacheInterceptor implements HttpInterceptor {
       const futureResponse = new ReplaySubject<HttpResponse<any>>(1);
       this.apisInProgress.set(req.url, futureResponse);
     }
-    console.log('progress interceptor', req.url);
     return next.handle(req).pipe(
       tap(event => {
         if (event instanceof HttpResponse && this.apisInProgress.has(req.url)) {

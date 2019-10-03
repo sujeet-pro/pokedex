@@ -45,7 +45,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       .pipe(
         debounceTime(100),
         map(paramMap => (paramMap.get('q') || '').toLowerCase()),
-        tap(console.log),
+        // tap(console.log),
       ).subscribe(query => {
         if (this.allPokemonList && Array.isArray(this.allPokemonList.results)) {
           if (!query || allSynonyms.has(query)) {

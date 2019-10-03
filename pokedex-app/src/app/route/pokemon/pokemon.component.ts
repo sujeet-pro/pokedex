@@ -35,7 +35,6 @@ export class PokemonComponent implements OnInit {
 
   ngOnInit() {
     this.activateRoute.data.subscribe(data => {
-      console.log('pokemon resolver data', data)
       this.resetValues();
       if (data.details && data.details.data) {
         this.processPokemonDetails(data.details.data as IPokemon);

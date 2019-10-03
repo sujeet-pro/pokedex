@@ -1,4 +1,4 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -12,6 +12,12 @@ import { IndexDbCacheInterceptor } from './interceptors/index-db-cache.intercept
 import { InProgressCacheInterceptor } from './interceptors/in-progress-cache.interceptor';
 import { GenericDataComponent } from './route/generic-data/generic-data.component';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
+
+export class MyHammerConfig extends HammerGestureConfig {
+  public buildHammer(element: HTMLElement): any {
+    return new (window as any).Hammer(element);
+  }
+}
 
 
 @NgModule({
@@ -29,6 +35,9 @@ import { NgxJsonViewerModule } from 'ngx-json-viewer';
     NgxJsonViewerModule
   ],
   providers: [{
+    provide: HAMMER_GESTURE_CONFIG,
+    useClass: MyHammerConfig
+  }, {
     provide: APP_INITIALIZER,
     useFactory: (initSvc: InitService) => () => initSvc.init(),
     deps: [InitService],
