@@ -1,0 +1,240 @@
+# Common
+type CommonFlavorText {
+  text: String!
+  language: Language!
+}
+type CommonFlavorTextByVersionGroup {
+  text: String!
+  versionGroup: VersionGroup!
+  language: Language!
+}
+type CommonEffectEntry {
+  effect: String!
+  language: Language!
+}
+type CommonEffectEntryWithShort {
+  effect: String!
+  shortEffect: String!
+  language: Language!
+}
+type CommonName {
+  name: String!
+  language: Language!
+}
+
+# Entities
+
+type Ability {
+  id: Int!
+  key: String!
+  name: String!
+  names: [CommonName!]!
+  generation: Generation!
+  pokemon: [AbilityPokemon!]!
+  isMainSeries: Boolean!
+  flavourTextEntries: [CommonFlavorTextByVersionGroup!]!
+  effectEntries: [CommonEffectEntryWithShort!]!
+  effectChanges: [AbilityEffectsChanges!]!
+}
+
+type AbilityEffectsChanges {
+  effectEntries: [CommonEffectEntry!]!
+  versionGroup: VersionGroup!
+}
+
+type AbilityPokemon {
+  slot: Int!
+  is_hidden: Boolean!
+  pokemon: Pokemon!
+}
+
+type Berry {
+  id: Int!
+  key: String!
+  name: String!
+  firmness: BerryFirmness
+  flavors: [BerryFlavorWithPotency!]!
+  growthTime: Int!
+  item: Item!
+  maxHarvest: Int!
+  naturalGiftPower: Int!
+  naturalGiftType: Type!
+  size: Int!
+  smoothness: Int!
+  soilDryness: Int!
+}
+
+type BerryFlavorWithPotency {
+  potency: Int!
+  flavor: BerryFlavor!
+}
+
+type BerryFirmness {
+  id: Int!
+  key: String!
+  name: String!
+  berries: [Berry!]!
+}
+
+type BerryFlavor {
+  id: Int!
+  key: String!
+  name: String!
+  berries: [Berry!]!
+  contestType: ContestType!
+}
+
+type Characteristic {
+  id: Int!
+  possibleValues: [Int!]!
+  description: String!
+  geneModulo: Int!
+  highestStat: Stat!
+}
+
+type ContestEffect {
+  id: Int!
+  jam: Int!
+  appeal: Int!
+  effects: [CommonEffect!]!
+  flavorTexts: [CommonText!]!
+}
+
+type ContestType {
+  id: Int!
+  key: String!
+  name: String!
+  berryFlavor: BerryFlavor!
+}
+
+type EffGroup {
+  id: Int!
+  key: String!
+  name: String!
+  pokemonSpecies: [PokemonSpecies!]!
+}
+
+type EncounterCondition {
+  id: Int!
+  key: String!
+  name: String!
+  values: [EncounterConditionValue!]!
+}
+
+type EncounterConditionValue {
+  id: Int!
+  key: String!
+  name: String!
+  condition: EncounterCondition!
+}
+
+type EncounterMethod {
+  id: Int!
+  key: String!
+  name: String!
+  order: Int!
+}
+
+# Entity : EvolutionChain
+type EvolutionChain {
+  """
+  Not Implemented: baby_trigger_item
+  """
+  id: Int!
+  isBaby: Boolean!
+  species: PokemonSpecies!
+}
+
+type EvolutionChainEvolutionDetail {
+  gender: ID
+  heldItem: Item
+  item: ID
+  knownMove: Move
+  knownMoveType: MoveType
+}
+type EvolutionChainStage1 {
+  species: PokemonSpecies!
+  isBaby: Boolean!
+  evolvesTo: [EvolutionChainStage2]!
+  evolution_details: [EvolutionChainEvolutionDetail!]!
+}
+type EvolutionChainStage2 {
+  species: PokemonSpecies!
+  isBaby: Boolean!
+  evolution_details: [EvolutionChainEvolutionDetail!]!
+  evolvesTo: [EvolutionChainStage3]!
+}
+type EvolutionChainStage3 {
+  species: PokemonSpecies!
+  isBaby: Boolean!
+  evolution_details: [EvolutionChainEvolutionDetail!]!
+  evolvesTo: [EvolutionChainStage4]!
+}
+type EvolutionChain4 {
+  species: PokemonSpecies!
+  isBaby: Boolean!
+  evolution_details: [EvolutionChainEvolutionDetail!]!
+}
+
+
+
+type EvolutionTrigger {}
+type Gender {}
+type Generation {
+  id: Int!
+  key: String!
+  name: String!
+}
+type GrowthRate {}
+type Item {
+  id: Int!
+  key: String!
+  name: String!
+}
+type ItemAttribute {}
+type ItemCategory {}
+type ItemFlingEffect {}
+type ItemPocket {}
+type Language {}
+type Location {}
+type LocationArea {}
+type Machine {}
+type Move {}
+type MoveAilment {}
+type MoveBattleStyle {}
+type MoveCategory {}
+type MoveDamageClass {}
+type MoveLearnMethod {}
+type MoveTarget {}
+type Nature {}
+type PalParkArea {}
+type PokeathlonStat {}
+type Pokedex {}
+type Pokemon {}
+type PokemonColor {}
+type PokemonForm {}
+type PokemonHabitat {}
+type PokemonShape {}
+type PokemonSpecies {}
+type Region {}
+type Stat {}
+type SuperContestEffect {}
+type Type {}
+type Version {
+  id: Int!
+  key: String!
+  name: String!
+  versionGroup: VersionGroup!
+}
+
+type VersionGroup {
+  """
+  Not Implemented: regions, pokedexes, move_learn_methods
+  """
+  id: Int!
+  key: String!
+  name: String!
+  generation: Generation!
+  order: Int!
+  versions: [Version!]!
+}
