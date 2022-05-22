@@ -3,5 +3,14 @@
   "editor.codeActionsOnSave": {
     "source.fixAll": true,
     "source.organizeImports": true
-  }
+  },
+  "cSpell.words": [
+    "alphasapphire",
+    "firered",
+    "heartgold",
+    "omegaruby",
+    "Pokeathlon",
+    "Pokedex",
+    "pokedexes"
+  ]
 }
