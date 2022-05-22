@@ -4,14 +4,14 @@
   "description": "[![CircleCI](https://circleci.com/gh/PokeAPI/api-data.svg?style=shield)](https://circleci.com/gh/PokeAPI/api-data)",
   "main": "index.js",
   "private": "true",
+  "type": "module",
   "engines": {
     "node": ">=16.15"
   },
   "scripts": {
     "format:fix": "prettier . --write --ignore-unknown",
     "format:check": "prettier . --check --ignore-unknown",
-    "start": "node -r @swc-node/register src/index.ts",
-    "type:check": "tsc --noEmit"
+    "start": "node  ./src/index.js"
   },
   "repository": {
     "type": "git",
@@ -25,14 +25,12 @@
   },
   "homepage": "https://github.com/websysarch/pokedex-data#readme",
   "dependencies": {
-    "@websysarch/prettier-config": "^1.0.0",
     "apollo-server": "^3.7.0",
-    "graphql": "^16.5.0",
-    "prettier": "^2.6.2"
+    "graphql": "^16.5.0"
   },
   "prettier": "@websysarch/prettier-config",
   "devDependencies": {
-    "@swc-node/register": "^1.5.1",
-    "typescript": "^4.6.4"
+    "@websysarch/prettier-config": "^1.0.0",
+    "prettier": "^2.6.2"
   }
 }

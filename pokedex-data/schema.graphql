@@ -1,3 +1,164 @@
+# Query
+input QueryOrderByInput {
+  id: QuerySort
+}
+
+input QueryFilterList {
+  eq: String
+  in: [String!]
+}
+
+enum QuerySort {
+  asc
+  desc
+}
+
+type Query {
+  allAbility(filter: QueryFilterList): AbilityList
+  ability(url: String, id: Int): Ability
+
+  allBerry(filter: QueryFilterList): BerryList
+  berry(url: String, id: Int): Berry
+
+  allBerryFirmness(filter: QueryFilterList): BerryFirmnessList
+  berryFirmness(url: String, id: Int): BerryFirmness
+
+  allBerryFlavor(filter: QueryFilterList): BerryFlavorList
+  berryFlavor(url: String, id: Int): BerryFlavor
+
+  allCharacteristic(filter: QueryFilterList): CharacteristicList
+  characteristic(url: String, id: Int): Characteristic
+
+  allContestEffect(filter: QueryFilterList): ContestEffectList
+  contestEffect(url: String, id: Int): ContestEffect
+
+  allContestType(filter: QueryFilterList): ContestTypeList
+  contestType(url: String, id: Int): ContestType
+
+  allEggGroup(filter: QueryFilterList): EggGroupList
+  eggGroup(url: String, id: Int): EggGroup
+
+  allEncounterCondition(filter: QueryFilterList): EncounterConditionList
+  encounterCondition(url: String, id: Int): EncounterCondition
+
+  allEncounterConditionValue(filter: QueryFilterList): EncounterConditionValueList
+  encounterConditionValue(url: String, id: Int): EncounterConditionValue
+
+  allEncounterMethod(filter: QueryFilterList): EncounterMethodList
+  encounterMethod(url: String, id: Int): EncounterMethod
+
+  allEvolutionChain(filter: QueryFilterList): EvolutionChainList
+  evolutionChain(url: String, id: Int): EvolutionChain
+
+  allEvolutionTrigger(filter: QueryFilterList): EvolutionTriggerList
+  evolutionTrigger(url: String, id: Int): EvolutionTrigger
+
+  allGender(filter: QueryFilterList): GenderList
+  gender(url: String, id: Int): Gender
+
+  allGeneration(filter: QueryFilterList): GenerationList
+  generation(url: String, id: Int): Generation
+
+  allGrowthRate(filter: QueryFilterList): GrowthRateList
+  growthRate(url: String, id: Int): GrowthRate
+
+  allItem(filter: QueryFilterList): ItemList
+  item(url: String, id: Int): Item
+
+  allItemAttribute(filter: QueryFilterList): ItemAttributeList
+  itemAttribute(url: String, id: Int): ItemAttribute
+
+  allItemCategory(filter: QueryFilterList): ItemCategoryList
+  itemCategory(url: String, id: Int): ItemCategory
+
+  allItemFlingEffect(filter: QueryFilterList): ItemFlingEffectList
+  itemFlingEffect(url: String, id: Int): ItemFlingEffect
+
+  allItemPocket(filter: QueryFilterList): ItemPocketList
+  itemPocket(url: String, id: Int): ItemPocket
+
+  allLanguage(filter: QueryFilterList): LanguageList
+  language(url: String, id: Int): Language
+
+  allLocation(filter: QueryFilterList): LocationList
+  location(url: String, id: Int): Location
+
+  allLocationArea(filter: QueryFilterList): LocationAreaList
+  locationArea(url: String, id: Int): LocationArea
+
+  allMachine(filter: QueryFilterList): MachineList
+  machine(url: String, id: Int): Machine
+
+  allMove(filter: QueryFilterList): MoveList
+  move(url: String, id: Int): Move
+
+  allMoveAilment(filter: QueryFilterList): MoveAilmentList
+  moveAilment(url: String, id: Int): MoveAilment
+
+  allMoveBattleStyle(filter: QueryFilterList): MoveBattleStyleList
+  moveBattleStyle(url: String, id: Int): MoveBattleStyle
+
+  allMoveCategory(filter: QueryFilterList): MoveCategoryList
+  moveCategory(url: String, id: Int): MoveCategory
+
+  allMoveDamageClass(filter: QueryFilterList): MoveDamageClassList
+  moveDamageClass(url: String, id: Int): MoveDamageClass
+
+  allMoveLearnMethod(filter: QueryFilterList): MoveLearnMethodList
+  moveLearnMethod(url: String, id: Int): MoveLearnMethod
+
+  allMoveTarget(filter: QueryFilterList): MoveTargetList
+  moveTarget(url: String, id: Int): MoveTarget
+
+  allNature(filter: QueryFilterList): NatureList
+  nature(url: String, id: Int): Nature
+
+  allPalParkArea(filter: QueryFilterList): PalParkAreaList
+  palParkArea(url: String, id: Int): PalParkArea
+
+  allPokeathlonStat(filter: QueryFilterList): PokeathlonStatList
+  pokeathlonStat(url: String, id: Int): PokeathlonStat
+
+  allPokedex(filter: QueryFilterList): PokedexList
+  pokedex(url: String, id: Int): Pokedex
+
+  allPokemon(filter: QueryFilterList): PokemonList
+  pokemon(url: String, id: Int): Pokemon
+
+  allPokemonColor(filter: QueryFilterList): PokemonColorList
+  pokemonColor(url: String, id: Int): PokemonColor
+
+  allPokemonForm(filter: QueryFilterList): PokemonFormList
+  pokemonForm(url: String, id: Int): PokemonForm
+
+  allPokemonHabitat(filter: QueryFilterList): PokemonHabitatList
+  pokemonHabitat(url: String, id: Int): PokemonHabitat
+
+  allPokemonShape(filter: QueryFilterList): PokemonShapeList
+  pokemonShape(url: String, id: Int): PokemonShape
+
+  allPokemonSpecies(filter: QueryFilterList): PokemonSpeciesList
+  pokemonSpecies(url: String, id: Int): PokemonSpecies
+
+  allRegion(filter: QueryFilterList): RegionList
+  region(url: String, id: Int): Region
+
+  allStat(filter: QueryFilterList): StatList
+  stat(url: String, id: Int): Stat
+
+  allSuperContestEffect(filter: QueryFilterList): SuperContestEffectList
+  superContestEffect(url: String, id: Int): SuperContestEffect
+
+  allType(filter: QueryFilterList): TypeList
+  type(url: String, id: Int): Type
+
+  allVersion(filter: QueryFilterList): VersionList
+  version(url: String, id: Int): Version
+
+  allVersionGroup(filter: QueryFilterList): VersionGroupList
+  versionGroup(url: String, id: Int): VersionGroup
+}
+
 # Common
 interface UnnamedConnection {
   url: String!
@@ -32,11 +193,6 @@ type LocalizedEffectWithShort {
   short_effect: String!
   language: LanguageConnection!
 }
-type VersionGroupedLocalizedEffect {
-  effect_entries: [LocalizedEffect!]!
-  version_group: VersionGroupConnection!
-}
-
 type LocalizedFlavorText {
   flavor_text: String!
   language: LanguageConnection!
@@ -45,6 +201,15 @@ type LocalizedFlavorTextWithVersionGroup {
   flavor_text: String!
   language: LanguageConnection!
   version_group: VersionGroupConnection
+}
+type LocalizedVersionedFlavorText {
+  flavor_text: String!
+  language: LanguageConnection!
+  version: VersionConnection
+}
+type VersionGroupedLocalizedEffect {
+  effect_entries(language: String = "en"): [LocalizedEffect!]!
+  version_group: VersionGroupConnection!
 }
 
 type GameIndex {
@@ -64,11 +229,11 @@ type Ability {
   name: String!
 
   effect_changes: [VersionGroupedLocalizedEffect!]!
-  effect_entries: [LocalizedEffectWithShort!]!
-  flavor_text_entries: [LocalizedFlavorTextWithVersionGroup!]!
+  effect_entries(language: String = "en"): [LocalizedEffectWithShort!]!
+  flavor_text_entries(language: String = "en"): [LocalizedFlavorTextWithVersionGroup!]!
   generation: GenerationConnection!
   is_main_series: Boolean!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   pokemon: [Ability_Pokemon!]!
 }
 
@@ -122,7 +287,7 @@ type BerryList implements ConnectionList {
 type BerryFirmness {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   berries: [BerryConnection!]!
 }
 type BerryFirmnessConnection implements Connection {
@@ -139,7 +304,7 @@ type BerryFirmnessList implements ConnectionList {
 type BerryFlavor {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   contest_type: ContestTypeConnection!
   berries: [BerryFlavor_Berry!]!
 }
@@ -160,7 +325,7 @@ type BerryFlavorList implements ConnectionList {
 # Entity: Characteristic (Don't have name hence not implementing interface)
 type Characteristic {
   id: Int!
-  descriptions: [LocalizedDescription!]!
+  descriptions(language: String = "en"): [LocalizedDescription!]!
   gene_modulo: Int!
   highest_stat: StatConnection!
   possible_values: [Int!]!
@@ -178,8 +343,8 @@ type CharacteristicList implements UnnamedConnectionList {
 type ContestEffect {
   id: Int!
   appeal: Int!
-  effect_entries: [LocalizedEffect!]!
-  flavor_text_entries: [LocalizedFlavorText!]!
+  effect_entries(language: String = "en"): [LocalizedEffect!]!
+  flavor_text_entries(language: String = "en"): [LocalizedFlavorText!]!
   jam: Int!
 }
 type ContestEffectConnection implements UnnamedConnection {
@@ -196,7 +361,7 @@ type ContestEffectList implements UnnamedConnectionList {
 type ContestType {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   berry_flavor: BerryFlavorConnection!
 }
 type ContestTypeConnection implements Connection {
@@ -213,7 +378,7 @@ type ContestTypeList implements ConnectionList {
 type EggGroup {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   pokemon_species: [PokemonSpeciesConnection!]!
 }
 type EggGroupConnection implements Connection {
@@ -230,7 +395,7 @@ type EggGroupList implements ConnectionList {
 type EncounterCondition {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   values: [EncounterConditionValueConnection!]!
 }
 type EncounterConditionConnection implements Connection {
@@ -247,7 +412,7 @@ type EncounterConditionList implements ConnectionList {
 type EncounterConditionValue {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   condition: EncounterConditionConnection!
 }
 type EncounterConditionValueConnection implements Connection {
@@ -264,7 +429,7 @@ type EncounterConditionValueList implements ConnectionList {
 type EncounterMethod {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   order: Int!
 }
 type EncounterMethodConnection implements Connection {
@@ -340,7 +505,7 @@ type EvolutionChainList implements ConnectionList {
 type EvolutionTrigger {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   pokemon_species: [PokemonSpeciesConnection!]!
 }
 type EvolutionTriggerConnection implements Connection {
@@ -378,7 +543,7 @@ type GenderList implements ConnectionList {
 type Generation {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   abilities: [AbilityConnection!]!
   main_region: RegionConnection
   moves: [MoveConnection!]!
@@ -400,7 +565,7 @@ type GenerationList implements ConnectionList {
 type GrowthRate {
   id: Int!
   name: String!
-  descriptions: [LocalizedDescription!]!
+  descriptions(language: String = "en"): [LocalizedDescription!]!
   formula: String!
   levels: [GrowthRate_Level!]!
   pokemon_species: [PokemonSpeciesConnection!]!
@@ -423,13 +588,13 @@ type GrowthRateList implements ConnectionList {
 type Item {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   attributes: [ItemAttributeConnection!]!
   baby_trigger_for: EvolutionChainConnection
   category: ItemCategoryConnection!
   cost: Int!
-  effect_entries: [LocalizedEffectWithShort!]!
-  flavor_text_entries: [LocalizedFlavorTextWithVersionGroup]!
+  effect_entries(language: String = "en"): [LocalizedEffectWithShort!]!
+  flavor_text_entries(language: String = "en"): [LocalizedFlavorTextWithVersionGroup]!
   fling_effect: ItemFlingEffectConnection
   fling_power: Int
   game_indices: [GameIndex!]!
@@ -463,8 +628,8 @@ type ItemList implements ConnectionList {
 type ItemAttribute {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
-  descriptions: [LocalizedDescription!]!
+  names(language: String = "en"): [LocalizedName!]!
+  descriptions(language: String = "en"): [LocalizedDescription!]!
   items: [ItemConnection!]!
 }
 type ItemAttributeConnection implements Connection {
@@ -481,7 +646,7 @@ type ItemAttributeList implements ConnectionList {
 type ItemCategory {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   items: [ItemConnection!]!
   pocket: ItemPocketConnection
 }
@@ -500,7 +665,7 @@ type ItemFlingEffect {
   id: Int!
   name: String!
   items: [ItemConnection!]!
-  effect_entries: [LocalizedEffect!]!
+  effect_entries(language: String = "en"): [LocalizedEffect!]!
 }
 type ItemFlingEffectConnection implements Connection {
   name: String!
@@ -516,7 +681,7 @@ type ItemFlingEffectList implements ConnectionList {
 type ItemPocket {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   categories: [ItemCategoryConnection!]!
 }
 type ItemPocketConnection implements Connection {
@@ -535,7 +700,7 @@ type Language {
   name: String!
   iso3166: String!
   iso639: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   official: Boolean!
 }
 type LanguageConnection implements Connection {
@@ -552,7 +717,7 @@ type LanguageList implements ConnectionList {
 type Location {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   areas: [LocationArea!]!
   game_indices: [GameIndex!]!
   region: RegionConnection!
@@ -571,7 +736,7 @@ type LocationList implements ConnectionList {
 type LocationArea {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   encounter_method_rates: [LocationArea_EncounterMethodRate!]!
   game_index: Int!
   location: LocationConnection!
@@ -628,7 +793,7 @@ type MachineList implements UnnamedConnectionList {
 type Move {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   accuracy: Int!
   contest_combos: Move_ContestCombos!
   contest_effect: ContestEffectConnection!
@@ -636,8 +801,8 @@ type Move {
   damage_class: MoveDamageClassConnection!
   effect_chance: Int
   effect_changes: [VersionGroupedLocalizedEffect!]!
-  effect_entries: [LocalizedEffectWithShort!]!
-  flavor_text_entries: [LocalizedFlavorTextWithVersionGroup!]!
+  effect_entries(language: String = "en"): [LocalizedEffectWithShort!]!
+  flavor_text_entries(language: String = "en"): [LocalizedFlavorTextWithVersionGroup!]!
   generation: GenerationConnection!
   learned_by_pokemon: [PokemonConnection!]!
   machines: [VersionGroupedMachine!]!
@@ -676,7 +841,7 @@ type Move_Meta {
 type Move_PastValues {
   accuracy: Int
   effect_chance: Int
-  effect_entries: [LocalizedEffectWithShort!]!
+  effect_entries(language: String = "en"): [LocalizedEffectWithShort!]!
   power: Int
   pp: Int
   type: TypeConnection
@@ -700,7 +865,7 @@ type MoveList implements ConnectionList {
 type MoveAilment {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   moves: [MoveConnection!]!
 }
 type MoveAilmentConnection implements Connection {
@@ -717,7 +882,7 @@ type MoveAilmentList implements ConnectionList {
 type MoveBattleStyle {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
 }
 type MoveBattleStyleConnection implements Connection {
   name: String!
@@ -733,7 +898,7 @@ type MoveBattleStyleList implements ConnectionList {
 type MoveCategory {
   id: Int!
   name: String!
-  descriptions: [LocalizedDescription!]!
+  descriptions(language: String = "en"): [LocalizedDescription!]!
   moves: [MoveConnection!]!
 }
 type MoveCategoryConnection implements Connection {
@@ -750,8 +915,8 @@ type MoveCategoryList implements ConnectionList {
 type MoveDamageClass {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
-  descriptions: [LocalizedDescription!]!
+  names(language: String = "en"): [LocalizedName!]!
+  descriptions(language: String = "en"): [LocalizedDescription!]!
   moves: [MoveConnection!]!
 }
 type MoveDamageClassConnection implements Connection {
@@ -768,8 +933,8 @@ type MoveDamageClassList implements ConnectionList {
 type MoveLearnMethod {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
-  descriptions: [LocalizedDescription!]!
+  names(language: String = "en"): [LocalizedName!]!
+  descriptions(language: String = "en"): [LocalizedDescription!]!
   version_groups: [VersionGroupConnection!]!
 }
 type MoveLearnMethodConnection implements Connection {
@@ -786,8 +951,8 @@ type MoveLearnMethodList implements ConnectionList {
 type MoveTarget {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
-  descriptions: [LocalizedDescription!]!
+  names(language: String = "en"): [LocalizedName!]!
+  descriptions(language: String = "en"): [LocalizedDescription!]!
   moves: [MoveConnection!]!
 }
 type MoveTargetConnection implements Connection {
@@ -804,7 +969,7 @@ type MoveTargetList implements ConnectionList {
 type Nature {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   decreased_stat: StatConnection
   hates_flavor: BerryFlavorConnection
   increased_stat: StatConnection
@@ -835,7 +1000,7 @@ type NatureList implements ConnectionList {
 type PalParkArea {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   pokemon_encounters: [PalParkArea_PokemonEncounter!]!
 }
 type PalParkArea_PokemonEncounter {
@@ -857,7 +1022,7 @@ type PalParkAreaList implements ConnectionList {
 type PokeathlonStat {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   affecting_natures: PokeathlonStat_AffectingNature!
 }
 type PokeathlonStat_AffectingNature {
@@ -882,8 +1047,8 @@ type PokeathlonStatList implements ConnectionList {
 type Pokedex {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
-  descriptions: [LocalizedDescription!]!
+  names(language: String = "en"): [LocalizedName!]!
+  descriptions(language: String = "en"): [LocalizedDescription!]!
   is_main_series: Boolean!
   pokemon_entries: [Pokedex_PokemonEntry!]!
   region: RegionConnection
@@ -977,7 +1142,7 @@ type Pokemon_SpritesOther {
   official_artwork: Pokemon_SpritesFrontDefaultOnly # Data has "official-artwork"
 }
 type Pokemon_SpritesFrontDefaultOnly {
-  front_default: String!
+  front_default: String
 }
 type Pokemon_SpritesFront {
   front_default: String
@@ -1099,7 +1264,7 @@ type PokemonList implements ConnectionList {
 type PokemonColor {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   pokemon_species: [PokemonSpeciesConnection!]!
 }
 type PokemonColorConnection implements Connection {
@@ -1116,9 +1281,9 @@ type PokemonColorList implements ConnectionList {
 type PokemonForm {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   form_name: String!
-  form_names: [LocalizedName!]!
+  form_names(language: String = "en"): [LocalizedName!]!
   form_order: Int!
   is_battle_only: Boolean!
   is_default: Boolean!
@@ -1153,7 +1318,7 @@ type PokemonFormList implements ConnectionList {
 type PokemonHabitat {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   pokemon_species: [PokemonSpeciesConnection!]!
 }
 type PokemonHabitatConnection implements Connection {
@@ -1170,7 +1335,7 @@ type PokemonHabitatList implements ConnectionList {
 type PokemonShape {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   awesome_names: [PokemonShape_AwesomeName!]!
   pokemon_species: [PokemonSpeciesConnection!]!
 }
@@ -1192,15 +1357,15 @@ type PokemonShapeList implements ConnectionList {
 type PokemonSpecies {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   base_happiness: Int!
   capture_rate: Int!
   color: PokemonColorConnection!
   egg_groups: [EggGroupConnection!]!
   evolution_chain: EvolutionChainConnection!
   evolves_from_species: PokemonSpeciesConnection
-  flavor_text_entries: [VersionedLocalizedFlavorText!]!
-  form_descriptions: [LocalizedDescription!]!
+  flavor_text_entries(language: String = "en"): [LocalizedVersionedFlavorText!]!
+  form_descriptions(language: String = "en"): [LocalizedDescription!]!
   forms_switchable: Boolean!
   gender_rate: Int!
   genera: [PokemonSpecies_Genus!]!
@@ -1249,7 +1414,7 @@ type PokemonSpeciesList implements ConnectionList {
 type Region {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   locations: LocationConnection!
   main_generation: GenerationConnection!
   pokedexes: [PokedexConnection!]!
@@ -1269,7 +1434,7 @@ type RegionList implements ConnectionList {
 type Stat {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   affecting_moves: Stat_AffectingMove
   affecting_natures: Stat_AffectingNature
   characteristics: [CharacteristicConnection!]!
@@ -1303,7 +1468,7 @@ type StatList implements ConnectionList {
 type SuperContestEffect {
   id: Int!
   appeal: Int!
-  flavor_text_entries: [LocalizedFlavorText!]!
+  flavor_text_entries(language: String = "en"): [LocalizedFlavorText!]!
   moves: [MoveConnection!]!
 }
 type SuperContestEffectConnection implements UnnamedConnection {
@@ -1319,7 +1484,7 @@ type SuperContestEffectList implements UnnamedConnectionList {
 type Type {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   damage_relations: Type_DamageRelation!
   game_indices: [GameIndex!]!
   generation: GenerationConnection!
@@ -1359,7 +1524,7 @@ type TypeList implements ConnectionList {
 type Version {
   id: Int!
   name: String!
-  names: [LocalizedName!]!
+  names(language: String = "en"): [LocalizedName!]!
   version_group: VersionGroupConnection!
 }
 type VersionConnection implements Connection {
@@ -1380,11 +1545,7 @@ type VersionedRate {
   rate: Int!
   version: VersionConnection
 }
-type VersionedLocalizedFlavorText {
-  flavor_text: String!
-  language: LanguageConnection!
-  version: VersionConnection
-}
+
 # Entity: VersionGroup
 type VersionGroup {
   id: Int!

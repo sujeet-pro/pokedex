@@ -34,7 +34,8 @@ type ${entityName}List implements ConnectionList{
 const fileToEntityName = fileName =>
   fileName.replaceAll(/(^\w)|(-\w)/gi, x => x.replace('-', '').toUpperCase())
 const dirPath = path.join(__dirname, 'data/api/v2')
-async function init() {
+
+async function printSchemaSkeleton() {
   const files = await fsp.readdir(dirPath)
   const fromFile = files
     .filter(file => file !== 'index.json')
@@ -44,4 +45,43 @@ async function init() {
   const content = `${common}${fromFile}`
   console.log(content)
 }
-init()
+
+async function printQuerySkeleton() {
+  const queryName = x => x[0].toLowerCase() + x.substring(1)
+  const files = await fsp.readdir(dirPath)
+  const folderTypeTuple = files
+    .filter(file => file !== 'index.json')
+    .map(x => [x, fileToEntityName(x)])
+
+  const query = folderTypeTuple
+    .map(
+      ([folder, type]) =>
+        `
+  all${type}(filter: QueryFilterList): ${type}List
+  ${queryName(type)}(url: String, id: Int): ${type}
+  `,
+    )
+    .join('')
+  // console.log(query)
+  const js = folderTypeTuple
+    .map(
+      ([folder, type]) => `
+  all${type}: getAll(getApiPathFor('${folder}')),
+  ${queryName(type)}: getOne('${folder}'),
+  `,
+    )
+    .join('')
+  // console.log(js)
+
+  const schemaExtJs = folderTypeTuple
+    .map(
+      ([folder, type]) => `
+  ${type}Connection: {
+    details: getConnection('${folder}'),
+  },
+  `,
+    )
+    .join('')
+  console.log(schemaExtJs)
+}
+printQuerySkeleton()
