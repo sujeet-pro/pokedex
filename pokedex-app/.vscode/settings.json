@@ -1,0 +1,13 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.tslint": true
+  },
+  "cSpell.words": [
+    "browserconfig",
+    "decimetres",
+    "localforage",
+    "pokedex",
+    "textdirection"
+  ]
+}

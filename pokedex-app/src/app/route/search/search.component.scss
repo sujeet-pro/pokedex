@@ -1,0 +1,61 @@
+@import '~src/styles/mixins';
+:host {
+  display: block;
+}
+.secondary-toolbar {
+  font-size: inherit;
+  position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+.stats-toolbar {
+  font-size: inherit;
+  height: 40px;
+}
+.results {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 12px;
+  box-sizing: border-box;
+  // justify-content: space-between;
+  .result {
+    margin: 12px;
+    box-sizing: border-box;
+    @include breakpoint-xs {
+      width: calc(100% - 24px);
+    }
+    @include breakpoint-s {
+      width: calc(50% - 24px);
+    }
+    @include breakpoint-m {
+      width: calc(33.3% - 24px);
+    }
+    @include breakpoint-l {
+      width: calc(25% - 24px);
+    }
+    @include breakpoint-xl {
+      width: calc(20% - 24px);
+    }
+  }
+}
+
+.load-more-container {
+  margin: 24px 24px 48px 24px;
+  text-align: center;
+}
+
+// Error section
+.error-helper-btn{
+  margin: 0px 12px;
+}
+.rotating {
+  animation: rotating 2s linear infinite;
+}
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

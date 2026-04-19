@@ -1,0 +1,21 @@
+$padding-size: 36px;
+$content-size: 360px;
+.logo-container {
+  text-align: center;
+  padding: $padding-size;
+}
+.logo {
+  max-height: $content-size;
+  max-width: 100%;
+}
+.pokemon-search-bar {
+  padding: 0 $padding-size $padding-size;
+  text-align: center;
+}
+.search-field {
+  max-width: $content-size;
+  width: 100%;
+
+  box-sizing: border-box;
+}
+

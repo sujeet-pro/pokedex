@@ -1,0 +1,14 @@
+<pokedex-pokemon-card [pokemon]="pokemon" [allowNav]="true" *ngIf="pokemon"></pokedex-pokemon-card>
+<mat-card *ngIf="!pokemon">
+  <mat-card-title>
+    {{pokemonId}}
+  </mat-card-title>
+  <mat-card-content>
+    <div *ngIf="!error">
+      Loading ...
+    </div>
+    <div *ngIf="error">
+      Unable to fetch details
+    </div>
+  </mat-card-content>
+</mat-card>
