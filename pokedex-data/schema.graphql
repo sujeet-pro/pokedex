@@ -1,0 +1,1572 @@
+# Query
+input QueryOrderByInput {
+  id: QuerySort
+}
+
+input QueryFilterList {
+  eq: String
+  in: [String!]
+}
+
+enum QuerySort {
+  asc
+  desc
+}
+
+type Query {
+  allAbility(filter: QueryFilterList): AbilityList
+  ability(url: String, id: Int): Ability
+
+  allBerry(filter: QueryFilterList): BerryList
+  berry(url: String, id: Int): Berry
+
+  allBerryFirmness(filter: QueryFilterList): BerryFirmnessList
+  berryFirmness(url: String, id: Int): BerryFirmness
+
+  allBerryFlavor(filter: QueryFilterList): BerryFlavorList
+  berryFlavor(url: String, id: Int): BerryFlavor
+
+  allCharacteristic(filter: QueryFilterList): CharacteristicList
+  characteristic(url: String, id: Int): Characteristic
+
+  allContestEffect(filter: QueryFilterList): ContestEffectList
+  contestEffect(url: String, id: Int): ContestEffect
+
+  allContestType(filter: QueryFilterList): ContestTypeList
+  contestType(url: String, id: Int): ContestType
+
+  allEggGroup(filter: QueryFilterList): EggGroupList
+  eggGroup(url: String, id: Int): EggGroup
+
+  allEncounterCondition(filter: QueryFilterList): EncounterConditionList
+  encounterCondition(url: String, id: Int): EncounterCondition
+
+  allEncounterConditionValue(filter: QueryFilterList): EncounterConditionValueList
+  encounterConditionValue(url: String, id: Int): EncounterConditionValue
+
+  allEncounterMethod(filter: QueryFilterList): EncounterMethodList
+  encounterMethod(url: String, id: Int): EncounterMethod
+
+  allEvolutionChain(filter: QueryFilterList): EvolutionChainList
+  evolutionChain(url: String, id: Int): EvolutionChain
+
+  allEvolutionTrigger(filter: QueryFilterList): EvolutionTriggerList
+  evolutionTrigger(url: String, id: Int): EvolutionTrigger
+
+  allGender(filter: QueryFilterList): GenderList
+  gender(url: String, id: Int): Gender
+
+  allGeneration(filter: QueryFilterList): GenerationList
+  generation(url: String, id: Int): Generation
+
+  allGrowthRate(filter: QueryFilterList): GrowthRateList
+  growthRate(url: String, id: Int): GrowthRate
+
+  allItem(filter: QueryFilterList): ItemList
+  item(url: String, id: Int): Item
+
+  allItemAttribute(filter: QueryFilterList): ItemAttributeList
+  itemAttribute(url: String, id: Int): ItemAttribute
+
+  allItemCategory(filter: QueryFilterList): ItemCategoryList
+  itemCategory(url: String, id: Int): ItemCategory
+
+  allItemFlingEffect(filter: QueryFilterList): ItemFlingEffectList
+  itemFlingEffect(url: String, id: Int): ItemFlingEffect
+
+  allItemPocket(filter: QueryFilterList): ItemPocketList
+  itemPocket(url: String, id: Int): ItemPocket
+
+  allLanguage(filter: QueryFilterList): LanguageList
+  language(url: String, id: Int): Language
+
+  allLocation(filter: QueryFilterList): LocationList
+  location(url: String, id: Int): Location
+
+  allLocationArea(filter: QueryFilterList): LocationAreaList
+  locationArea(url: String, id: Int): LocationArea
+
+  allMachine(filter: QueryFilterList): MachineList
+  machine(url: String, id: Int): Machine
+
+  allMove(filter: QueryFilterList): MoveList
+  move(url: String, id: Int): Move
+
+  allMoveAilment(filter: QueryFilterList): MoveAilmentList
+  moveAilment(url: String, id: Int): MoveAilment
+
+  allMoveBattleStyle(filter: QueryFilterList): MoveBattleStyleList
+  moveBattleStyle(url: String, id: Int): MoveBattleStyle
+
+  allMoveCategory(filter: QueryFilterList): MoveCategoryList
+  moveCategory(url: String, id: Int): MoveCategory
+
+  allMoveDamageClass(filter: QueryFilterList): MoveDamageClassList
+  moveDamageClass(url: String, id: Int): MoveDamageClass
+
+  allMoveLearnMethod(filter: QueryFilterList): MoveLearnMethodList
+  moveLearnMethod(url: String, id: Int): MoveLearnMethod
+
+  allMoveTarget(filter: QueryFilterList): MoveTargetList
+  moveTarget(url: String, id: Int): MoveTarget
+
+  allNature(filter: QueryFilterList): NatureList
+  nature(url: String, id: Int): Nature
+
+  allPalParkArea(filter: QueryFilterList): PalParkAreaList
+  palParkArea(url: String, id: Int): PalParkArea
+
+  allPokeathlonStat(filter: QueryFilterList): PokeathlonStatList
+  pokeathlonStat(url: String, id: Int): PokeathlonStat
+
+  allPokedex(filter: QueryFilterList): PokedexList
+  pokedex(url: String, id: Int): Pokedex
+
+  allPokemon(filter: QueryFilterList): PokemonList
+  pokemon(url: String, id: Int): Pokemon
+
+  allPokemonColor(filter: QueryFilterList): PokemonColorList
+  pokemonColor(url: String, id: Int): PokemonColor
+
+  allPokemonForm(filter: QueryFilterList): PokemonFormList
+  pokemonForm(url: String, id: Int): PokemonForm
+
+  allPokemonHabitat(filter: QueryFilterList): PokemonHabitatList
+  pokemonHabitat(url: String, id: Int): PokemonHabitat
+
+  allPokemonShape(filter: QueryFilterList): PokemonShapeList
+  pokemonShape(url: String, id: Int): PokemonShape
+
+  allPokemonSpecies(filter: QueryFilterList): PokemonSpeciesList
+  pokemonSpecies(url: String, id: Int): PokemonSpecies
+
+  allRegion(filter: QueryFilterList): RegionList
+  region(url: String, id: Int): Region
+
+  allStat(filter: QueryFilterList): StatList
+  stat(url: String, id: Int): Stat
+
+  allSuperContestEffect(filter: QueryFilterList): SuperContestEffectList
+  superContestEffect(url: String, id: Int): SuperContestEffect
+
+  allType(filter: QueryFilterList): TypeList
+  type(url: String, id: Int): Type
+
+  allVersion(filter: QueryFilterList): VersionList
+  version(url: String, id: Int): Version
+
+  allVersionGroup(filter: QueryFilterList): VersionGroupList
+  versionGroup(url: String, id: Int): VersionGroup
+}
+
+# Common
+interface UnnamedConnection {
+  url: String!
+}
+interface UnnamedConnectionList {
+  count: Int!
+  results: [UnnamedConnection!]!
+}
+interface Connection {
+  name: String!
+  url: String!
+}
+interface ConnectionList {
+  count: Int!
+  results: [Connection!]!
+}
+
+type LocalizedName {
+  name: String!
+  language: LanguageConnection!
+}
+type LocalizedDescription {
+  description: String
+  language: LanguageConnection!
+}
+type LocalizedEffect {
+  effect: String!
+  language: LanguageConnection!
+}
+type LocalizedEffectWithShort {
+  effect: String!
+  short_effect: String!
+  language: LanguageConnection!
+}
+type LocalizedFlavorText {
+  flavor_text: String!
+  language: LanguageConnection!
+}
+type LocalizedFlavorTextWithVersionGroup {
+  flavor_text: String!
+  language: LanguageConnection!
+  version_group: VersionGroupConnection
+}
+type LocalizedVersionedFlavorText {
+  flavor_text: String!
+  language: LanguageConnection!
+  version: VersionConnection
+}
+type VersionGroupedLocalizedEffect {
+  effect_entries(language: String = "en"): [LocalizedEffect!]!
+  version_group: VersionGroupConnection!
+}
+
+type GameIndex {
+  game_index: Int!
+  generation: GenerationConnection!
+}
+
+type _UNKNOWN {
+  placeholder: String
+}
+
+# Entities
+
+# Entity: Ability
+type Ability {
+  id: Int!
+  name: String!
+
+  effect_changes: [VersionGroupedLocalizedEffect!]!
+  effect_entries(language: String = "en"): [LocalizedEffectWithShort!]!
+  flavor_text_entries(language: String = "en"): [LocalizedFlavorTextWithVersionGroup!]!
+  generation: GenerationConnection!
+  is_main_series: Boolean!
+  names(language: String = "en"): [LocalizedName!]!
+  pokemon: [Ability_Pokemon!]!
+}
+
+type Ability_Pokemon {
+  is_hidden: Boolean!
+  slot: Int!
+  pokemon: PokemonConnection!
+}
+
+type AbilityConnection implements Connection {
+  name: String!
+  url: String!
+  details: Ability
+}
+type AbilityList implements ConnectionList {
+  count: Int!
+  results: [AbilityConnection!]!
+}
+
+# Entity: Berry
+type Berry {
+  id: Int!
+  name: String!
+
+  firmness: BerryFirmnessConnection!
+  flavors: [Berry_Flavour!]!
+  growth_time: Int!
+  item: ItemConnection
+  max_harvest: Int!
+  natural_gift_power: Int!
+  natural_gift_type: TypeConnection!
+  size: Int!
+  smoothness: Int!
+  soil_dryness: Int!
+}
+type Berry_Flavour {
+  potency: Int!
+  flavor: BerryFlavorConnection!
+}
+type BerryConnection implements Connection {
+  name: String!
+  url: String!
+  details: Berry
+}
+type BerryList implements ConnectionList {
+  count: Int!
+  results: [BerryConnection!]!
+}
+
+# Entity: BerryFirmness
+type BerryFirmness {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  berries: [BerryConnection!]!
+}
+type BerryFirmnessConnection implements Connection {
+  name: String!
+  url: String!
+  details: BerryFirmness
+}
+type BerryFirmnessList implements ConnectionList {
+  count: Int!
+  results: [BerryFirmnessConnection!]!
+}
+
+# Entity: BerryFlavor
+type BerryFlavor {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  contest_type: ContestTypeConnection!
+  berries: [BerryFlavor_Berry!]!
+}
+type BerryFlavor_Berry {
+  potency: Int!
+  berry: BerryConnection!
+}
+type BerryFlavorConnection implements Connection {
+  name: String!
+  url: String!
+  details: BerryFlavor
+}
+type BerryFlavorList implements ConnectionList {
+  count: Int!
+  results: [BerryFlavorConnection!]!
+}
+
+# Entity: Characteristic (Don't have name hence not implementing interface)
+type Characteristic {
+  id: Int!
+  descriptions(language: String = "en"): [LocalizedDescription!]!
+  gene_modulo: Int!
+  highest_stat: StatConnection!
+  possible_values: [Int!]!
+}
+type CharacteristicConnection implements UnnamedConnection {
+  url: String!
+  details: Characteristic
+}
+type CharacteristicList implements UnnamedConnectionList {
+  count: Int!
+  results: [CharacteristicConnection!]!
+}
+
+# Entity: ContestEffect
+type ContestEffect {
+  id: Int!
+  appeal: Int!
+  effect_entries(language: String = "en"): [LocalizedEffect!]!
+  flavor_text_entries(language: String = "en"): [LocalizedFlavorText!]!
+  jam: Int!
+}
+type ContestEffectConnection implements UnnamedConnection {
+  name: String!
+  url: String!
+  details: ContestEffect
+}
+type ContestEffectList implements UnnamedConnectionList {
+  count: Int!
+  results: [ContestEffectConnection!]!
+}
+
+# Entity: ContestType
+type ContestType {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  berry_flavor: BerryFlavorConnection!
+}
+type ContestTypeConnection implements Connection {
+  name: String!
+  url: String!
+  details: ContestType
+}
+type ContestTypeList implements ConnectionList {
+  count: Int!
+  results: [ContestTypeConnection!]!
+}
+
+# Entity: EggGroup
+type EggGroup {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  pokemon_species: [PokemonSpeciesConnection!]!
+}
+type EggGroupConnection implements Connection {
+  name: String!
+  url: String!
+  details: EggGroup
+}
+type EggGroupList implements ConnectionList {
+  count: Int!
+  results: [EggGroupConnection!]!
+}
+
+# Entity: EncounterCondition
+type EncounterCondition {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  values: [EncounterConditionValueConnection!]!
+}
+type EncounterConditionConnection implements Connection {
+  name: String!
+  url: String!
+  details: EncounterCondition
+}
+type EncounterConditionList implements ConnectionList {
+  count: Int!
+  results: [EncounterConditionConnection!]!
+}
+
+# Entity: EncounterConditionValue
+type EncounterConditionValue {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  condition: EncounterConditionConnection!
+}
+type EncounterConditionValueConnection implements Connection {
+  name: String!
+  url: String!
+  details: EncounterConditionValue
+}
+type EncounterConditionValueList implements ConnectionList {
+  count: Int!
+  results: [EncounterConditionValueConnection!]!
+}
+
+# Entity: EncounterMethod
+type EncounterMethod {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  order: Int!
+}
+type EncounterMethodConnection implements Connection {
+  name: String!
+  url: String!
+  details: EncounterMethod
+}
+type EncounterMethodList implements ConnectionList {
+  count: Int!
+  results: [EncounterMethodConnection!]!
+}
+
+# Entity: EvolutionChain
+type EvolutionChain {
+  id: Int!
+  baby_trigger_item: ItemConnection
+  chain: EvolutionChain_Depth1!
+}
+type EvolutionChain_Depth1 {
+  evolution_details: [EvolutionChain_EvolutionDetail!]!
+  evolves_to: [EvolutionChain_Depth2!]!
+  is_baby: Boolean!
+  species: PokemonSpeciesConnection
+}
+type EvolutionChain_Depth2 {
+  evolution_details: [EvolutionChain_EvolutionDetail!]!
+  evolves_to: [EvolutionChain_Depth3!]!
+  is_baby: Boolean!
+  species: PokemonSpeciesConnection
+}
+type EvolutionChain_Depth3 {
+  evolution_details: [EvolutionChain_EvolutionDetail!]!
+  evolves_to: [EvolutionChain_Depth4!]!
+  is_baby: Boolean!
+  species: PokemonSpeciesConnection
+}
+type EvolutionChain_Depth4 {
+  evolution_details: [EvolutionChain_EvolutionDetail!]!
+  is_baby: Boolean!
+  species: PokemonSpeciesConnection
+}
+type EvolutionChain_EvolutionDetail {
+  gender: GenderConnection
+  held_item: ItemConnection
+  item: ItemConnection
+  known_move: MoveConnection
+  known_move_type: TypeConnection
+  location: LocationConnection
+  min_affection: Int
+  min_beauty: Int
+  min_happiness: Int
+  min_level: Int
+  needs_overworld_rain: Boolean!
+  party_species: PokemonSpeciesConnection
+  party_type: TypeConnection
+  relative_physical_stats: Int
+  time_of_day: String!
+  trade_species: PokemonSpeciesConnection
+  trigger: EvolutionTriggerConnection
+  turn_upside_down: Boolean!
+}
+type EvolutionChainConnection implements Connection {
+  name: String!
+  url: String!
+  details: EvolutionChain
+}
+type EvolutionChainList implements ConnectionList {
+  count: Int!
+  results: [EvolutionChainConnection!]!
+}
+
+# Entity: EvolutionTrigger
+type EvolutionTrigger {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  pokemon_species: [PokemonSpeciesConnection!]!
+}
+type EvolutionTriggerConnection implements Connection {
+  url: String!
+  name: String!
+  details: EvolutionTrigger
+}
+type EvolutionTriggerList implements ConnectionList {
+  count: Int!
+  results: [EvolutionTriggerConnection!]!
+}
+
+# Entity: Gender
+type Gender {
+  id: Int!
+  name: String!
+  pokemon_species_details: [Gender_SpeciesDetails!]!
+  required_for_evolution: [PokemonSpeciesConnection!]!
+}
+type Gender_SpeciesDetails {
+  pokemon_species: PokemonSpeciesConnection!
+  rate: Int!
+}
+type GenderConnection implements Connection {
+  name: String!
+  url: String!
+  details: Gender
+}
+type GenderList implements ConnectionList {
+  count: Int!
+  results: [GenderConnection!]!
+}
+
+# Entity: Generation
+type Generation {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  abilities: [AbilityConnection!]!
+  main_region: RegionConnection
+  moves: [MoveConnection!]!
+  pokemon_species: [PokemonSpeciesConnection!]!
+  types: [TypeConnection!]!
+  version_groups: [VersionGroupConnection!]!
+}
+type GenerationConnection implements Connection {
+  name: String!
+  url: String!
+  details: Generation
+}
+type GenerationList implements ConnectionList {
+  count: Int!
+  results: [GenerationConnection!]!
+}
+
+# Entity: GrowthRate
+type GrowthRate {
+  id: Int!
+  name: String!
+  descriptions(language: String = "en"): [LocalizedDescription!]!
+  formula: String!
+  levels: [GrowthRate_Level!]!
+  pokemon_species: [PokemonSpeciesConnection!]!
+}
+type GrowthRate_Level {
+  experience: Int!
+  level: Int!
+}
+type GrowthRateConnection implements Connection {
+  name: String!
+  url: String!
+  details: GrowthRate
+}
+type GrowthRateList implements ConnectionList {
+  count: Int!
+  results: [GrowthRateConnection!]!
+}
+
+# Entity: Item
+type Item {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  attributes: [ItemAttributeConnection!]!
+  baby_trigger_for: EvolutionChainConnection
+  category: ItemCategoryConnection!
+  cost: Int!
+  effect_entries(language: String = "en"): [LocalizedEffectWithShort!]!
+  flavor_text_entries(language: String = "en"): [LocalizedFlavorTextWithVersionGroup]!
+  fling_effect: ItemFlingEffectConnection
+  fling_power: Int
+  game_indices: [GameIndex!]!
+  held_by_pokemon: [Item_Pokemon!]!
+  machines: [Item_Machine!]!
+  sprites: Item_Sprites!
+}
+type Item_Sprites {
+  default: String!
+}
+type Item_Pokemon {
+  pokemon: PokemonConnection!
+  version_details: [VersionedRarity!]!
+}
+
+type Item_Machine {
+  machine: MachineConnection
+  version_group: VersionGroupConnection
+}
+type ItemConnection implements Connection {
+  name: String!
+  url: String!
+  details: Item
+}
+type ItemList implements ConnectionList {
+  count: Int!
+  results: [ItemConnection!]!
+}
+
+# Entity: ItemAttribute
+type ItemAttribute {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  descriptions(language: String = "en"): [LocalizedDescription!]!
+  items: [ItemConnection!]!
+}
+type ItemAttributeConnection implements Connection {
+  name: String!
+  url: String!
+  details: ItemAttribute
+}
+type ItemAttributeList implements ConnectionList {
+  count: Int!
+  results: [ItemAttributeConnection!]!
+}
+
+# Entity: ItemCategory
+type ItemCategory {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  items: [ItemConnection!]!
+  pocket: ItemPocketConnection
+}
+type ItemCategoryConnection implements Connection {
+  name: String!
+  url: String!
+  details: ItemCategory
+}
+type ItemCategoryList implements ConnectionList {
+  count: Int!
+  results: [ItemCategoryConnection!]!
+}
+
+# Entity: ItemFlingEffect
+type ItemFlingEffect {
+  id: Int!
+  name: String!
+  items: [ItemConnection!]!
+  effect_entries(language: String = "en"): [LocalizedEffect!]!
+}
+type ItemFlingEffectConnection implements Connection {
+  name: String!
+  url: String!
+  details: ItemFlingEffect
+}
+type ItemFlingEffectList implements ConnectionList {
+  count: Int!
+  results: [ItemFlingEffectConnection!]!
+}
+
+# Entity: ItemPocket
+type ItemPocket {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  categories: [ItemCategoryConnection!]!
+}
+type ItemPocketConnection implements Connection {
+  name: String!
+  url: String!
+  details: ItemPocket
+}
+type ItemPocketList implements ConnectionList {
+  count: Int!
+  results: [ItemPocketConnection!]!
+}
+
+# Entity: Language
+type Language {
+  id: Int!
+  name: String!
+  iso3166: String!
+  iso639: String!
+  names(language: String = "en"): [LocalizedName!]!
+  official: Boolean!
+}
+type LanguageConnection implements Connection {
+  name: String!
+  url: String!
+  details: Language
+}
+type LanguageList implements ConnectionList {
+  count: Int!
+  results: [LanguageConnection!]!
+}
+
+# Entity: Location
+type Location {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  areas: [LocationArea!]!
+  game_indices: [GameIndex!]!
+  region: RegionConnection!
+}
+type LocationConnection implements Connection {
+  name: String!
+  url: String!
+  details: Location
+}
+type LocationList implements ConnectionList {
+  count: Int!
+  results: [LocationConnection!]!
+}
+
+# Entity: LocationArea
+type LocationArea {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  encounter_method_rates: [LocationArea_EncounterMethodRate!]!
+  game_index: Int!
+  location: LocationConnection!
+  pokemon_encounters: [LocationArea_PokemonEncounter!]!
+}
+type LocationArea_EncounterMethodRate {
+  encounter_method: EncounterMethodConnection!
+  version_details: [VersionedRate!]!
+}
+type LocationArea_PokemonEncounter {
+  pokemon: PokemonConnection!
+  version_details: [LocationArea_PokemonEncounterVersionedDetails!]!
+}
+type LocationArea_PokemonEncounterVersionedDetails {
+  encounter_details: [LocationArea_PokemonEncounterDetails!]!
+  max_chance: Int!
+  version: VersionConnection!
+}
+type LocationArea_PokemonEncounterDetails {
+  chance: Int!
+  condition_values: [EncounterConditionValueConnection!]!
+  max_level: Int!
+  method: EncounterMethodConnection!
+  min_level: Int!
+}
+type LocationAreaConnection implements Connection {
+  name: String!
+  url: String!
+  details: LocationArea
+}
+type LocationAreaList implements ConnectionList {
+  count: Int!
+  results: [LocationAreaConnection!]!
+}
+
+# Entity: Machine
+type Machine {
+  id: Int!
+  item: ItemConnection!
+  move: MoveConnection!
+  version_group: VersionGroupConnection!
+}
+type MachineConnection implements UnnamedConnection {
+  name: String!
+  url: String!
+  details: Machine
+}
+type MachineList implements UnnamedConnectionList {
+  count: Int!
+  results: [MachineConnection!]!
+}
+
+# Entity: Move
+type Move {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  accuracy: Int!
+  contest_combos: Move_ContestCombos!
+  contest_effect: ContestEffectConnection!
+  contest_type: ContestTypeConnection!
+  damage_class: MoveDamageClassConnection!
+  effect_chance: Int
+  effect_changes: [VersionGroupedLocalizedEffect!]!
+  effect_entries(language: String = "en"): [LocalizedEffectWithShort!]!
+  flavor_text_entries(language: String = "en"): [LocalizedFlavorTextWithVersionGroup!]!
+  generation: GenerationConnection!
+  learned_by_pokemon: [PokemonConnection!]!
+  machines: [VersionGroupedMachine!]!
+  meta: Move_Meta
+  past_values: [Move_PastValues!]! # Check
+  power: Int!
+  pp: Int!
+  priority: Int!
+  stat_changes: [Move_StatChange!]!
+  super_contest_effect: SuperContestEffectConnection
+  target: MoveTargetConnection
+  type: TypeConnection
+}
+type Move_ContestCombos {
+  normal: Move_ContestComboMoveDetails!
+  super: Move_ContestComboMoveDetails!
+}
+type Move_ContestComboMoveDetails {
+  use_after: [MoveConnection!]
+  use_before: [MoveConnection!]
+}
+type Move_Meta {
+  ailment: MoveAilmentConnection!
+  ailment_chance: Int!
+  category: MoveCategoryConnection!
+  crit_rate: Int!
+  drain: Int!
+  flinch_chance: Int!
+  healing: Int!
+  max_hits: Int
+  max_turns: Int
+  min_hits: Int
+  min_turns: Int
+  stat_chance: Int!
+}
+type Move_PastValues {
+  accuracy: Int
+  effect_chance: Int
+  effect_entries(language: String = "en"): [LocalizedEffectWithShort!]!
+  power: Int
+  pp: Int
+  type: TypeConnection
+  version_group: VersionGroupConnection
+}
+type Move_StatChange {
+  change: Int!
+  stat: StatConnection!
+}
+type MoveConnection implements Connection {
+  name: String!
+  url: String!
+  details: Move
+}
+type MoveList implements ConnectionList {
+  count: Int!
+  results: [MoveConnection!]!
+}
+
+# Entity: MoveAilment
+type MoveAilment {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  moves: [MoveConnection!]!
+}
+type MoveAilmentConnection implements Connection {
+  name: String!
+  url: String!
+  details: MoveAilment
+}
+type MoveAilmentList implements ConnectionList {
+  count: Int!
+  results: [MoveAilmentConnection!]!
+}
+
+# Entity: MoveBattleStyle
+type MoveBattleStyle {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+}
+type MoveBattleStyleConnection implements Connection {
+  name: String!
+  url: String!
+  details: MoveBattleStyle
+}
+type MoveBattleStyleList implements ConnectionList {
+  count: Int!
+  results: [MoveBattleStyleConnection!]!
+}
+
+# Entity: MoveCategory
+type MoveCategory {
+  id: Int!
+  name: String!
+  descriptions(language: String = "en"): [LocalizedDescription!]!
+  moves: [MoveConnection!]!
+}
+type MoveCategoryConnection implements Connection {
+  name: String!
+  url: String!
+  details: MoveCategory
+}
+type MoveCategoryList implements ConnectionList {
+  count: Int!
+  results: [MoveCategoryConnection!]!
+}
+
+# Entity: MoveDamageClass
+type MoveDamageClass {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  descriptions(language: String = "en"): [LocalizedDescription!]!
+  moves: [MoveConnection!]!
+}
+type MoveDamageClassConnection implements Connection {
+  name: String!
+  url: String!
+  details: MoveDamageClass
+}
+type MoveDamageClassList implements ConnectionList {
+  count: Int!
+  results: [MoveDamageClassConnection!]!
+}
+
+# Entity: MoveLearnMethod
+type MoveLearnMethod {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  descriptions(language: String = "en"): [LocalizedDescription!]!
+  version_groups: [VersionGroupConnection!]!
+}
+type MoveLearnMethodConnection implements Connection {
+  name: String!
+  url: String!
+  details: MoveLearnMethod
+}
+type MoveLearnMethodList implements ConnectionList {
+  count: Int!
+  results: [MoveLearnMethodConnection!]!
+}
+
+# Entity: MoveTarget
+type MoveTarget {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  descriptions(language: String = "en"): [LocalizedDescription!]!
+  moves: [MoveConnection!]!
+}
+type MoveTargetConnection implements Connection {
+  name: String!
+  url: String!
+  details: MoveTarget
+}
+type MoveTargetList implements ConnectionList {
+  count: Int!
+  results: [MoveTargetConnection!]!
+}
+
+# Entity: Nature
+type Nature {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  decreased_stat: StatConnection
+  hates_flavor: BerryFlavorConnection
+  increased_stat: StatConnection
+  likes_flavor: BerryFlavorConnection
+  move_battle_style_preferences: [Nature_MoveBattleStylePreference!]!
+  pokeathlon_stat_changes: [Nature_PokeathlonStatChange!]!
+}
+type Nature_PokeathlonStatChange {
+  max_change: Int!
+  pokeathlon_stat: PokeathlonStatConnection
+}
+type Nature_MoveBattleStylePreference {
+  high_hp_preference: Int!
+  low_hp_preference: Int!
+  move_battle_style: MoveBattleStyleConnection
+}
+type NatureConnection implements Connection {
+  name: String!
+  url: String!
+  details: Nature
+}
+type NatureList implements ConnectionList {
+  count: Int!
+  results: [NatureConnection!]!
+}
+
+# Entity: PalParkArea
+type PalParkArea {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  pokemon_encounters: [PalParkArea_PokemonEncounter!]!
+}
+type PalParkArea_PokemonEncounter {
+  base_score: Int!
+  rate: Int!
+  pokemon_species: PokemonSpeciesConnection
+}
+type PalParkAreaConnection implements Connection {
+  name: String!
+  url: String!
+  details: PalParkArea
+}
+type PalParkAreaList implements ConnectionList {
+  count: Int!
+  results: [PalParkAreaConnection!]!
+}
+
+# Entity: PokeathlonStat
+type PokeathlonStat {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  affecting_natures: PokeathlonStat_AffectingNature!
+}
+type PokeathlonStat_AffectingNature {
+  decrease: [PokeathlonStat_AffectingNatureChange!]!
+  increase: [PokeathlonStat_AffectingNatureChange!]!
+}
+type PokeathlonStat_AffectingNatureChange {
+  max_change: Int!
+  nature: NatureConnection!
+}
+type PokeathlonStatConnection implements Connection {
+  name: String!
+  url: String!
+  details: PokeathlonStat
+}
+type PokeathlonStatList implements ConnectionList {
+  count: Int!
+  results: [PokeathlonStatConnection!]!
+}
+
+# Entity: Pokedex
+type Pokedex {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  descriptions(language: String = "en"): [LocalizedDescription!]!
+  is_main_series: Boolean!
+  pokemon_entries: [Pokedex_PokemonEntry!]!
+  region: RegionConnection
+  version_groups: [VersionGroupConnection!]!
+}
+type Pokedex_PokemonEntry {
+  entry_number: Int!
+  pokemon_species: PokemonSpeciesConnection!
+}
+type PokedexConnection implements Connection {
+  name: String!
+  url: String!
+  details: Pokedex
+}
+type PokedexList implements ConnectionList {
+  count: Int!
+  results: [PokedexConnection!]!
+}
+
+# Entity: Pokemon
+type Pokemon {
+  id: Int!
+  name: String!
+  abilities: [Pokemon_Ability!]!
+  base_experience: Int!
+  forms: PokemonFormConnection!
+  game_indices: [GameIndex!]!
+  height: Int!
+  held_items: [Pokemon_Item!]!
+  is_default: Boolean!
+  location_area_encounters: String!
+  encounters: [Pokemon_Encounter!]!
+  moves: [Pokemon_Move!]!
+  order: Int!
+  past_types: [Pokemon_PastType!]!
+  species: PokemonSpeciesConnection!
+  sprites: Pokemon_Sprites
+  stats: [Pokemon_Stat!]!
+  types: [Pokemon_Type!]!
+  weight: Int!
+}
+type Pokemon_Ability {
+  ability: AbilityConnection!
+  is_hidden: Boolean!
+  slot: Int!
+}
+type Pokemon_Item {
+  item: ItemConnection!
+  version_details: [VersionedRarity!]!
+}
+type Pokemon_MoveVersionGroupDetails {
+  level_learned_at: Int!
+  move_learn_method: MoveLearnMethodConnection!
+  version_group: VersionGroupConnection!
+}
+type Pokemon_Move {
+  move: MoveConnection!
+  version_group_details: [Pokemon_MoveVersionGroupDetails!]!
+}
+type Pokemon_Type {
+  slot: Int!
+  type: TypeConnection!
+}
+type Pokemon_PastType {
+  generation: GenerationConnection!
+  types: [Pokemon_Type!]!
+}
+type Pokemon_Stat {
+  base_stat: Int!
+  effort: Int!
+  stat: StatConnection!
+}
+type Pokemon_Encounter {
+  location_area: LocationAreaConnection!
+  version_details: [LocationArea_PokemonEncounterVersionedDetails!]!
+}
+type Pokemon_Sprites {
+  back_default: String
+  back_female: String
+  back_shiny: String
+  back_shiny_female: String
+  front_default: String
+  front_female: String
+  front_shiny: String
+  front_shiny_female: String
+  other: Pokemon_SpritesOther
+}
+type Pokemon_SpritesOther {
+  dream_world: Pokemon_SpritesFront
+  home: Pokemon_SpritesFrontAll
+  official_artwork: Pokemon_SpritesFrontDefaultOnly # Data has "official-artwork"
+}
+type Pokemon_SpritesFrontDefaultOnly {
+  front_default: String
+}
+type Pokemon_SpritesFront {
+  front_default: String
+  front_female: String
+}
+type Pokemon_SpritesFrontAll {
+  front_default: String
+  front_female: String
+  front_shiny: String
+  front_shiny_female: String
+}
+type Pokemon_SpritesFrontAndBackAll {
+  front_default: String
+  front_female: String
+  front_shiny: String
+  front_shiny_female: String
+  back_default: String
+  back_female: String
+  back_shiny: String
+  back_shiny_female: String
+}
+type Pokemon_SpritesVersions {
+  generation_i: Pokemon_SpritsGen1
+  generation_ii: Pokemon_SpritsGen2
+  generation_iii: Pokemon_SpritsGen3
+  generation_iv: Pokemon_SpritsGen4
+  generation_v: Pokemon_SpritsGen5
+  generation_vi: Pokemon_SpritsGen6
+  generation_vii: Pokemon_SpritsGen7
+  generation_viii: Pokemon_SpritsGen8
+}
+type Pokemon_SpritsGen1 {
+  red_blue: Pokemon_SpritesGen1Files
+  yellow: Pokemon_SpritesGen1Files
+}
+type Pokemon_SpritsGen2 {
+  crystal: Pokemon_SpritesGenCrystal
+  gold: Pokemon_SpritesGenGoldOrSilver
+  silver: Pokemon_SpritesGenGoldOrSilver
+}
+type Pokemon_SpritsGen3 {
+  emerald: Pokemon_SpritesFront
+  firered_leafgreen: Pokemon_SpritesMaleAll
+  ruby_sapphire: Pokemon_SpritesMaleAll
+}
+type Pokemon_SpritsGen4 {
+  diamond_pearl: Pokemon_SpritesFrontAndBackAll
+  heartgold_soulsilver: Pokemon_SpritesFrontAndBackAll
+  platinum: Pokemon_SpritesFrontAndBackAll
+}
+type Pokemon_SpritsGen5 {
+  black_white: Pokemon_SpritesGenBlackWhite
+}
+type Pokemon_SpritsGen6 {
+  omegaruby_alphasapphire: Pokemon_SpritesFrontAll
+  x_y: Pokemon_SpritesFrontAll
+}
+type Pokemon_SpritsGen7 {
+  icons: Pokemon_SpritesFront!
+  ultra_sun_ultra_moon: Pokemon_SpritesFrontAll
+}
+type Pokemon_SpritsGen8 {
+  icons: Pokemon_SpritesFront!
+}
+type Pokemon_SpritesGen1Files {
+  back_default: String
+  back_gray: String
+  back_transparent: String
+  front_default: String
+  front_gray: String
+  front_transparent: String
+}
+type Pokemon_SpritesGenCrystal {
+  back_default: String
+  back_shiny: String
+  back_shiny_transparent: String
+  back_transparent: String
+  front_default: String
+  front_shiny: String
+  front_shiny_transparent: String
+  front_transparent: String
+}
+type Pokemon_SpritesGenGoldOrSilver {
+  back_default: String
+  back_shiny: String
+  front_default: String
+  front_shiny: String
+  front_transparent: String
+}
+type Pokemon_SpritesMaleAll {
+  back_default: String
+  back_shiny: String
+  front_default: String
+  front_shiny: String
+}
+type Pokemon_SpritesGenBlackWhite {
+  animated: Pokemon_SpritesFrontAndBackAll
+  front_default: String
+  front_female: String
+  front_shiny: String
+  front_shiny_female: String
+  back_default: String
+  back_female: String
+  back_shiny: String
+  back_shiny_female: String
+}
+
+type PokemonConnection implements Connection {
+  name: String!
+  url: String!
+  details: Pokemon
+}
+type PokemonList implements ConnectionList {
+  count: Int!
+  results: [PokemonConnection!]!
+}
+
+# Entity: PokemonColor
+type PokemonColor {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  pokemon_species: [PokemonSpeciesConnection!]!
+}
+type PokemonColorConnection implements Connection {
+  name: String!
+  url: String!
+  details: PokemonColor
+}
+type PokemonColorList implements ConnectionList {
+  count: Int!
+  results: [PokemonColorConnection!]!
+}
+
+# Entity: PokemonForm
+type PokemonForm {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  form_name: String!
+  form_names(language: String = "en"): [LocalizedName!]!
+  form_order: Int!
+  is_battle_only: Boolean!
+  is_default: Boolean!
+  is_mega: Boolean!
+  order: Int!
+  pokemon: PokemonConnection!
+  sprites: PokemonForm_Sprites
+  types: [Pokemon_Type!]!
+  version_group: VersionGroupConnection!
+}
+type PokemonForm_Sprites {
+  back_default: String
+  back_female: String
+  back_shiny: String
+  back_shiny_female: String
+  front_default: String
+  front_female: String
+  front_shiny: String
+  front_shiny_female: String
+}
+type PokemonFormConnection implements Connection {
+  name: String!
+  url: String!
+  details: PokemonForm
+}
+type PokemonFormList implements ConnectionList {
+  count: Int!
+  results: [PokemonFormConnection!]!
+}
+
+# Entity: PokemonHabitat
+type PokemonHabitat {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  pokemon_species: [PokemonSpeciesConnection!]!
+}
+type PokemonHabitatConnection implements Connection {
+  name: String!
+  url: String!
+  details: PokemonHabitat
+}
+type PokemonHabitatList implements ConnectionList {
+  count: Int!
+  results: [PokemonHabitatConnection!]!
+}
+
+# Entity: PokemonShape
+type PokemonShape {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  awesome_names: [PokemonShape_AwesomeName!]!
+  pokemon_species: [PokemonSpeciesConnection!]!
+}
+type PokemonShape_AwesomeName {
+  awesome_name: String!
+  language: LanguageConnection!
+}
+type PokemonShapeConnection implements Connection {
+  name: String!
+  url: String!
+  details: PokemonShape
+}
+type PokemonShapeList implements ConnectionList {
+  count: Int!
+  results: [PokemonShapeConnection!]!
+}
+
+# Entity: PokemonSpecies
+type PokemonSpecies {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  base_happiness: Int!
+  capture_rate: Int!
+  color: PokemonColorConnection!
+  egg_groups: [EggGroupConnection!]!
+  evolution_chain: EvolutionChainConnection!
+  evolves_from_species: PokemonSpeciesConnection
+  flavor_text_entries(language: String = "en"): [LocalizedVersionedFlavorText!]!
+  form_descriptions(language: String = "en"): [LocalizedDescription!]!
+  forms_switchable: Boolean!
+  gender_rate: Int!
+  genera: [PokemonSpecies_Genus!]!
+  generation: GenerationConnection!
+  growth_rate: GrowthRateConnection!
+  habitat: PokemonHabitatConnection!
+  has_gender_differences: Boolean!
+  hatch_counter: Int!
+  is_baby: Boolean!
+  is_legendary: Boolean!
+  is_mythical: Boolean!
+  order: Int!
+  pal_park_encounters: [PokemonSpecies_PalParkEncounter!]!
+  pokedex_numbers: [PokemonSpecies_PokedexNumber!]!
+  shape: PokemonShapeConnection!
+  varieties: [PokemonSpecies_Variety!]!
+}
+type PokemonSpecies_Genus {
+  genus: String!
+  language: LanguageConnection!
+}
+type PokemonSpecies_PalParkEncounter {
+  area: PalParkAreaConnection!
+  base_score: Int!
+  rate: Int!
+}
+type PokemonSpecies_PokedexNumber {
+  entry_number: Int!
+  pokedex: PokedexConnection!
+}
+type PokemonSpecies_Variety {
+  is_default: Boolean!
+  pokemon: PokemonConnection
+}
+type PokemonSpeciesConnection implements Connection {
+  name: String!
+  url: String!
+  details: PokemonSpecies
+}
+type PokemonSpeciesList implements ConnectionList {
+  count: Int!
+  results: [PokemonSpeciesConnection!]!
+}
+
+# Entity: Region
+type Region {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  locations: LocationConnection!
+  main_generation: GenerationConnection!
+  pokedexes: [PokedexConnection!]!
+  version_groups: [VersionGroupConnection!]!
+}
+type RegionConnection implements Connection {
+  name: String!
+  url: String!
+  details: Region
+}
+type RegionList implements ConnectionList {
+  count: Int!
+  results: [RegionConnection!]!
+}
+
+# Entity: Stat
+type Stat {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  affecting_moves: Stat_AffectingMove
+  affecting_natures: Stat_AffectingNature
+  characteristics: [CharacteristicConnection!]!
+  game_index: Int!
+  is_battle_only: Boolean!
+  move_damage_class: MoveDamageClassConnection!
+}
+type Stat_AffectingMove {
+  decrease: [Stat_MoveChange!]!
+  increase: [Stat_MoveChange!]!
+}
+type Stat_MoveChange {
+  change: Int!
+  move: MoveConnection!
+}
+type Stat_AffectingNature {
+  decrease: [NatureConnection!]!
+  increase: [NatureConnection!]!
+}
+type StatConnection implements Connection {
+  name: String!
+  url: String!
+  details: Stat
+}
+type StatList implements ConnectionList {
+  count: Int!
+  results: [StatConnection!]!
+}
+
+# Entity: SuperContestEffect
+type SuperContestEffect {
+  id: Int!
+  appeal: Int!
+  flavor_text_entries(language: String = "en"): [LocalizedFlavorText!]!
+  moves: [MoveConnection!]!
+}
+type SuperContestEffectConnection implements UnnamedConnection {
+  url: String!
+  details: SuperContestEffect
+}
+type SuperContestEffectList implements UnnamedConnectionList {
+  count: Int!
+  results: [SuperContestEffectConnection!]!
+}
+
+# Entity: Type
+type Type {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  damage_relations: Type_DamageRelation!
+  game_indices: [GameIndex!]!
+  generation: GenerationConnection!
+  move_damage_class: MoveDamageClassConnection!
+  moves: [MoveConnection!]!
+  past_damage_relations: [Type_PastDamageRelation!]!
+  pokemon: [Type_Pokemon!]!
+}
+type Type_DamageRelation {
+  double_damage_from: [TypeConnection!]!
+  double_damage_to: [TypeConnection!]!
+  half_damage_from: [TypeConnection!]!
+  half_damage_to: [TypeConnection!]!
+  no_damage_from: [TypeConnection!]!
+  no_damage_to: [TypeConnection!]!
+}
+type Type_PastDamageRelation {
+  damage_relations: Type_DamageRelation!
+  generation: GenerationConnection!
+}
+type Type_Pokemon {
+  slot: Int!
+  pokemon: PokemonConnection!
+}
+
+type TypeConnection implements Connection {
+  name: String!
+  url: String!
+  details: Type
+}
+type TypeList implements ConnectionList {
+  count: Int!
+  results: [TypeConnection!]!
+}
+
+# Entity: Version
+type Version {
+  id: Int!
+  name: String!
+  names(language: String = "en"): [LocalizedName!]!
+  version_group: VersionGroupConnection!
+}
+type VersionConnection implements Connection {
+  name: String!
+  url: String!
+  details: Version
+}
+type VersionList implements ConnectionList {
+  count: Int!
+  results: [VersionConnection!]!
+}
+
+type VersionedRarity {
+  rarity: Int!
+  version: VersionConnection
+}
+type VersionedRate {
+  rate: Int!
+  version: VersionConnection
+}
+
+# Entity: VersionGroup
+type VersionGroup {
+  id: Int!
+  name: String!
+  generation: GenerationConnection!
+  move_learn_methods: [MoveLearnMethodConnection!]!
+  order: Int!
+  pokedexes: [PokedexConnection!]!
+  regions: [RegionConnection!]!
+  versions: [VersionConnection!]!
+}
+type VersionGroupConnection implements Connection {
+  name: String!
+  url: String!
+  details: VersionGroup
+}
+type VersionGroupList implements ConnectionList {
+  count: Int!
+  results: [VersionGroupConnection!]!
+}
+type VersionGroupedMachine {
+  machine: MachineConnection!
+  version_group: VersionGroupConnection
+}

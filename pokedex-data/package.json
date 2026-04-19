@@ -1,0 +1,36 @@
+{
+  "name": "pokedex-data",
+  "version": "0.0.0",
+  "description": "[![CircleCI](https://circleci.com/gh/PokeAPI/api-data.svg?style=shield)](https://circleci.com/gh/PokeAPI/api-data)",
+  "main": "index.js",
+  "private": "true",
+  "type": "module",
+  "engines": {
+    "node": ">=16.15"
+  },
+  "scripts": {
+    "format:fix": "prettier . --write --ignore-unknown",
+    "format:check": "prettier . --check --ignore-unknown",
+    "start": "node  ./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/websysarch/pokedex-data.git"
+  },
+  "keywords": [],
+  "author": "WebSysArch",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/websysarch/pokedex-data/issues"
+  },
+  "homepage": "https://github.com/websysarch/pokedex-data#readme",
+  "dependencies": {
+    "apollo-server": "^3.7.0",
+    "graphql": "^16.5.0"
+  },
+  "prettier": "@websysarch/prettier-config",
+  "devDependencies": {
+    "@websysarch/prettier-config": "^1.0.0",
+    "prettier": "^2.6.2"
+  }
+}
