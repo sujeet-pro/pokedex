@@ -73,10 +73,7 @@ function SpeciesDetailContent({ name }: { name: string }) {
               <Link to="/pokemon/$name" params={{ name: v.pokemon.name }} className="pill">
                 {titleCase(v.pokemon.name)}
                 {v.is_default && (
-                  <span style={{ color: "var(--text-muted)", fontSize: "0.75em" }}>
-                    {" "}
-                    (default)
-                  </span>
+                  <span style={{ color: "var(--text-muted)", fontSize: "0.75em" }}> (default)</span>
                 )}
               </Link>
             </li>
@@ -90,9 +87,7 @@ function SpeciesDetailContent({ name }: { name: string }) {
 export function SpeciesDetailPage() {
   const { id } = speciesRoute.useParams();
   return (
-    <Suspense
-      fallback={<div className="skeleton" style={{ height: "20rem" }} aria-busy="true" />}
-    >
+    <Suspense fallback={<div className="skeleton" style={{ height: "20rem" }} aria-busy="true" />}>
       <SpeciesDetailContent name={id.toLowerCase()} />
     </Suspense>
   );

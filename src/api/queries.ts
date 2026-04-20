@@ -15,8 +15,7 @@ const HOUR = 60 * 60 * 1000;
 export const listPokemonQuery = (limit = 1025) =>
   queryOptions({
     queryKey: ["pokemon-list", limit] as const,
-    queryFn: ({ signal }) =>
-      api.get<PaginatedList>(`/pokemon?limit=${limit}&offset=0`, signal),
+    queryFn: ({ signal }) => api.get<PaginatedList>(`/pokemon?limit=${limit}&offset=0`, signal),
     staleTime: 24 * HOUR,
     gcTime: 24 * HOUR,
   });

@@ -8,8 +8,7 @@ type Props = { pokemon: Pokemon };
 
 export function PokemonCard({ pokemon }: Props) {
   const art =
-    pokemon.sprites.other?.["official-artwork"]?.front_default ||
-    pokemon.sprites.front_default;
+    pokemon.sprites.other?.["official-artwork"]?.front_default || pokemon.sprites.front_default;
   return (
     <Link
       to="/pokemon/$name"

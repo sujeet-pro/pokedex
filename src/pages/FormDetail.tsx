@@ -53,9 +53,7 @@ function FormDetailContent({ name }: { name: string }) {
 export function FormDetailPage() {
   const { id } = formRoute.useParams();
   return (
-    <Suspense
-      fallback={<div className="skeleton" style={{ height: "20rem" }} aria-busy="true" />}
-    >
+    <Suspense fallback={<div className="skeleton" style={{ height: "20rem" }} aria-busy="true" />}>
       <FormDetailContent name={id.toLowerCase()} />
     </Suspense>
   );

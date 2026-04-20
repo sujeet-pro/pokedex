@@ -1,11 +1,7 @@
 import { Suspense } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import {
-  evolutionChainByUrlQuery,
-  pokemonQuery,
-  speciesQuery,
-} from "~/api/queries";
+import { evolutionChainByUrlQuery, pokemonQuery, speciesQuery } from "~/api/queries";
 import { pokemonRoute } from "~/router";
 import { Sprite } from "~/components/Sprite";
 import { StatBar } from "~/components/StatBar";
@@ -62,8 +58,7 @@ function PokemonDetailContent({ name }: { name: string }) {
   const { data: species } = useQuery(speciesQuery(pokemon.species.name));
 
   const art =
-    pokemon.sprites.other?.["official-artwork"]?.front_default ||
-    pokemon.sprites.front_default;
+    pokemon.sprites.other?.["official-artwork"]?.front_default || pokemon.sprites.front_default;
   const flavor = species ? englishEntry(species.flavor_text_entries) : undefined;
   const genus = species ? englishEntry(species.genera) : undefined;
 

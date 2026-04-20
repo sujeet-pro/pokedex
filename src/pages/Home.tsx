@@ -14,8 +14,7 @@ function FeaturedPokemon() {
   const { data: species } = useQuery(speciesQuery(id));
 
   const art =
-    pokemon.sprites.other?.["official-artwork"]?.front_default ||
-    pokemon.sprites.front_default;
+    pokemon.sprites.other?.["official-artwork"]?.front_default || pokemon.sprites.front_default;
   const flavor = species ? englishEntry(species.flavor_text_entries) : undefined;
 
   return (
@@ -37,11 +36,7 @@ function FeaturedPokemon() {
         {flavor && (
           <p style={{ margin: 0, color: "var(--text-muted)" }}>{cleanFlavor(flavor.flavor_text)}</p>
         )}
-        <Link
-          to="/pokemon/$name"
-          params={{ name: pokemon.name }}
-          className="hero__cta"
-        >
+        <Link to="/pokemon/$name" params={{ name: pokemon.name }} className="hero__cta">
           View details
         </Link>
       </div>
@@ -56,8 +51,14 @@ function FeaturedSkeleton() {
   return (
     <section className="hero" aria-busy="true" aria-label="Loading featured Pokémon">
       <div>
-        <div className="skeleton" style={{ width: "10rem", height: "0.8rem", marginBottom: "0.5rem" }} />
-        <div className="skeleton" style={{ width: "70%", height: "2rem", marginBottom: "0.5rem" }} />
+        <div
+          className="skeleton"
+          style={{ width: "10rem", height: "0.8rem", marginBottom: "0.5rem" }}
+        />
+        <div
+          className="skeleton"
+          style={{ width: "70%", height: "2rem", marginBottom: "0.5rem" }}
+        />
         <div className="skeleton" style={{ width: "100%", height: "3rem" }} />
       </div>
       <div className="skeleton" style={{ aspectRatio: "1" }} />
@@ -155,9 +156,7 @@ function BrowseGrid() {
         <button
           type="button"
           className="pill-button"
-          onClick={() =>
-            setOffset((o) => Math.min(data.results.length - pageSize, o + pageSize))
-          }
+          onClick={() => setOffset((o) => Math.min(data.results.length - pageSize, o + pageSize))}
           disabled={deferredOffset + pageSize >= data.results.length}
         >
           Next →

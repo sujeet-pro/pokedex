@@ -1,5 +1,11 @@
 import { Popover, ToggleGroup, VisuallyHidden } from "radix-ui";
-import { usePreferences, type Mode, type Scale, type Theme, type Dir } from "~/hooks/usePreferences";
+import {
+  usePreferences,
+  type Mode,
+  type Scale,
+  type Theme,
+  type Dir,
+} from "~/hooks/usePreferences";
 
 const THEMES: Theme[] = ["blue", "yellow", "red"];
 const SCALES: Scale[] = ["xs", "sm", "md", "lg", "xl"];
@@ -17,12 +23,7 @@ export function SettingsMenu() {
         </button>
       </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Content
-          className="settings"
-          sideOffset={6}
-          align="end"
-          collisionPadding={8}
-        >
+        <Popover.Content className="settings" sideOffset={6} align="end" collisionPadding={8}>
           <VisuallyHidden.Root>
             <h2>Display settings</h2>
           </VisuallyHidden.Root>

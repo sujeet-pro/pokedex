@@ -22,7 +22,9 @@ export function cleanFlavor(text: string): string {
   return text.replace(/\s+/g, " ").trim();
 }
 
-export function englishEntry<T extends { language: { name: string } }>(entries: T[]): T | undefined {
+export function englishEntry<T extends { language: { name: string } }>(
+  entries: T[],
+): T | undefined {
   return entries.find((e) => e.language.name === "en");
 }
 

@@ -42,10 +42,7 @@ function AbilityDetailContent({ name }: { name: string }) {
               <Link to="/pokemon/$name" params={{ name: p.pokemon.name }} className="pill">
                 {titleCase(p.pokemon.name)}
                 {p.is_hidden && (
-                  <span style={{ color: "var(--text-muted)", fontSize: "0.75em" }}>
-                    {" "}
-                    (hidden)
-                  </span>
+                  <span style={{ color: "var(--text-muted)", fontSize: "0.75em" }}> (hidden)</span>
                 )}
               </Link>
             </li>
@@ -59,9 +56,7 @@ function AbilityDetailContent({ name }: { name: string }) {
 export function AbilityDetailPage() {
   const { id } = abilityRoute.useParams();
   return (
-    <Suspense
-      fallback={<div className="skeleton" style={{ height: "20rem" }} aria-busy="true" />}
-    >
+    <Suspense fallback={<div className="skeleton" style={{ height: "20rem" }} aria-busy="true" />}>
       <AbilityDetailContent name={id.toLowerCase()} />
     </Suspense>
   );

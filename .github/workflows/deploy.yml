@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -25,11 +25,14 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
-      - name: Lint & typecheck
-        run: npm run check
-        continue-on-error: true
+      - name: Lint
+        run: npm run lint
+      - name: Format check
+        run: npm run format:check
+      - name: Typecheck
+        run: npm run typecheck
       - name: Build
-        run: npm run build
+        run: npx vite build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

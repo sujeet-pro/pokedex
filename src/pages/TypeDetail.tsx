@@ -34,8 +34,8 @@ function TypeDetailContent({ name }: { name: string }) {
         <TypeBadge name={data.name} asLink={false} /> type
       </h1>
       <p className="page-lede">
-        Generation: {data.generation.name.replace("generation-", "")}. {data.pokemon.length} Pokémon,{" "}
-        {data.moves.length} moves.
+        Generation: {data.generation.name.replace("generation-", "")}. {data.pokemon.length}{" "}
+        Pokémon, {data.moves.length} moves.
       </p>
 
       <section className="panel" aria-labelledby="rel-heading">
@@ -80,9 +80,7 @@ function TypeDetailContent({ name }: { name: string }) {
 export function TypeDetailPage() {
   const { id } = typeRoute.useParams();
   return (
-    <Suspense
-      fallback={<div className="skeleton" style={{ height: "20rem" }} aria-busy="true" />}
-    >
+    <Suspense fallback={<div className="skeleton" style={{ height: "20rem" }} aria-busy="true" />}>
       <TypeDetailContent name={id.toLowerCase()} />
     </Suspense>
   );
