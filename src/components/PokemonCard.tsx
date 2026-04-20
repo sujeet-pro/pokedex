@@ -17,16 +17,18 @@ export function PokemonCard({ entry, locale }: Props) {
       params={{ lang: locale, name: entry.name }}
       className="pokemon-card"
     >
-      <div className="pokemon-card-sprite">
+      <div className="pokemon-card__sprite">
         <img src={sprite} alt="" loading="lazy" width={96} height={96} />
       </div>
-      <div className="pokemon-card-dex">{padDex(entry.id)}</div>
-      <div className="pokemon-card-name">{entry.display_name}</div>
-      <div className="pokemon-card-types">
+      <div className="pokemon-card__id">{padDex(entry.id)}</div>
+      <div className="pokemon-card__name">{entry.display_name}</div>
+      <ul className="pokemon-card__types pill-list" aria-label="Types">
         {entry.types.map((t) => (
-          <TypeCartridge key={t} name={t} />
+          <li key={t}>
+            <TypeCartridge name={t} size="sm" />
+          </li>
         ))}
-      </div>
+      </ul>
     </Link>
   );
 }

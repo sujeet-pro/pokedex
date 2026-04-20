@@ -7,7 +7,9 @@ export function Footer({ locale }: Props) {
   const t = makeT(locale);
   return (
     <footer className="footer">
-      <small>{t("footer_attribution")}</small>
+      <div className="container">
+        <p>{t("footer_attribution")}</p>
+      </div>
     </footer>
   );
 }

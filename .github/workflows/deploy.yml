@@ -5,40 +5,63 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 permissions:
   contents: read
   pages: write
   id-token: write
 
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
 jobs:
+  # NOTE: The v3 plan in redo.md §12 originally proposed a per-locale matrix
+  # (build-data → ssg [en, fr] → deploy). In practice `npm run build` runs
+  # `bundles:build` then `vite build` which emits BOTH locales in one shot
+  # under dist/client/{en,fr}/ plus shared assets/, index.html, favicon.svg,
+  # and ui-data/. Splitting SSG per-locale would require invasive changes to
+  # the vite prerender config, which is out of scope for this CI task, so we
+  # use a single monolithic build-and-deploy job here. When per-locale
+  # splitting lands (Phase H §12), revisit matrix + artifact merge.
+
   build:
+    name: Build (bundles + SSG)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
-      - name: Lint
-        run: npm run lint
-      - name: Format check
-        run: npm run format:check
-      - name: Typecheck
-        run: npm run typecheck
-      - name: Build
-        run: npx vite build
-      - name: Upload artifact
+
+      - name: Cache ui-data bundles
+        uses: actions/cache@v4
+        with:
+          path: public/ui-data
+          key: ui-data-${{ hashFiles('data/api/v2/**/*.json', 'scripts/**/*.ts') }}
+          restore-keys: |
+            ui-data-
+
+      - name: Build UI-data bundles
+        run: npm run bundles:build
+
+      - name: Build site (vite + prerender)
+        run: npm run build
+
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: dist/client
 
   deploy:
+    name: Deploy
     needs: build
     runs-on: ubuntu-latest
     environment:

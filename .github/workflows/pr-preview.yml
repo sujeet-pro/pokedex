@@ -1,0 +1,11 @@
+# TODO: PR preview workflow (deferred).
+#
+# Intended behavior:
+#   - On pull_request (opened, synchronize, reopened) targeting main.
+#   - Run bundles:build + vite build, then deploy the resulting dist/client
+#     to a per-PR preview surface (e.g. Cloudflare Pages, Netlify, or a
+#     separate gh-pages subdirectory via peaceiris/actions-gh-pages).
+#   - Comment back on the PR with the preview URL.
+#
+# Skipped in this pass to stay within the CI task budget. Revisit once the
+# v3 base topology (ci.yml + deploy.yml) is proven green on main.

@@ -1,9 +1,10 @@
 name: CI
 
 on:
-  pull_request:
   push:
     branches: [main]
+  pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -11,23 +12,90 @@ concurrency:
 
 jobs:
   check:
+    name: Lint / Format / Typecheck / Unit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
+
       - name: Lint (oxlint)
-        run: npm run lint
-      - name: Format (oxfmt --check)
+        id: lint
+        run: npm run lint 2>&1 | tee lint.log
+        continue-on-error: false
+
+      - name: Upload lint log on failure
+        if: failure() && steps.lint.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-log
+          path: lint.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Format check (oxfmt)
         run: npm run format:check
+
       - name: Typecheck (tsgo)
         run: npm run typecheck
-      - name: Build
-        run: npx vite build
-      - name: Test
-        run: npm test -- --run
-        if: hashFiles('src/**/*.test.ts', 'src/**/*.test.tsx') != ''
+
+      - name: Unit tests (vitest)
+        run: |
+          if find src -type f \( -name '*.test.ts' -o -name '*.test.tsx' -o -name '*.spec.ts' -o -name '*.spec.tsx' \) | grep -q .; then
+            npm run test:unit
+          else
+            echo "No unit tests found; skipping test:unit"
+          fi
+
+  e2e:
+    name: E2E (Playwright)
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build UI-data bundles (required for prerender)
+        run: npm run bundles:build
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14

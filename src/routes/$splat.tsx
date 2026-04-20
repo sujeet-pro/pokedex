@@ -7,10 +7,18 @@ export const Route = createFileRoute("/$splat")({
 
 function NotFoundPage() {
   return (
-    <div className="notfound">
-      <h1>Page not found</h1>
-      <p>We couldn't find the page you were looking for.</p>
-      <Link to="/">Back to home</Link>
+    <div className="app">
+      <main className="main">
+        <div className="container">
+          <div className="error-state">
+            <h1>Page not found</h1>
+            <p>We couldn't find the page you were looking for.</p>
+            <div className="nav-buttons">
+              <Link to="/" className="hero-cta">Back to home</Link>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

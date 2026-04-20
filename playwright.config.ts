@@ -12,10 +12,11 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   webServer: {
-    command: "npm run preview",
+    command: "npx vite preview --port 4173",
     url: "http://localhost:4173/pokedex/",
     reuseExistingServer: !process.env["CI"],
-    timeout: 120_000,
+    timeout: 60_000,
+    stdout: "pipe",
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 });

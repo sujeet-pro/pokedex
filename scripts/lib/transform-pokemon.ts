@@ -1,14 +1,23 @@
-import type { PokemonBundle, PokemonIndexEntry, BundleAbilityEntry } from "../../src/types/bundles";
+import type {
+  PokemonBundle,
+  PokemonIndexEntry,
+  BundleAbilityEntry,
+  BundleDefenderType,
+} from "../../src/types/bundles";
 import type { Locale } from "../../src/types/locales";
 import {
   readPokemon,
   readSpecies,
   readAbility,
+  readType,
   refId,
+  refIdSafe,
   type PokemonRaw,
   type PokemonSpeciesRaw,
 } from "./pokeapi";
 import { escapeHtml, paragraphHtml, pickEffect, pickFlavor, pickGenus, pickName } from "./localize";
+import { buildEvolutionChainForSpecies } from "./evolution";
+import { readSummaryHtml } from "./summary";
 
 function spriteArtwork(p: PokemonRaw): string | null {
   const art = p.sprites.other?.["official-artwork"]?.front_default ?? null;
@@ -34,6 +43,23 @@ function buildAbilities(raw: PokemonRaw, lang: Locale): BundleAbilityEntry[] {
   }
   items.sort((a, b) => a.slot - b.slot);
   return items;
+}
+
+function buildDefenders(raw: PokemonRaw): BundleDefenderType[] {
+  const out: BundleDefenderType[] = [];
+  for (const t of raw.types.slice().sort((a, b) => a.slot - b.slot)) {
+    const id = refIdSafe(t.type);
+    if (id == null) continue;
+    const type = readType(id);
+    if (!type) continue;
+    out.push({
+      name: t.type.name,
+      double_damage_from: type.damage_relations.double_damage_from.map((r) => r.name),
+      half_damage_from: type.damage_relations.half_damage_from.map((r) => r.name),
+      no_damage_from: type.damage_relations.no_damage_from.map((r) => r.name),
+    });
+  }
+  return out;
 }
 
 function buildSpeciesBlock(sp: PokemonSpeciesRaw, fallbackName: string, lang: Locale) {
@@ -106,10 +132,10 @@ export function buildPokemonBundle(
     abilities: buildAbilities(raw, lang),
     forms: raw.forms.map((f) => ({ name: f.name, display_name: escapeDisplay(f.name) })),
     species: buildSpeciesBlock(species, raw.name, lang),
-    evolution_chain: null,
-    defenders: [],
+    evolution_chain: buildEvolutionChainForSpecies(speciesId, lang),
+    defenders: buildDefenders(raw),
     pager,
-    summary_html: null,
+    summary_html: readSummaryHtml(raw.id, lang),
   };
 
   const indexEntry: PokemonIndexEntry = {

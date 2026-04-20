@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Pokeball } from "~/components/Pokeball";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -8,18 +7,19 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   return (
-    <div className="landing">
-      <Pokeball />
-      <h1>Pokédex</h1>
-      <p>Select a language to continue.</p>
-      <div className="landing-picker">
-        <Link to="/$lang" params={{ lang: "en" }}>
-          English
-        </Link>
-        <Link to="/$lang" params={{ lang: "fr" }}>
-          Français
-        </Link>
-      </div>
+    <div className="app">
+      <main className="main" id="main-content">
+        <div className="container">
+          <div className="landing-hero">
+            <h1>Pokédex</h1>
+            <p>Select a language to continue · Choisissez votre langue</p>
+            <div className="landing-hero__picker">
+              <Link to="/$lang" params={{ lang: "en" }}>English</Link>
+              <Link to="/$lang" params={{ lang: "fr" }}>Français</Link>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
