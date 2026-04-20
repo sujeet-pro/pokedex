@@ -1,67 +1,173 @@
 import { queryOptions } from "@tanstack/react-query";
-import { api } from "./client";
+import { bundles, loadText } from "./client";
 import type {
-  AbilityDetail,
-  EvolutionChain,
-  PaginatedList,
-  Pokemon,
-  PokemonForm,
-  PokemonSpecies,
-  TypeDetail,
-} from "~/types/pokeapi";
+  AbilityBundle,
+  AbilityIndexBundle,
+  BerryBundle,
+  BerryIndexBundle,
+  FormBundle,
+  GenerationBundle,
+  GenerationIndexBundle,
+  ItemBundle,
+  ItemIndexBundle,
+  LocationBundle,
+  LocationIndexBundle,
+  MoveBundle,
+  MoveIndexBundle,
+  PokemonBundle,
+  PokemonIndexBundle,
+  SearchIndexBundle,
+  SpeciesBundle,
+  TypeBundle,
+  TypeIndexBundle,
+} from "~/types/bundles";
 
-const HOUR = 60 * 60 * 1000;
+// Bundles are deploy-time artifacts — the only time they change is when the
+// site is rebuilt and redeployed. So cache forever.
+const FOREVER = { staleTime: Infinity, gcTime: Infinity } as const;
 
-export const listPokemonQuery = (limit = 1025) =>
+export const pokemonIndexQuery = () =>
   queryOptions({
-    queryKey: ["pokemon-list", limit] as const,
-    queryFn: ({ signal }) => api.get<PaginatedList>(`/pokemon?limit=${limit}&offset=0`, signal),
-    staleTime: 24 * HOUR,
-    gcTime: 24 * HOUR,
+    queryKey: ["bundle", "pokemon", "_index"] as const,
+    queryFn: ({ signal }) => bundles.get<PokemonIndexBundle>("/pokemon/_index.json", signal),
+    ...FOREVER,
   });
 
-export const pokemonQuery = (idOrName: string | number) =>
+export const pokemonBundleQuery = (name: string) =>
   queryOptions({
-    queryKey: ["pokemon", String(idOrName)] as const,
-    queryFn: ({ signal }) => api.get<Pokemon>(`/pokemon/${idOrName}`, signal),
-    staleTime: HOUR,
+    queryKey: ["bundle", "pokemon", name] as const,
+    queryFn: ({ signal }) => bundles.get<PokemonBundle>(`/pokemon/${name}.json`, signal),
+    ...FOREVER,
   });
 
-export const speciesQuery = (idOrName: string | number) =>
+export const typeBundleQuery = (name: string) =>
   queryOptions({
-    queryKey: ["species", String(idOrName)] as const,
-    queryFn: ({ signal }) => api.get<PokemonSpecies>(`/pokemon-species/${idOrName}`, signal),
-    staleTime: HOUR,
+    queryKey: ["bundle", "type", name] as const,
+    queryFn: ({ signal }) => bundles.get<TypeBundle>(`/type/${name}.json`, signal),
+    ...FOREVER,
   });
 
-export const typeQuery = (idOrName: string | number) =>
+export const typeIndexQuery = () =>
   queryOptions({
-    queryKey: ["type", String(idOrName)] as const,
-    queryFn: ({ signal }) => api.get<TypeDetail>(`/type/${idOrName}`, signal),
-    staleTime: HOUR,
+    queryKey: ["bundle", "type", "_index"] as const,
+    queryFn: ({ signal }) => bundles.get<TypeIndexBundle>("/type/_index.json", signal),
+    ...FOREVER,
   });
 
-export const abilityQuery = (idOrName: string | number) =>
+export const abilityBundleQuery = (name: string) =>
   queryOptions({
-    queryKey: ["ability", String(idOrName)] as const,
-    queryFn: ({ signal }) => api.get<AbilityDetail>(`/ability/${idOrName}`, signal),
-    staleTime: HOUR,
+    queryKey: ["bundle", "ability", name] as const,
+    queryFn: ({ signal }) => bundles.get<AbilityBundle>(`/ability/${name}.json`, signal),
+    ...FOREVER,
   });
 
-export const formQuery = (idOrName: string | number) =>
+export const abilityIndexQuery = () =>
   queryOptions({
-    queryKey: ["pokemon-form", String(idOrName)] as const,
-    queryFn: ({ signal }) => api.get<PokemonForm>(`/pokemon-form/${idOrName}`, signal),
-    staleTime: HOUR,
+    queryKey: ["bundle", "ability", "_index"] as const,
+    queryFn: ({ signal }) => bundles.get<AbilityIndexBundle>("/ability/_index.json", signal),
+    ...FOREVER,
   });
 
-export const evolutionChainByUrlQuery = (url: string | null | undefined) =>
+export const speciesBundleQuery = (name: string) =>
   queryOptions({
-    queryKey: ["evolution-chain", url ?? ""] as const,
-    queryFn: ({ signal }) => {
-      if (!url) throw new Error("No evolution-chain url");
-      return api.get<EvolutionChain>(url, signal);
-    },
-    enabled: Boolean(url),
-    staleTime: 24 * HOUR,
+    queryKey: ["bundle", "pokemon-species", name] as const,
+    queryFn: ({ signal }) =>
+      bundles.get<SpeciesBundle>(`/pokemon-species/${name}.json`, signal),
+    ...FOREVER,
+  });
+
+export const formBundleQuery = (name: string) =>
+  queryOptions({
+    queryKey: ["bundle", "pokemon-form", name] as const,
+    queryFn: ({ signal }) => bundles.get<FormBundle>(`/pokemon-form/${name}.json`, signal),
+    ...FOREVER,
+  });
+
+export const pokemonSummaryQuery = (id: number) =>
+  queryOptions({
+    queryKey: ["summary", "pokemon", id, "en"] as const,
+    queryFn: ({ signal }) => loadText(`/summary/${id}_en.txt`, signal),
+    ...FOREVER,
+  });
+
+// ── Phase 2 resources ────────────────────────────────────────────────
+
+export const berryIndexQuery = () =>
+  queryOptions({
+    queryKey: ["bundle", "berry", "_index"] as const,
+    queryFn: ({ signal }) => bundles.get<BerryIndexBundle>("/berry/_index.json", signal),
+    ...FOREVER,
+  });
+
+export const berryBundleQuery = (name: string) =>
+  queryOptions({
+    queryKey: ["bundle", "berry", name] as const,
+    queryFn: ({ signal }) => bundles.get<BerryBundle>(`/berry/${name}.json`, signal),
+    ...FOREVER,
+  });
+
+export const itemIndexQuery = () =>
+  queryOptions({
+    queryKey: ["bundle", "item", "_index"] as const,
+    queryFn: ({ signal }) => bundles.get<ItemIndexBundle>("/item/_index.json", signal),
+    ...FOREVER,
+  });
+
+export const itemBundleQuery = (name: string) =>
+  queryOptions({
+    queryKey: ["bundle", "item", name] as const,
+    queryFn: ({ signal }) => bundles.get<ItemBundle>(`/item/${name}.json`, signal),
+    ...FOREVER,
+  });
+
+export const locationIndexQuery = () =>
+  queryOptions({
+    queryKey: ["bundle", "location", "_index"] as const,
+    queryFn: ({ signal }) => bundles.get<LocationIndexBundle>("/location/_index.json", signal),
+    ...FOREVER,
+  });
+
+export const locationBundleQuery = (name: string) =>
+  queryOptions({
+    queryKey: ["bundle", "location", name] as const,
+    queryFn: ({ signal }) => bundles.get<LocationBundle>(`/location/${name}.json`, signal),
+    ...FOREVER,
+  });
+
+export const moveIndexQuery = () =>
+  queryOptions({
+    queryKey: ["bundle", "move", "_index"] as const,
+    queryFn: ({ signal }) => bundles.get<MoveIndexBundle>("/move/_index.json", signal),
+    ...FOREVER,
+  });
+
+export const moveBundleQuery = (name: string) =>
+  queryOptions({
+    queryKey: ["bundle", "move", name] as const,
+    queryFn: ({ signal }) => bundles.get<MoveBundle>(`/move/${name}.json`, signal),
+    ...FOREVER,
+  });
+
+export const generationIndexQuery = () =>
+  queryOptions({
+    queryKey: ["bundle", "generation", "_index"] as const,
+    queryFn: ({ signal }) =>
+      bundles.get<GenerationIndexBundle>("/generation/_index.json", signal),
+    ...FOREVER,
+  });
+
+export const generationBundleQuery = (name: string) =>
+  queryOptions({
+    queryKey: ["bundle", "generation", name] as const,
+    queryFn: ({ signal }) => bundles.get<GenerationBundle>(`/generation/${name}.json`, signal),
+    ...FOREVER,
+  });
+
+// ── Unified search ───────────────────────────────────────────────────
+
+export const searchIndexQuery = () =>
+  queryOptions({
+    queryKey: ["bundle", "search-index"] as const,
+    queryFn: ({ signal }) => bundles.get<SearchIndexBundle>("/search-index.json", signal),
+    ...FOREVER,
   });

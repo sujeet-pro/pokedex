@@ -1,119 +1,109 @@
 import { Suspense } from "react";
 import { Link } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { abilityQuery } from "~/api/queries";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { abilityBundleQuery, abilityIndexQuery } from "~/api/queries";
 import { abilityRoute } from "~/router";
+import { useAdjacentNav } from "~/hooks/useAdjacentNav";
 import { ConsoleDevice } from "~/components/ConsoleDevice";
-import { cleanFlavor, englishEntry, padId, titleCase } from "~/utils/formatters";
-
-function idFromUrl(url: string): number {
-  const m = url.match(/\/(\d+)\/?$/);
-  return m ? Number(m[1]) : 0;
-}
+import { padId, titleCase } from "~/utils/formatters";
 
 function AbilityContent({ name }: { name: string }) {
-  const { data } = useSuspenseQuery(abilityQuery(name));
-  const english = englishEntry(data.effect_entries);
-  const flavor = englishEntry(data.flavor_text_entries);
-  const displayName = englishEntry(data.names)?.name ?? titleCase(data.name);
+  const { data } = useSuspenseQuery(abilityBundleQuery(name));
+  const { data: index } = useQuery(abilityIndexQuery());
+  useAdjacentNav(index?.entries, data.name, "/ability");
 
   return (
-    <>
-      <div className="screen__hud" style={{ gridTemplateColumns: "1fr" }}>
-        <div>
-          <p className="hud-row">
-            <b>ABILITY</b> · GEN {data.generation.name.replace("generation-", "").toUpperCase()} ·{" "}
-            <b>POKÉMON</b> {data.pokemon.length}
-          </p>
-          <h1 className="hud-name">{displayName}</h1>
-          {english && <div className="hud-genus">{english.short_effect}</div>}
-        </div>
+    <div className="screen__hud" style={{ gridTemplateColumns: "1fr" }}>
+      <div>
+        <p className="hud-row">
+          <b>ABILITY</b> · GEN {data.generation.replace("generation-", "").toUpperCase()} ·{" "}
+          <b>POKÉMON</b> {data.pokemon.length}
+        </p>
+        <h1 className="hud-name">{data.display_name}</h1>
+        {data.short_effect && <div className="hud-genus">{data.short_effect}</div>}
+      </div>
 
-        {english && (
-          <div className="hud-card">
-            <div className="hud-card__title">
-              <span>Effect</span>
-            </div>
-            <p
-              style={{
-                margin: 0,
-                color: "var(--screen-fg-dim)",
-                fontSize: "0.9rem",
-                lineHeight: 1.6,
-              }}
-            >
-              {english.effect}
-            </p>
-          </div>
-        )}
-
-        {flavor && (
-          <div className="hud-card">
-            <div className="hud-card__title">
-              <span>Flavor</span>
-            </div>
-            <p className="hud-flavor" style={{ marginTop: 0 }}>
-              {cleanFlavor(flavor.flavor_text)}
-            </p>
-          </div>
-        )}
-
+      {data.effect && (
         <div className="hud-card">
           <div className="hud-card__title">
-            <span>Holders</span>
-            <span>{data.pokemon.length}</span>
+            <span>Effect</span>
           </div>
-          <ul className="grid-cards">
-            {data.pokemon.map((p) => {
-              const id = idFromUrl(p.pokemon.url);
-              return (
-                <li key={p.pokemon.name}>
-                  <Link
-                    to="/pokemon/$name"
-                    params={{ name: p.pokemon.name }}
-                    className="pokemon-card"
-                    aria-label={`${titleCase(p.pokemon.name)}, ${padId(id)}${p.is_hidden ? ", hidden ability" : ""}`}
-                  >
-                    <div className="pokemon-card__sprite">
-                      <img
-                        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`}
-                        alt=""
-                        width={450}
-                        height={450}
-                        loading="lazy"
-                        decoding="async"
-                        onError={(e) => {
-                          (e.currentTarget as HTMLImageElement).src =
-                            `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
-                        }}
-                      />
-                    </div>
-                    <div className="pokemon-card__id">{padId(id)}</div>
-                    <div className="pokemon-card__name">
-                      {titleCase(p.pokemon.name)}
-                      {p.is_hidden && (
-                        <span
-                          aria-hidden="true"
-                          style={{
-                            display: "block",
-                            color: "var(--amber)",
-                            fontSize: "0.7rem",
-                            letterSpacing: "0.1em",
-                            marginTop: "0.15rem",
-                          }}
-                        >
-                          HIDDEN
-                        </span>
-                      )}
-                    </div>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+          <p
+            style={{
+              margin: 0,
+              color: "var(--screen-fg-dim)",
+              fontSize: "0.9rem",
+              lineHeight: 1.6,
+            }}
+          >
+            {data.effect}
+          </p>
         </div>
+      )}
+
+      {data.flavor && (
+        <div className="hud-card">
+          <div className="hud-card__title">
+            <span>Flavor</span>
+          </div>
+          <p className="hud-flavor" style={{ marginTop: 0 }}>
+            {data.flavor}
+          </p>
+        </div>
+      )}
+
+      <div className="hud-card">
+        <div className="hud-card__title">
+          <span>Holders</span>
+          <span>{data.pokemon.length}</span>
+        </div>
+        <ul className="grid-cards">
+          {data.pokemon.map((p) => (
+            <li key={p.name}>
+              <Link
+                to="/pokemon/$name"
+                params={{ name: p.name }}
+                className="pokemon-card"
+                aria-label={`${titleCase(p.name)}, ${padId(p.id)}${p.is_hidden ? ", hidden ability" : ""}`}
+              >
+                <div className="pokemon-card__sprite">
+                  <img
+                    src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${p.id}.png`}
+                    alt=""
+                    width={450}
+                    height={450}
+                    loading="lazy"
+                    decoding="async"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src =
+                        `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png`;
+                    }}
+                  />
+                </div>
+                <div className="pokemon-card__id">{padId(p.id)}</div>
+                <div className="pokemon-card__name">
+                  {titleCase(p.name)}
+                  {p.is_hidden && (
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        display: "block",
+                        color: "var(--amber)",
+                        fontSize: "0.7rem",
+                        letterSpacing: "0.1em",
+                        marginTop: "0.15rem",
+                      }}
+                    >
+                      HIDDEN
+                    </span>
+                  )}
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -147,16 +137,16 @@ function AbilityContentSkeleton({ urlName }: { urlName: string }) {
 }
 
 export function AbilityDetailPage() {
-  const { id } = abilityRoute.useParams();
-  const display = titleCase(id);
+  const { name } = abilityRoute.useParams();
+  const display = titleCase(name);
   return (
     <ConsoleDevice
       title="POKÉ DEX · ABILITY"
       subtitle={display}
       ariaLabel={`Ability readout for ${display}`}
     >
-      <Suspense fallback={<AbilityContentSkeleton urlName={id} />}>
-        <AbilityContent name={id.toLowerCase()} />
+      <Suspense fallback={<AbilityContentSkeleton urlName={name} />}>
+        <AbilityContent name={name.toLowerCase()} />
       </Suspense>
     </ConsoleDevice>
   );

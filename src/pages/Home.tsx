@@ -1,35 +1,50 @@
-import { Suspense, useDeferredValue, useMemo, useState } from "react";
+import { Suspense, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { listPokemonQuery, pokemonQuery, speciesQuery } from "~/api/queries";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import {
+  berryBundleQuery,
+  berryIndexQuery,
+  itemBundleQuery,
+  itemIndexQuery,
+  locationBundleQuery,
+  locationIndexQuery,
+  moveBundleQuery,
+  moveIndexQuery,
+  pokemonBundleQuery,
+  pokemonIndexQuery,
+} from "~/api/queries";
 import { ConsoleDevice } from "~/components/ConsoleDevice";
-import { PokemonCardSkeleton } from "~/components/PokemonCard";
 import { SpeakButton } from "~/components/SpeakButton";
 import { Sprite } from "~/components/Sprite";
 import { TypeCartridge } from "~/components/TypeCartridge";
-import { cleanFlavor, englishEntry, padId, titleCase } from "~/utils/formatters";
-import { randomPokemonId } from "~/utils/randomPokemon";
+import { padId, titleCase } from "~/utils/formatters";
+import "~/styles/components/HomeFeatured.css";
 
-// ── featured (random) Pokémon ──────────────────────────────────────────
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)]!;
+}
 
-function FeaturedShell() {
-  // Roll once per mount. Reload = new pick; client-side nav = same pick.
-  const id = useMemo(() => randomPokemonId(), []);
-  const idStr = String(id);
+// Featured Pokémon ─────────────────────────────────────────────────
+
+function FeaturedPokemon() {
+  const { data: index } = useSuspenseQuery(pokemonIndexQuery());
+  const entry = useMemo(() => pickRandom(index.entries), [index.entries]);
 
   return (
     <ConsoleDevice
       title="POKÉ DEX · FEATURED"
-      subtitle={`random pick · ${padId(id)}`}
+      subtitle={`random pick · ${padId(entry.id)}`}
       ariaLabel="Random featured Pokémon"
-      headerAction={<SpeakButton pokemonName={idStr} />}
+      headerAction={
+        <SpeakButton kind="pokemon" name={entry.name} displayName={titleCase(entry.name)} />
+      }
       footer={
         <>
           <div className="device__dpad" aria-hidden="true" />
           <div style={{ textAlign: "center" }}>
             <Link
               to="/pokemon/$name"
-              params={{ name: idStr }}
+              params={{ name: entry.name }}
               className="hero-cta"
               style={{ marginTop: 0 }}
             >
@@ -43,38 +58,33 @@ function FeaturedShell() {
         </>
       }
     >
-      <Suspense fallback={<FeaturedInnerSkeleton />}>
-        <FeaturedInner id={id} />
+      <Suspense fallback={<FeaturedPokemonSkeleton />}>
+        <FeaturedPokemonBody name={entry.name} />
       </Suspense>
     </ConsoleDevice>
   );
 }
 
-function FeaturedInner({ id }: { id: number }) {
-  const { data: pokemon } = useSuspenseQuery(pokemonQuery(id));
-  const { data: species } = useQuery(speciesQuery(id));
-
-  const art =
-    pokemon.sprites.other?.["official-artwork"]?.front_default || pokemon.sprites.front_default;
-  const flavor = species ? englishEntry(species.flavor_text_entries) : undefined;
-
+function FeaturedPokemonBody({ name }: { name: string }) {
+  const { data } = useSuspenseQuery(pokemonBundleQuery(name));
+  const art = data.sprites.official_artwork || data.sprites.front_default;
   return (
     <div className="screen__hud">
       <div>
         <p className="hud-row">
-          <b>RANDOM</b> · {padId(pokemon.id)}
+          <b>RANDOM</b> · {padId(data.id)}
         </p>
-        <h1 className="hud-name">{titleCase(pokemon.name)}</h1>
-        <div className="hud-genus">{englishEntry(species?.genera ?? [])?.genus ?? "Pokémon"}</div>
+        <h1 className="hud-name">{titleCase(data.name)}</h1>
+        <div className="hud-genus">{data.species.genus ?? "Pokémon"}</div>
         <div className="cart-row" aria-label="Types">
-          {pokemon.types.map((t) => (
-            <TypeCartridge key={t.type.name} name={t.type.name} />
+          {data.types.map((t) => (
+            <TypeCartridge key={t.name} name={t.name} />
           ))}
         </div>
-        {flavor && <p className="hud-flavor">{cleanFlavor(flavor.flavor_text)}</p>}
+        {data.species.flavor && <p className="hud-flavor">{data.species.flavor}</p>}
       </div>
       <div className="hud-sprite">
-        <Sprite src={art} alt={`${pokemon.name} official artwork`} priority />
+        <Sprite src={art} alt={`${data.name} official artwork`} priority />
         <span className="hud-sprite__corners" aria-hidden="true">
           <span /> <span /> <span /> <span />
         </span>
@@ -83,7 +93,7 @@ function FeaturedInner({ id }: { id: number }) {
   );
 }
 
-function FeaturedInnerSkeleton() {
+function FeaturedPokemonSkeleton() {
   return (
     <div className="screen__hud" aria-busy="true" aria-label="Loading featured Pokémon">
       <div>
@@ -93,11 +103,7 @@ function FeaturedInnerSkeleton() {
         <h1 className="hud-name" style={{ opacity: 0.45 }}>
           Loading…
         </h1>
-        <div className="hud-genus" style={{ opacity: 0 }}>
-          placeholder
-        </div>
         <div className="cart-row" aria-hidden="true">
-          <span className="skeleton" style={{ width: "64px", height: "28px" }} />
           <span className="skeleton" style={{ width: "64px", height: "28px" }} />
         </div>
         <div className="skeleton" style={{ height: "4.5rem", marginTop: "1rem", width: "100%" }} />
@@ -113,106 +119,179 @@ function FeaturedInnerSkeleton() {
   );
 }
 
-// ── browse-all catalog ─────────────────────────────────────────────────
+// Shared featured card shell ───────────────────────────────────────
 
-function idFromUrl(url: string): number {
-  const match = url.match(/\/(\d+)\/?$/);
-  return match ? Number(match[1]) : 0;
-}
-
-function BrowseGrid() {
-  const [offset, setOffset] = useState(0);
-  const pageSize = 24;
-  const { data } = useSuspenseQuery(listPokemonQuery());
-  const deferredOffset = useDeferredValue(offset);
-
-  const slice = useMemo(
-    () => data.results.slice(deferredOffset, deferredOffset + pageSize),
-    [data.results, deferredOffset],
-  );
-
+function FeaturedCard({
+  title,
+  browseTo,
+  browseLabel,
+  children,
+}: {
+  title: string;
+  browseTo: string;
+  browseLabel: string;
+  children: React.ReactNode;
+}) {
   return (
-    <section aria-labelledby="browse-heading">
-      <div className="catalog-head">
-        <h2 id="browse-heading">Catalog · all entries</h2>
-        <span className="catalog-head__count" aria-live="polite">
-          {deferredOffset + 1}–{Math.min(deferredOffset + pageSize, data.results.length)} /{" "}
-          {data.results.length}
-        </span>
-      </div>
-      <ul className="grid-cards">
-        {slice.map((r) => {
-          const id = idFromUrl(r.url);
-          return (
-            <li key={r.name}>
-              <Link
-                to="/pokemon/$name"
-                params={{ name: r.name }}
-                className="pokemon-card"
-                aria-label={`${titleCase(r.name)}, ${padId(id)}`}
-              >
-                <div className="pokemon-card__sprite">
-                  <img
-                    src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`}
-                    alt=""
-                    width={450}
-                    height={450}
-                    loading="lazy"
-                    decoding="async"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src =
-                        `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
-                    }}
-                  />
-                </div>
-                <div className="pokemon-card__id">{padId(id)}</div>
-                <div className="pokemon-card__name">{titleCase(r.name)}</div>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-      <nav className="nav-buttons" aria-label="Pagination">
-        <button
-          type="button"
-          className="pill-button"
-          onClick={() => setOffset((o) => Math.max(0, o - pageSize))}
-          disabled={deferredOffset === 0}
-        >
-          ◀ Previous
-        </button>
-        <button
-          type="button"
-          className="pill-button"
-          onClick={() => setOffset((o) => Math.min(data.results.length - pageSize, o + pageSize))}
-          disabled={deferredOffset + pageSize >= data.results.length}
-        >
-          Next ▶
-        </button>
-      </nav>
+    <section className="featured-card">
+      <header className="featured-card__head">
+        <h2 className="featured-card__title">{title}</h2>
+        <Link to={browseTo} className="featured-card__browse">
+          {browseLabel} →
+        </Link>
+      </header>
+      <Suspense
+        fallback={<div className="skeleton" style={{ height: "8rem", marginTop: "0.5rem" }} />}
+      >
+        {children}
+      </Suspense>
     </section>
   );
 }
 
-function BrowseSkeleton() {
+// Featured Berry ───────────────────────────────────────────────────
+
+function FeaturedBerryBody() {
+  const { data: index } = useSuspenseQuery(berryIndexQuery());
+  const entry = useMemo(() => pickRandom(index.entries), [index.entries]);
+  const { data } = useSuspenseQuery(berryBundleQuery(entry.name));
   return (
-    <ul className="grid-cards" aria-busy="true" aria-label="Loading Pokémon">
-      {Array.from({ length: 12 }, (_, i) => `skeleton-${i}`).map((key) => (
-        <li key={key}>
-          <PokemonCardSkeleton />
-        </li>
-      ))}
-    </ul>
+    <Link to="/berry/$name" params={{ name: data.name }} className="featured-card__link">
+      <div className="featured-card__media featured-card__media--berry">
+        <img
+          src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${data.name}-berry.png`}
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div className="featured-card__body">
+        <div className="featured-card__name">{data.display_name}</div>
+        <div className="featured-card__meta">
+          <TypeCartridge name={data.natural_gift_type} size="sm" asLink={false} />
+          <span className="featured-card__tag">{titleCase(data.firmness)}</span>
+        </div>
+      </div>
+    </Link>
   );
 }
+
+// Featured Item ────────────────────────────────────────────────────
+
+function FeaturedItemBody() {
+  const { data: index } = useSuspenseQuery(itemIndexQuery());
+  // Bias toward items with sprites so the card has a visual.
+  const withSprite = useMemo(() => index.entries.filter((e) => e.sprite), [index.entries]);
+  const entry = useMemo(() => pickRandom(withSprite.length ? withSprite : index.entries), [index.entries, withSprite]);
+  const { data } = useSuspenseQuery(itemBundleQuery(entry.name));
+  return (
+    <Link to="/item/$name" params={{ name: data.name }} className="featured-card__link">
+      <div className="featured-card__media featured-card__media--item">
+        {data.sprite && (
+          <img
+            src={data.sprite}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            style={{ imageRendering: "pixelated" }}
+          />
+        )}
+      </div>
+      <div className="featured-card__body">
+        <div className="featured-card__name">{data.display_name}</div>
+        <div className="featured-card__meta">
+          <span className="featured-card__tag">{titleCase(data.category)}</span>
+          {data.cost > 0 && <span className="featured-card__tag">₽{data.cost}</span>}
+        </div>
+        {data.short_effect && (
+          <p className="featured-card__flavor">{data.short_effect}</p>
+        )}
+      </div>
+    </Link>
+  );
+}
+
+// Featured Location ────────────────────────────────────────────────
+
+function FeaturedLocationBody() {
+  const { data: index } = useSuspenseQuery(locationIndexQuery());
+  const entry = useMemo(() => pickRandom(index.entries), [index.entries]);
+  const { data } = useSuspenseQuery(locationBundleQuery(entry.name));
+  return (
+    <Link to="/locations" hash={data.name} className="featured-card__link">
+      <div className="featured-card__body featured-card__body--text-only">
+        <div className="featured-card__name">{data.display_name}</div>
+        <div className="featured-card__meta">
+          {data.region && <span className="featured-card__tag">{titleCase(data.region)}</span>}
+          {data.generation && (
+            <span className="featured-card__tag">
+              {titleCase(data.generation.replace("generation-", ""))}
+            </span>
+          )}
+          <span className="featured-card__tag">
+            {data.areas.length} area{data.areas.length === 1 ? "" : "s"}
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+// Featured Move ────────────────────────────────────────────────────
+
+function FeaturedMoveBody() {
+  const { data: index } = useSuspenseQuery(moveIndexQuery());
+  const entry = useMemo(() => pickRandom(index.entries), [index.entries]);
+  const { data } = useSuspenseQuery(moveBundleQuery(entry.name));
+  return (
+    <Link to="/move/$name" params={{ name: data.name }} className="featured-card__link">
+      <div className="featured-card__body featured-card__body--text-only">
+        <div className="featured-card__name">{data.display_name}</div>
+        <div className="featured-card__meta">
+          <TypeCartridge name={data.type} size="sm" asLink={false} />
+          <span className="featured-card__tag">{titleCase(data.damage_class)}</span>
+          <span className="featured-card__tag mono">PWR {data.power ?? "—"}</span>
+          <span className="featured-card__tag mono">ACC {data.accuracy ?? "—"}</span>
+        </div>
+        {data.short_effect && <p className="featured-card__flavor">{data.short_effect}</p>}
+      </div>
+    </Link>
+  );
+}
+
+// Page ─────────────────────────────────────────────────────────────
 
 export function HomePage() {
   return (
     <>
-      <FeaturedShell />
-      <Suspense fallback={<BrowseSkeleton />}>
-        <BrowseGrid />
+      <Suspense
+        fallback={
+          <ConsoleDevice
+            title="POKÉ DEX · FEATURED"
+            subtitle="loading"
+            ariaLabel="Loading featured"
+          >
+            <FeaturedPokemonSkeleton />
+          </ConsoleDevice>
+        }
+      >
+        <FeaturedPokemon />
       </Suspense>
+
+      <div className="featured-grid">
+        <FeaturedCard title="Featured Berry" browseTo="/berries" browseLabel="All berries">
+          <FeaturedBerryBody />
+        </FeaturedCard>
+        <FeaturedCard title="Featured Item" browseTo="/items" browseLabel="All items">
+          <FeaturedItemBody />
+        </FeaturedCard>
+        <FeaturedCard title="Featured Location" browseTo="/locations" browseLabel="All locations">
+          <FeaturedLocationBody />
+        </FeaturedCard>
+        <FeaturedCard title="Featured Move" browseTo="/moves" browseLabel="All moves">
+          <FeaturedMoveBody />
+        </FeaturedCard>
+      </div>
     </>
   );
 }

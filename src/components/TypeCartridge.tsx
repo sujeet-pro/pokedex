@@ -27,8 +27,8 @@ export function TypeCartridge({ name, asLink = true, size = "md" }: Props) {
   }
   return (
     <Link
-      to="/type/$id"
-      params={{ id: info.name }}
+      to="/type/$name"
+      params={{ name: info.name }}
       className={className}
       aria-label={`View ${info.display} type`}
     >

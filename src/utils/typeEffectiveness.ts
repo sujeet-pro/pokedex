@@ -1,21 +1,21 @@
-import type { TypeDetail } from "~/types/pokeapi";
+import type { BundleDefenderType } from "~/types/bundles";
 import { ALL_TYPES, type TypeName } from "./typeInfo";
 
 export type Multiplier = 0 | 0.25 | 0.5 | 1 | 2 | 4;
 export type PerDefFactor = 0 | 0.5 | 1 | 2;
 
-export function damageTaken(defenders: TypeDetail[]): Record<TypeName, Multiplier> {
+export function damageTaken(defenders: BundleDefenderType[]): Record<TypeName, Multiplier> {
   const out = {} as Record<TypeName, Multiplier>;
   for (const atk of ALL_TYPES) {
     let m = 1;
     for (const def of defenders) {
-      if (def.damage_relations.no_damage_from.some((x) => x.name === atk)) {
+      if (def.no_damage_from.some((x) => x === atk)) {
         m = 0;
         break;
       }
-      if (def.damage_relations.double_damage_from.some((x) => x.name === atk)) {
+      if (def.double_damage_from.some((x) => x === atk)) {
         m *= 2;
-      } else if (def.damage_relations.half_damage_from.some((x) => x.name === atk)) {
+      } else if (def.half_damage_from.some((x) => x === atk)) {
         m *= 0.5;
       }
     }
@@ -26,16 +26,16 @@ export function damageTaken(defenders: TypeDetail[]): Record<TypeName, Multiplie
 
 export function breakdownForAttack(
   attackType: string,
-  defenders: TypeDetail[],
+  defenders: BundleDefenderType[],
 ): { defender: string; factor: PerDefFactor }[] {
   return defenders.map((def) => {
-    if (def.damage_relations.no_damage_from.some((x) => x.name === attackType)) {
+    if (def.no_damage_from.some((x) => x === attackType)) {
       return { defender: def.name, factor: 0 as const };
     }
-    if (def.damage_relations.double_damage_from.some((x) => x.name === attackType)) {
+    if (def.double_damage_from.some((x) => x === attackType)) {
       return { defender: def.name, factor: 2 as const };
     }
-    if (def.damage_relations.half_damage_from.some((x) => x.name === attackType)) {
+    if (def.half_damage_from.some((x) => x === attackType)) {
       return { defender: def.name, factor: 0.5 as const };
     }
     return { defender: def.name, factor: 1 as const };

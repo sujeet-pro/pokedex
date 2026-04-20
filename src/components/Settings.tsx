@@ -29,8 +29,20 @@ export function SettingsMenu() {
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
-        <button type="button" className="pill-button" aria-label="Display settings">
-          <span aria-hidden="true">⚙︎</span> Settings
+        <button type="button" className="settings-btn" aria-label="Display settings">
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            aria-hidden="true"
+            className="settings-btn__icon"
+          >
+            <path
+              d="M19.43 12.98a7.54 7.54 0 0 0 0-1.96l2.03-1.58a.5.5 0 0 0 .12-.62l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.5 7.5 0 0 0-1.69-.98l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54a7.5 7.5 0 0 0-1.69.98l-2.39-.96a.5.5 0 0 0-.6.22L2.82 8.82a.5.5 0 0 0 .12.62l2.03 1.58a7.54 7.54 0 0 0 0 1.96l-2.03 1.58a.5.5 0 0 0-.12.62l1.92 3.32a.5.5 0 0 0 .6.22l2.39-.96a7.5 7.5 0 0 0 1.69.98l.36 2.54a.5.5 0 0 0 .5.42h3.84a.5.5 0 0 0 .5-.42l.36-2.54a7.5 7.5 0 0 0 1.69-.98l2.39.96a.5.5 0 0 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.62l-2.03-1.58ZM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"
+              fill="currentColor"
+            />
+          </svg>
+          <span className="settings-btn__label">Settings</span>
         </button>
       </Popover.Trigger>
       <Popover.Portal>

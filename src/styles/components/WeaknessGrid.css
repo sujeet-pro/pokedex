@@ -49,7 +49,7 @@
   justify-items: center;
   align-items: center;
   gap: 2px;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--screen-bg-2);
   border: 1px solid var(--screen-rule);
   border-radius: var(--radius-sm);
   font-family: var(--font-mono);
@@ -192,14 +192,14 @@
 /* ── popover content ─────────────────────────────────── */
 .weak__pop {
   width: min(320px, calc(100vw - 1.5rem));
-  background: linear-gradient(180deg, #0b1a12 0%, #07110c 100%);
+  background: linear-gradient(180deg, var(--screen-bg-2) 0%, var(--screen-bg) 100%);
   color: var(--screen-fg);
   border: 1px solid var(--amber);
   border-radius: var(--radius-md);
   box-shadow:
     0 8px 30px rgba(0, 0, 0, 0.6),
     0 0 0 1px rgba(0, 0, 0, 0.5),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    inset 0 0 0 1px color-mix(in srgb, var(--phosphor) 6%, transparent);
   padding: 0.9rem 1rem 0.75rem;
   font-family: var(--font-sans);
   z-index: 60;
@@ -230,7 +230,7 @@
 }
 
 .weak__pop-arrow {
-  fill: #0b1a12;
+  fill: var(--screen-bg-2);
   stroke: var(--amber);
   stroke-width: 1;
 }
@@ -322,7 +322,7 @@
 .weak__pop-breakdown {
   margin-top: 0.5rem;
   padding: 0.5rem 0.6rem;
-  background: rgba(0, 0, 0, 0.35);
+  background: color-mix(in srgb, var(--screen-bg) 85%, transparent);
   border: 1px dashed var(--screen-rule);
   border-radius: var(--radius-sm);
 }

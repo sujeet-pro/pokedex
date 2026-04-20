@@ -1,6 +1,6 @@
 import { Popover } from "radix-ui";
 import { Link } from "@tanstack/react-router";
-import type { TypeDetail } from "~/types/pokeapi";
+import type { BundleDefenderType } from "~/types/bundles";
 import {
   breakdownForAttack,
   damageTaken,
@@ -12,7 +12,7 @@ import {
 import { ALL_TYPES, TYPE_INFO, typeInfo } from "~/utils/typeInfo";
 import "~/styles/components/WeaknessGrid.css";
 
-type Props = { defenders: TypeDetail[] };
+type Props = { defenders: BundleDefenderType[] };
 
 export function WeaknessGrid({ defenders }: Props) {
   if (defenders.length === 0) return null;
@@ -59,7 +59,7 @@ function WeaknessCell({
 }: {
   attacker: keyof typeof TYPE_INFO;
   mult: Multiplier;
-  defenders: TypeDetail[];
+  defenders: BundleDefenderType[];
   defenderNames: string[];
 }) {
   const info = TYPE_INFO[attacker];
@@ -152,7 +152,7 @@ function WeaknessCell({
           </div>
 
           <footer className="weak__pop-foot">
-            <Link to="/type/$id" params={{ id: attacker }} className="weak__pop-link">
+            <Link to="/type/$name" params={{ name: attacker }} className="weak__pop-link">
               View {info.display} type →
             </Link>
             <Popover.Close className="weak__pop-close" aria-label="Close explanation">

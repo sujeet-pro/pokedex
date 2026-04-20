@@ -21,14 +21,14 @@
 
 .speak-bezel:hover {
   border-color: var(--case-ink);
-  color: #fff;
+  color: var(--case-ink);
   transform: translateY(-1px);
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--case-ink) 30%, transparent);
 }
 
 .speak-bezel:focus-visible {
   outline: none;
-  color: #fff;
+  color: var(--case-ink);
   box-shadow:
     0 0 0 2px var(--case-3),
     0 0 0 4px var(--phosphor);

@@ -1,30 +1,39 @@
-const BASE = "https://pokeapi.co/api/v2";
+// All data the site reads at runtime comes from pre-built bundles under
+// `<BASE_URL>/bundles/...json`. The bundles are generated at build time by
+// `scripts/build-bundles.ts` from the committed `data/` mirror — no PokéAPI
+// calls happen in the browser.
 
-export class ApiError extends Error {
+const BUNDLES_BASE = `${import.meta.env.BASE_URL}bundles`;
+
+export class BundleError extends Error {
   status: number;
   path: string;
   constructor(status: number, path: string, message: string) {
     super(message);
-    this.name = "ApiError";
+    this.name = "BundleError";
     this.status = status;
     this.path = path;
   }
 }
 
-async function request<T>(path: string, signal?: AbortSignal): Promise<T> {
-  const url = path.startsWith("http") ? path : `${BASE}${path}`;
+async function load<T>(path: string, signal?: AbortSignal): Promise<T> {
+  const url = `${BUNDLES_BASE}${path}`;
   const res = await fetch(url, { signal });
   if (!res.ok) {
-    throw new ApiError(res.status, path, `Request failed: ${res.status} ${res.statusText}`);
+    throw new BundleError(res.status, path, `Bundle fetch failed: ${res.status} ${res.statusText}`);
   }
   return res.json() as Promise<T>;
 }
 
-export const api = {
-  get: request,
+export const bundles = {
+  get: load,
 };
 
-export function extractIdFromUrl(url: string): number | null {
-  const match = url.match(/\/(\d+)\/?$/);
-  return match ? Number(match[1]) : null;
+export async function loadText(path: string, signal?: AbortSignal): Promise<string> {
+  const url = `${BUNDLES_BASE}${path}`;
+  const res = await fetch(url, { signal });
+  if (!res.ok) {
+    throw new BundleError(res.status, path, `Text fetch failed: ${res.status} ${res.statusText}`);
+  }
+  return res.text();
 }

@@ -2,6 +2,8 @@ import { useEffect, type ReactNode } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useHotkey, useHotkeySequence } from "@tanstack/react-hotkeys";
 import { Autocomplete } from "./Autocomplete";
+import { BurgerMenu } from "./BurgerMenu";
+import { Pokeball } from "./Pokeball";
 import { SettingsMenu } from "./Settings";
 
 const IS_MAC = typeof navigator !== "undefined" && /Mac|iPhone|iPad|iPod/.test(navigator.platform);
@@ -24,14 +26,29 @@ export function Layout({ children }: { children: ReactNode }) {
   useHotkeySequence(["G", "S"], () => {
     navigate({ to: "/search" });
   });
+  useHotkeySequence(["G", "P"], () => {
+    navigate({ to: "/pokemon" });
+  });
+  useHotkeySequence(["G", "B"], () => {
+    navigate({ to: "/berries" });
+  });
+  useHotkeySequence(["G", "I"], () => {
+    navigate({ to: "/items" });
+  });
+  useHotkeySequence(["G", "L"], () => {
+    navigate({ to: "/locations" });
+  });
+  useHotkeySequence(["G", "M"], () => {
+    navigate({ to: "/moves" });
+  });
+  useHotkeySequence(["G", "G"], () => {
+    navigate({ to: "/generations" });
+  });
   useHotkey("/", (e) => {
     e.preventDefault();
     focusSearch();
   });
 
-  // Cmd+K (Mac) / Ctrl+K (Windows/Linux) — universal "open search" shortcut.
-  // Done with a native listener so it overrides the browser's default
-  // (Cmd+K focuses the Chrome omnibox in search-engine mode on Mac).
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key.toLowerCase() === "k" && (e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey) {
@@ -50,13 +67,14 @@ export function Layout({ children }: { children: ReactNode }) {
       </a>
       <header className="navbar">
         <div className="container navbar__inner">
+          <BurgerMenu />
           <Link to="/" className="navbar__brand" aria-label="Pokédex home">
-            Poké Dex
+            <Pokeball className="navbar__brand__icon" />
+            <span>Poké Dex</span>
           </Link>
           <div className="navbar__search">
             <Autocomplete kbdHint={CMD_KEY_LABEL} />
           </div>
-          <div className="navbar__spacer" aria-hidden="true" />
           <div className="navbar__controls">
             <SettingsMenu />
           </div>
@@ -76,8 +94,11 @@ export function Layout({ children }: { children: ReactNode }) {
           </p>
           <p>
             Shortcuts: <kbd>{CMD_KEY_LABEL}</kbd>
-            <kbd>K</kbd> search · <kbd>/</kbd> search · <kbd>g</kbd> <kbd>h</kbd> home ·{" "}
-            <kbd>g</kbd> <kbd>s</kbd> browse · <kbd>Esc</kbd> closes popovers
+            <kbd>K</kbd> / <kbd>/</kbd> search · <kbd>g</kbd>+<kbd>h</kbd> home ·{" "}
+            <kbd>g</kbd>+<kbd>p</kbd> Pokémon · <kbd>g</kbd>+<kbd>b</kbd> berries ·{" "}
+            <kbd>g</kbd>+<kbd>i</kbd> items · <kbd>g</kbd>+<kbd>m</kbd> moves ·{" "}
+            <kbd>g</kbd>+<kbd>l</kbd> locations · <kbd>g</kbd>+<kbd>g</kbd> generations ·{" "}
+            <kbd>[</kbd>/<kbd>]</kbd> prev / next on detail · <kbd>Esc</kbd> close popover
           </p>
         </div>
       </footer>

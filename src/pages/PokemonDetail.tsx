@@ -1,54 +1,35 @@
 import { Suspense } from "react";
-import { Link } from "@tanstack/react-router";
-import { useQuery, useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
-import { evolutionChainByUrlQuery, pokemonQuery, speciesQuery, typeQuery } from "~/api/queries";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useHotkey } from "@tanstack/react-hotkeys";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { pokemonBundleQuery } from "~/api/queries";
 import { pokemonRoute } from "~/router";
 import { AbilityButton } from "~/components/AbilityButton";
 import { ConsoleDevice } from "~/components/ConsoleDevice";
 import { DossierField } from "~/components/DossierField";
+import { PokemonSummary } from "~/components/PokemonSummary";
 import { SpeakButton } from "~/components/SpeakButton";
 import { Sprite } from "~/components/Sprite";
 import { StatRadar } from "~/components/StatRadar";
 import { TypeCartridge } from "~/components/TypeCartridge";
 import { WeaknessGrid } from "~/components/WeaknessGrid";
-import type { EvolutionChainLink, Pokemon, PokemonSpecies } from "~/types/pokeapi";
-import {
-  cleanFlavor,
-  decimetersToMeters,
-  englishEntry,
-  hectogramsToKg,
-  padId,
-  titleCase,
-} from "~/utils/formatters";
-
-function evoTrigger(details: EvolutionChainLink["evolution_details"][number] | undefined): string {
-  if (!details) return "";
-  if (details.min_level != null) return `LVL ${details.min_level}`;
-  if (details.item) return titleCase(details.item.name);
-  if (details.trigger?.name) return details.trigger.name.replace(/-/g, " ");
-  return "";
-}
+import type { BundleEvoNode, PokemonBundle } from "~/types/bundles";
+import { decimetersToMeters, hectogramsToKg, padId, titleCase } from "~/utils/formatters";
 
 function EvolutionChain({
-  chainUrl,
+  root,
   currentName,
 }: {
-  chainUrl: string | null | undefined;
+  root: BundleEvoNode;
   currentName: string;
 }) {
-  const { data } = useQuery(evolutionChainByUrlQuery(chainUrl));
-  if (!data) return null;
-
   const nodes: { name: string; id: number; trigger: string }[] = [];
 
-  function walk(node: EvolutionChainLink, incomingTrigger: string) {
-    const id = Number(node.species.url.match(/\/(\d+)\/?$/)?.[1] ?? 0);
-    nodes.push({ name: node.species.name, id, trigger: incomingTrigger });
-    for (const child of node.evolves_to) {
-      walk(child, evoTrigger(child.evolution_details[0]));
-    }
+  function walk(node: BundleEvoNode) {
+    nodes.push({ name: node.name, id: node.id, trigger: node.trigger });
+    for (const child of node.evolves_to) walk(child);
   }
-  walk(data.chain, "");
+  walk(root);
 
   if (nodes.length < 2) {
     return (
@@ -98,54 +79,49 @@ function EvolutionChain({
   );
 }
 
-// ── Pager (bezel footer) — self-fetches so we can show a stable pre-data shell.
-
-function DetailPager({ urlName }: { urlName: string }) {
-  const { data } = useQuery(pokemonQuery(urlName));
-  const id = data?.id ?? null;
-  const display = data ? `${padId(data.id)} · ${titleCase(data.name)}` : "—";
-  const prevId = id ? Math.max(1, id - 1) : null;
-  const nextId = id ? Math.min(1025, id + 1) : null;
+function DetailPager({ bundle }: { bundle: PokemonBundle }) {
+  const display = `${padId(bundle.id)} · ${titleCase(bundle.name)}`;
+  const { prev, next } = bundle.pager;
 
   return (
     <>
       <div className="device__dpad" aria-hidden="true" />
       <nav aria-label="Adjacent entries" className="pager">
         <span className="pager__label mono">{display}</span>
-        {prevId != null ? (
+        {prev ? (
           <Link
             className="pill-button pager__prev"
             to="/pokemon/$name"
-            params={{ name: String(prevId) }}
-            aria-label={`Previous entry, ${padId(prevId)}`}
+            params={{ name: prev.name }}
+            aria-label={`Previous entry, ${padId(prev.id)}`}
           >
-            ◀ Prev {padId(prevId)}
+            ◀ Prev {padId(prev.id)}
           </Link>
         ) : (
           <button
             type="button"
             className="pill-button pager__prev"
             disabled
-            aria-label="Previous entry — loading"
+            aria-label="No previous entry"
           >
             ◀ Prev ————
           </button>
         )}
-        {nextId != null ? (
+        {next ? (
           <Link
             className="pill-button pager__next"
             to="/pokemon/$name"
-            params={{ name: String(nextId) }}
-            aria-label={`Next entry, ${padId(nextId)}`}
+            params={{ name: next.name }}
+            aria-label={`Next entry, ${padId(next.id)}`}
           >
-            Next {padId(nextId)} ▶
+            Next {padId(next.id)} ▶
           </Link>
         ) : (
           <button
             type="button"
             className="pill-button pager__next"
             disabled
-            aria-label="Next entry — loading"
+            aria-label="No next entry"
           >
             Next ———— ▶
           </button>
@@ -158,8 +134,6 @@ function DetailPager({ urlName }: { urlName: string }) {
     </>
   );
 }
-
-// ── The two HUD halves — left (identity) and right (infographics) ──────
 
 function LeftHudSkeleton({ urlName }: { urlName: string }) {
   return (
@@ -225,50 +199,53 @@ function RightHudSkeleton() {
   );
 }
 
-// ── Real content (mounted inside Suspense) ────────────────────────────
-
 function PokemonDetailContent({ name }: { name: string }) {
-  const { data: pokemon } = useSuspenseQuery(pokemonQuery(name));
-  const typeResults = useSuspenseQueries({
-    queries: pokemon.types.map((t) => typeQuery(t.type.name)),
-  });
-  const defenders = typeResults.map((r) => r.data);
-  const { data: species } = useQuery(speciesQuery(pokemon.species.name));
+  const { data } = useSuspenseQuery(pokemonBundleQuery(name));
+  const navigate = useNavigate();
 
-  const art =
-    pokemon.sprites.other?.["official-artwork"]?.front_default || pokemon.sprites.front_default;
-  const flavor = species ? englishEntry(species.flavor_text_entries) : undefined;
-  const genus = species ? englishEntry(species.genera) : undefined;
-
-  const statsForRadar = pokemon.stats.map((s) => ({ name: s.stat.name, value: s.base_stat }));
+  const art = data.sprites.official_artwork || data.sprites.front_default;
+  const statsForRadar = data.stats.map((s) => ({ name: s.name, value: s.base_stat }));
   const total = statsForRadar.reduce((a, s) => a + s.value, 0);
+
+  useHotkey("[", (e) => {
+    if (!data.pager.prev) return;
+    e.preventDefault();
+    navigate({ to: "/pokemon/$name", params: { name: data.pager.prev.name } });
+  });
+  useHotkey("]", (e) => {
+    if (!data.pager.next) return;
+    e.preventDefault();
+    navigate({ to: "/pokemon/$name", params: { name: data.pager.next.name } });
+  });
 
   return (
     <>
       <div className="screen__hud">
         <div>
           <p className="hud-row">
-            <b>DEX</b> {padId(pokemon.id).slice(1)} &nbsp;·&nbsp; <b>GEN</b>{" "}
-            {species?.generation.name.replace("generation-", "").toUpperCase() ?? "—"} &nbsp;·&nbsp;{" "}
-            <b>ORD</b> {pokemon.order}
+            <b>DEX</b> {padId(data.id).slice(1)} &nbsp;·&nbsp; <b>GEN</b>{" "}
+            {data.species.generation.replace("generation-", "").toUpperCase()} &nbsp;·&nbsp;{" "}
+            <b>ORD</b> {data.order}
           </p>
-          <h1 className="hud-name">{titleCase(pokemon.name)}</h1>
-          {genus && <div className="hud-genus">{genus.genus}</div>}
+          <h1 className="hud-name">{titleCase(data.name)}</h1>
+          {data.species.genus && <div className="hud-genus">{data.species.genus}</div>}
 
           <div className="hud-sprite">
-            <Sprite src={art} alt={`${pokemon.name} artwork`} priority />
+            <Sprite src={art} alt={`${data.name} artwork`} priority />
             <span className="hud-sprite__corners" aria-hidden="true">
               <span /> <span /> <span /> <span />
             </span>
           </div>
 
           <div className="cart-row" aria-label="Types">
-            {pokemon.types.map((t) => (
-              <TypeCartridge key={t.type.name} name={t.type.name} />
+            {data.types.map((t) => (
+              <TypeCartridge key={t.name} name={t.name} />
             ))}
           </div>
 
-          {flavor && <p className="hud-flavor">{cleanFlavor(flavor.flavor_text)}</p>}
+          {data.species.flavor && <p className="hud-flavor">{data.species.flavor}</p>}
+
+          <PokemonSummary id={data.id} available={data.has_summary} />
         </div>
 
         <div className="hud__column">
@@ -283,84 +260,70 @@ function PokemonDetailContent({ name }: { name: string }) {
           <dl className="readouts">
             <div>
               <dt>Height</dt>
-              <dd>{decimetersToMeters(pokemon.height)}</dd>
+              <dd>{decimetersToMeters(data.height)}</dd>
             </div>
             <div>
               <dt>Weight</dt>
-              <dd>{hectogramsToKg(pokemon.weight)}</dd>
+              <dd>{hectogramsToKg(data.weight)}</dd>
             </div>
             <div>
               <dt>Base XP</dt>
-              <dd className="mono">{pokemon.base_experience}</dd>
+              <dd className="mono">{data.base_experience}</dd>
             </div>
-            {species && (
-              <>
-                <div>
-                  <dt>Catch</dt>
-                  <dd className="mono">
-                    {species.capture_rate}
-                    <small> /255</small>
-                  </dd>
-                </div>
-                <div>
-                  <dt>Happy</dt>
-                  <dd className="mono">{species.base_happiness}</dd>
-                </div>
-                <div>
-                  <dt>Hatch</dt>
-                  <dd className="mono">
-                    {species.hatch_counter ?? 0}
-                    <small> steps</small>
-                  </dd>
-                </div>
-              </>
-            )}
+            <div>
+              <dt>Catch</dt>
+              <dd className="mono">
+                {data.species.capture_rate}
+                <small> /255</small>
+              </dd>
+            </div>
+            <div>
+              <dt>Happy</dt>
+              <dd className="mono">{data.species.base_happiness}</dd>
+            </div>
+            <div>
+              <dt>Hatch</dt>
+              <dd className="mono">
+                {data.species.hatch_counter ?? 0}
+                <small> steps</small>
+              </dd>
+            </div>
           </dl>
 
           <div className="hud-card">
-            <WeaknessGrid defenders={defenders} />
+            <WeaknessGrid defenders={data.defenders} />
           </div>
         </div>
       </div>
 
-      {species?.evolution_chain?.url && (
-        <Suspense
-          fallback={
-            <div
-              className="skeleton"
-              style={{ height: "6rem", marginTop: "1rem" }}
-              aria-busy="true"
-              aria-label="Loading evolution chain"
-            />
-          }
-        >
-          <EvolutionChain chainUrl={species.evolution_chain.url} currentName={pokemon.name} />
-        </Suspense>
+      {data.evolution_chain && (
+        <EvolutionChain root={data.evolution_chain} currentName={data.name} />
       )}
 
       <div className="screen__hud" style={{ marginTop: "1.25rem", gridTemplateColumns: "1fr 1fr" }}>
         <div className="hud-card">
           <div className="hud-card__title">
             <span>Abilities</span>
-            <span>{pokemon.abilities.length}</span>
+            <span>{data.abilities.length}</span>
           </div>
           <ul className="ability-list">
-            {pokemon.abilities.map((a) => (
-              <li key={a.ability.name}>
-                <AbilityButton name={a.ability.name} isHidden={a.is_hidden} />
+            {data.abilities.map((a) => (
+              <li key={a.name}>
+                <AbilityButton name={a.name} isHidden={a.is_hidden} />
               </li>
             ))}
           </ul>
         </div>
 
-        {species && <DossierCard pokemon={pokemon} species={species} />}
+        <DossierCard bundle={data} />
       </div>
     </>
   );
 }
 
-function DossierCard({ pokemon, species }: { pokemon: Pokemon; species: PokemonSpecies }) {
-  const eggGroups = species.egg_groups.map((e) => titleCase(e.name)).join(" · ") || "—";
+function DossierCard({ bundle }: { bundle: PokemonBundle }) {
+  const { species } = bundle;
+  const eggGroups = species.egg_groups.map((e) => titleCase(e)).join(" · ") || "—";
   const rarity = species.is_legendary
     ? "Legendary"
     : species.is_mythical
@@ -368,8 +331,8 @@ function DossierCard({ pokemon, species }: { pokemon: Pokemon; species: PokemonS
       : species.is_baby
         ? "Baby"
         : "Standard";
-  const habitat = species.habitat ? titleCase(species.habitat.name) : "Unknown";
-  const shape = species.shape ? titleCase(species.shape.name) : "Unknown";
+  const habitat = species.habitat ? titleCase(species.habitat) : "Unknown";
+  const shape = species.shape ? titleCase(species.shape) : "Unknown";
 
   return (
     <div className="hud-card">
@@ -385,10 +348,10 @@ function DossierCard({ pokemon, species }: { pokemon: Pokemon; species: PokemonS
           <DossierField termKey="shape" value={shape} />
         </li>
         <li>
-          <DossierField termKey="color" value={titleCase(species.color.name)} />
+          <DossierField termKey="color" value={titleCase(species.color)} />
         </li>
         <li>
-          <DossierField termKey="growth" value={titleCase(species.growth_rate.name)} />
+          <DossierField termKey="growth" value={titleCase(species.growth_rate)} />
         </li>
         <li>
           <DossierField termKey="egg-groups" value={eggGroups} />
@@ -400,13 +363,17 @@ function DossierCard({ pokemon, species }: { pokemon: Pokemon; species: PokemonS
       <div style={{ marginTop: "0.75rem" }}>
         <ul className="pill-list">
           <li>
-            <Link to="/pokemon-species/$id" params={{ id: pokemon.species.name }} className="pill">
-              Species · {titleCase(pokemon.species.name)}
+            <Link
+              to="/pokemon-species/$name"
+              params={{ name: species.name }}
+              className="pill"
+            >
+              Species · {titleCase(species.name)}
             </Link>
           </li>
-          {pokemon.forms.map((f) => (
+          {bundle.forms.map((f) => (
             <li key={f.name}>
-              <Link to="/pokemon-form/$id" params={{ id: f.name }} className="pill">
+              <Link to="/pokemon-form/$name" params={{ name: f.name }} className="pill">
                 Form · {titleCase(f.name)}
               </Link>
             </li>
@@ -414,6 +381,41 @@ function DossierCard({ pokemon, species }: { pokemon: Pokemon; species: PokemonS
         </ul>
       </div>
     </div>
+  );
+}
+
+function DetailPagerShell({ name }: { name: string }) {
+  // Suspense-safe wrapper — the pager needs the bundle to fill prev/next.
+  return (
+    <Suspense fallback={<DetailPagerPlaceholder name={name} />}>
+      <DetailPagerFromBundle name={name} />
+    </Suspense>
+  );
+}
+
+function DetailPagerFromBundle({ name }: { name: string }) {
+  const { data } = useSuspenseQuery(pokemonBundleQuery(name));
+  return <DetailPager bundle={data} />;
+}
+
+function DetailPagerPlaceholder({ name }: { name: string }) {
+  return (
+    <>
+      <div className="device__dpad" aria-hidden="true" />
+      <nav aria-label="Adjacent entries" className="pager">
+        <span className="pager__label mono">— · {titleCase(name)}</span>
+        <button type="button" className="pill-button pager__prev" disabled>
+          ◀ Prev ————
+        </button>
+        <button type="button" className="pill-button pager__next" disabled>
+          Next ———— ▶
+        </button>
+      </nav>
+      <div className="device__ab" aria-hidden="true">
+        <span className="device__btn">A</span>
+        <span className="device__btn device__btn--b">B</span>
+      </div>
+    </>
   );
 }
 
@@ -426,17 +428,15 @@ export function PokemonDetailPage() {
       title="POKÉ DEX · SCANNER"
       subtitle={`read · ${displayName}`}
       ariaLabel={`Pokédex entry for ${displayName}`}
-      headerAction={<SpeakButton pokemonName={lowerName} displayName={displayName} />}
-      footer={<DetailPager urlName={lowerName} />}
+      headerAction={<SpeakButton kind="pokemon" name={lowerName} displayName={displayName} />}
+      footer={<DetailPagerShell name={lowerName} />}
     >
       <Suspense
         fallback={
-          <>
-            <div className="screen__hud">
-              <LeftHudSkeleton urlName={name} />
-              <RightHudSkeleton />
-            </div>
-          </>
+          <div className="screen__hud">
+            <LeftHudSkeleton urlName={name} />
+            <RightHudSkeleton />
+          </div>
         }
       >
         <PokemonDetailContent name={lowerName} />

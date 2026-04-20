@@ -43,7 +43,7 @@ declare global {
   }
 }
 
-const SYSTEM_PROMPT =
+export const POKEMON_SYSTEM_PROMPT =
   "You are a friendly narrator recording a short voiceover about a Pokémon. " +
   "Speak in two to four warm, conversational sentences. " +
   'Open with the Pokémon\'s name — for example "This is Charizard." — then describe what kind of creature it is, ' +
@@ -70,7 +70,10 @@ function getSummarizer(): SummarizerCtor | undefined {
   return window.Summarizer;
 }
 
-export async function summarizeWithAi(rawContext: string): Promise<AiResult> {
+export async function summarizeWithAi(
+  rawContext: string,
+  systemPrompt: string = POKEMON_SYSTEM_PROMPT,
+): Promise<AiResult> {
   // 1) Prompt API — best style control.
   const lm = getLanguageModel();
   if (lm?.create) {
@@ -78,7 +81,7 @@ export async function summarizeWithAi(rawContext: string): Promise<AiResult> {
       const availability = (await lm.availability?.()) ?? "available";
       if (availability === "available") {
         const session = await lm.create({
-          initialPrompts: [{ role: "system", content: SYSTEM_PROMPT }],
+          initialPrompts: [{ role: "system", content: systemPrompt }],
           temperature: 0.6,
         });
         const out = await session.prompt(rawContext);
@@ -101,9 +104,7 @@ export async function summarizeWithAi(rawContext: string): Promise<AiResult> {
           type: "tldr",
           format: "plain-text",
           length: "medium",
-          sharedContext:
-            "Structured Pokédex notes that must be turned into a friendly spoken dossier. " +
-            "Output plain prose, no lists or headings.",
+          sharedContext: systemPrompt,
         });
         const out = await summarizer.summarize(rawContext);
         summarizer.destroy?.();

@@ -1,18 +1,16 @@
 import { Suspense } from "react";
 import { Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { formQuery } from "~/api/queries";
+import { formBundleQuery } from "~/api/queries";
 import { formRoute } from "~/router";
 import { ConsoleDevice } from "~/components/ConsoleDevice";
 import { DossierField } from "~/components/DossierField";
 import { Sprite } from "~/components/Sprite";
 import { TypeCartridge } from "~/components/TypeCartridge";
-import { englishEntry, titleCase } from "~/utils/formatters";
+import { titleCase } from "~/utils/formatters";
 
 function FormContent({ name }: { name: string }) {
-  const { data } = useSuspenseQuery(formQuery(name));
-  const art = data.sprites.front_default;
-  const display = englishEntry(data.names)?.name ?? titleCase(data.name);
+  const { data } = useSuspenseQuery(formBundleQuery(name));
 
   return (
     <>
@@ -28,15 +26,15 @@ function FormContent({ name }: { name: string }) {
               {titleCase(data.pokemon.name)}
             </Link>
           </p>
-          <h1 className="hud-name">{display}</h1>
+          <h1 className="hud-name">{data.display_name}</h1>
           <div className="cart-row" aria-label="Types">
             {data.types.map((t) => (
-              <TypeCartridge key={t.type.name} name={t.type.name} />
+              <TypeCartridge key={t.name} name={t.name} />
             ))}
           </div>
         </div>
         <div className="hud-sprite">
-          <Sprite src={art} alt={`${data.name} sprite`} priority />
+          <Sprite src={data.sprites.front_default} alt={`${data.name} sprite`} priority />
           <span className="hud-sprite__corners" aria-hidden="true">
             <span /> <span /> <span /> <span />
           </span>
@@ -52,7 +50,7 @@ function FormContent({ name }: { name: string }) {
             <DossierField termKey="form-name" value={data.form_name || "—"} />
           </li>
           <li>
-            <DossierField termKey="version-group" value={titleCase(data.version_group.name)} />
+            <DossierField termKey="version-group" value={titleCase(data.version_group)} />
           </li>
         </ul>
       </div>
@@ -97,16 +95,16 @@ function FormContentSkeleton({ urlName }: { urlName: string }) {
 }
 
 export function FormDetailPage() {
-  const { id } = formRoute.useParams();
-  const display = titleCase(id);
+  const { name } = formRoute.useParams();
+  const display = titleCase(name);
   return (
     <ConsoleDevice
       title="POKÉ DEX · FORM"
       subtitle={display}
       ariaLabel={`Form readout for ${display}`}
     >
-      <Suspense fallback={<FormContentSkeleton urlName={id} />}>
-        <FormContent name={id.toLowerCase()} />
+      <Suspense fallback={<FormContentSkeleton urlName={name} />}>
+        <FormContent name={name.toLowerCase()} />
       </Suspense>
     </ConsoleDevice>
   );

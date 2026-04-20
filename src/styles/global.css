@@ -17,20 +17,17 @@
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.15);
   --shadow-md: 0 8px 20px rgb(0 0 0 / 0.2);
   --shadow-lg: 0 18px 40px rgb(0 0 0 / 0.35);
-
-  /* screen palette — always dark, independent of light/dark mode */
-  --screen-bg: #07110c;
-  --screen-bg-2: #0b1a12;
-  --screen-fg: #ffffff;
-  --screen-fg-dim: #d4e6d8;
-  --phosphor: #b6e3bf;
-  --phosphor-dim: #66b97a;
-  --amber: #f4c542;
-  --warn: #ff7a7a;
-  --screen-rule: rgba(182, 227, 191, 0.2);
 }
 
-/* device casing themes (stored in `data-theme`) */
+/* ──────────────────────────────────────────────────────────────────────
+   Theming
+   Every screen-facing colour is driven by CSS vars. Variables are set
+   per-(theme × mode) combo so the console interior and page chrome
+   switch together. Three themes × two modes = six palettes below.
+   ────────────────────────────────────────────────────────────────────── */
+
+/* Shared per-theme casing (device body). Casing looks the same in both
+   modes — the shell is a physical object; only the screen changes. */
 :root[data-theme="red"] {
   --case: #bb2a2a;
   --case-2: #8f1e1e;
@@ -56,22 +53,153 @@
   --brand-accent: #e0b53c;
 }
 
-/* page-level modes (outside the device) */
-:root[data-mode="light"] {
-  --bg: #efe5e2;
-  --bg-alt: #e2d4d0;
-  --text: #1a0d0d;
-  --text-muted: #6a4f4e;
-  --border: #d7c6c2;
-  --page-overlay: rgba(0, 0, 0, 0.02);
-}
+/* Dark modes share a dark scanline + dark card pocket. */
 :root[data-mode="dark"] {
+  --screen-scanline: rgba(0, 0, 0, 0.18);
+  --screen-shade: rgba(0, 0, 0, 0.22);
+  --screen-shade-strong: rgba(0, 0, 0, 0.35);
+
+  /* List cards sit inside the dark casing, so use casing colours. */
+  --card-bg: var(--case-3);
+  --card-bg-2: color-mix(in srgb, var(--case-3) 50%, #000);
+  --card-ink: var(--case-ink);
+  --card-ink-dim: color-mix(in srgb, var(--case-ink) 65%, transparent);
+  --card-rule: color-mix(in srgb, var(--case-ink) 22%, transparent);
+  --card-pocket: color-mix(in srgb, black 55%, var(--screen-bg));
+}
+/* Light modes: scanlines barely visible; cards lift off the light page. */
+:root[data-mode="light"] {
+  --screen-scanline: rgba(0, 0, 0, 0.04);
+  --screen-shade: rgba(0, 0, 0, 0.04);
+  --screen-shade-strong: rgba(0, 0, 0, 0.08);
+
+  /* Cards on light bg stay light — use the screen surface tones. */
+  --card-bg: var(--screen-bg);
+  --card-bg-2: var(--screen-bg-2);
+  --card-ink: var(--screen-fg);
+  --card-ink-dim: var(--screen-fg-dim);
+  --card-rule: var(--screen-rule);
+  --card-pocket: color-mix(in srgb, var(--screen-bg-2) 80%, white);
+}
+
+/* ── Red × Dark ────────────────────────────────────────────────────── */
+:root[data-theme="red"][data-mode="dark"] {
   --bg: #120404;
   --bg-alt: #1a0707;
   --text: #f4eaea;
   --text-muted: #b8a3a3;
   --border: #35181a;
   --page-overlay: rgba(0, 0, 0, 0.2);
+
+  --screen-bg: #1a0707;
+  --screen-bg-2: #2a0d0d;
+  --screen-fg: #ffd9d9;
+  --screen-fg-dim: #d9a6a6;
+  --phosphor: #ff8f8f;
+  --phosphor-dim: #b9675f;
+  --amber: #f4c542;
+  --warn: #ff7a7a;
+  --screen-rule: rgba(255, 143, 143, 0.2);
+}
+
+/* ── Red × Light ───────────────────────────────────────────────────── */
+:root[data-theme="red"][data-mode="light"] {
+  --bg: #efe5e2;
+  --bg-alt: #e2d4d0;
+  --text: #1a0d0d;
+  --text-muted: #5a3b3a;
+  --border: #d7c6c2;
+  --page-overlay: rgba(0, 0, 0, 0.02);
+
+  --screen-bg: #fbeae6;
+  --screen-bg-2: #f3d5cf;
+  --screen-fg: #2a0d0d;
+  --screen-fg-dim: #5a2b2b;
+  --phosphor: #7e1f1f;
+  --phosphor-dim: #7a3535;
+  --amber: #7a4400;
+  --warn: #9e1b1b;
+  --screen-rule: rgba(126, 31, 31, 0.35);
+}
+
+/* ── Blue × Dark ───────────────────────────────────────────────────── */
+:root[data-theme="blue"][data-mode="dark"] {
+  --bg: #05091a;
+  --bg-alt: #0a1028;
+  --text: #e8ecff;
+  --text-muted: #a2aacb;
+  --border: #18224b;
+  --page-overlay: rgba(0, 0, 0, 0.22);
+
+  --screen-bg: #071030;
+  --screen-bg-2: #0b1a44;
+  --screen-fg: #e0edff;
+  --screen-fg-dim: #9fb6dc;
+  --phosphor: #6db7ff;
+  --phosphor-dim: #4a81be;
+  --amber: #f2d15b;
+  --warn: #ff9a9a;
+  --screen-rule: rgba(109, 183, 255, 0.22);
+}
+
+/* ── Blue × Light ──────────────────────────────────────────────────── */
+:root[data-theme="blue"][data-mode="light"] {
+  --bg: #e5e9f2;
+  --bg-alt: #d7dcea;
+  --text: #0d1228;
+  --text-muted: #404970;
+  --border: #c4cadb;
+  --page-overlay: rgba(0, 0, 0, 0.02);
+
+  --screen-bg: #eaf1ff;
+  --screen-bg-2: #d6e2f6;
+  --screen-fg: #071030;
+  --screen-fg-dim: #31406b;
+  --phosphor: #162d63;
+  --phosphor-dim: #3b528c;
+  --amber: #7a5500;
+  --warn: #9e1b1b;
+  --screen-rule: rgba(22, 45, 99, 0.35);
+}
+
+/* ── Yellow × Dark ─────────────────────────────────────────────────── */
+:root[data-theme="yellow"][data-mode="dark"] {
+  --bg: #140f03;
+  --bg-alt: #1c1605;
+  --text: #f8eccf;
+  --text-muted: #c4b07f;
+  --border: #3a2e0a;
+  --page-overlay: rgba(0, 0, 0, 0.22);
+
+  --screen-bg: #1f1603;
+  --screen-bg-2: #2d2008;
+  --screen-fg: #fbecbf;
+  --screen-fg-dim: #c2a36b;
+  --phosphor: #f4c542;
+  --phosphor-dim: #a88a33;
+  --amber: #ffdc73;
+  --warn: #ff8a6a;
+  --screen-rule: rgba(244, 197, 66, 0.22);
+}
+
+/* ── Yellow × Light ────────────────────────────────────────────────── */
+:root[data-theme="yellow"][data-mode="light"] {
+  --bg: #f2ead4;
+  --bg-alt: #e6dcba;
+  --text: #1c1507;
+  --text-muted: #5a4a1f;
+  --border: #d7cba6;
+  --page-overlay: rgba(0, 0, 0, 0.02);
+
+  --screen-bg: #fdf5d9;
+  --screen-bg-2: #f2e6b6;
+  --screen-fg: #2a1f00;
+  --screen-fg-dim: #5a4814;
+  --phosphor: #604700;
+  --phosphor-dim: #7a5f14;
+  --amber: #7a4f00;
+  --warn: #9e1b1b;
+  --screen-rule: rgba(96, 71, 0, 0.35);
 }
 
 /* font scale — only place root font-size is set */
@@ -151,14 +279,14 @@ img {
 
 kbd {
   display: inline-block;
-  padding: 0.1em 0.4em;
-  border: 1px solid var(--case-3);
+  padding: 0.1em 0.45em;
+  border: 1px solid var(--text-muted);
   border-bottom-width: 2px;
   border-radius: 4px;
-  background: color-mix(in srgb, var(--case-3) 40%, transparent);
+  background: var(--bg);
   font-family: var(--font-mono);
   font-size: 0.82em;
-  color: var(--case-ink);
+  color: var(--text);
   line-height: 1;
   letter-spacing: 0.02em;
 }
@@ -193,7 +321,7 @@ kbd {
   inset-inline-start: 0.5rem;
   padding: 0.55rem 0.9rem;
   background: var(--phosphor);
-  color: #07110c;
+  color: var(--screen-bg);
   border-radius: var(--radius-sm);
   font-weight: 700;
   font-family: var(--font-mono);
@@ -214,9 +342,9 @@ kbd {
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgba(182, 227, 191, 0.08) 0%,
-    rgba(182, 227, 191, 0.18) 50%,
-    rgba(182, 227, 191, 0.08) 100%
+    color-mix(in srgb, var(--phosphor) 8%, transparent) 0%,
+    color-mix(in srgb, var(--phosphor) 18%, transparent) 50%,
+    color-mix(in srgb, var(--phosphor) 8%, transparent) 100%
   );
   background-size: 200% 100%;
   border-radius: var(--radius-sm);

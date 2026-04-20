@@ -1,20 +1,15 @@
 import { Suspense } from "react";
 import { Link } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { typeQuery } from "~/api/queries";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { typeBundleQuery, typeIndexQuery } from "~/api/queries";
+import { useAdjacentNav } from "~/hooks/useAdjacentNav";
 import { typeRoute } from "~/router";
 import { ConsoleDevice } from "~/components/ConsoleDevice";
 import { TypeCartridge } from "~/components/TypeCartridge";
 import { typeInfo } from "~/utils/typeInfo";
-import type { NamedResource } from "~/types/pokeapi";
 import { padId, titleCase } from "~/utils/formatters";
 
-function idFromUrl(url: string): number {
-  const m = url.match(/\/(\d+)\/?$/);
-  return m ? Number(m[1]) : 0;
-}
-
-function RelationBlock({ label, list }: { label: string; list: NamedResource[] }) {
+function RelationBlock({ label, list }: { label: string; list: string[] }) {
   return (
     <div className="hud-card">
       <div className="hud-card__title">
@@ -36,8 +31,8 @@ function RelationBlock({ label, list }: { label: string; list: NamedResource[] }
         </p>
       ) : (
         <div className="cart-row" style={{ marginTop: 0 }}>
-          {list.map((t) => (
-            <TypeCartridge key={t.name} name={t.name} size="sm" />
+          {list.map((name) => (
+            <TypeCartridge key={name} name={name} size="sm" />
           ))}
         </div>
       )}
@@ -46,82 +41,78 @@ function RelationBlock({ label, list }: { label: string; list: NamedResource[] }
 }
 
 function TypeContent({ name }: { name: string }) {
-  const { data } = useSuspenseQuery(typeQuery(name));
-  const r = data.damage_relations;
+  const { data } = useSuspenseQuery(typeBundleQuery(name));
+  const { data: index } = useQuery(typeIndexQuery());
+  useAdjacentNav(index?.entries, data.name, "/type");
+  const r = data.relations;
   const info = typeInfo(data.name);
 
   return (
-    <>
-      <div className="screen__hud" style={{ gridTemplateColumns: "1fr" }}>
-        <div>
-          <p className="hud-row">
-            <b>TYPE</b> · GEN{" "}
-            {titleCase(data.generation.name.replace("generation-", "")).toUpperCase()}
-          </p>
-          <h1 className="hud-name">{info.display}</h1>
-          <div className="hud-genus">{info.description}</div>
-          <div className="cart-row">
-            <TypeCartridge name={data.name} asLink={false} />
-          </div>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "0.75rem",
-          }}
-        >
-          <RelationBlock label="Deals ×2 to" list={r.double_damage_to} />
-          <RelationBlock label="Deals ×½ to" list={r.half_damage_to} />
-          <RelationBlock label="Deals ×0 to" list={r.no_damage_to} />
-          <RelationBlock label="Takes ×2 from" list={r.double_damage_from} />
-          <RelationBlock label="Takes ×½ from" list={r.half_damage_from} />
-          <RelationBlock label="Takes ×0 from" list={r.no_damage_from} />
-        </div>
-
-        <div className="hud-card">
-          <div className="hud-card__title">
-            <span>Pokémon of this type</span>
-            <span>
-              {Math.min(60, data.pokemon.length)} / {data.pokemon.length}
-            </span>
-          </div>
-          <ul className="grid-cards">
-            {data.pokemon.slice(0, 60).map((p) => {
-              const id = idFromUrl(p.pokemon.url);
-              return (
-                <li key={p.pokemon.name}>
-                  <Link
-                    to="/pokemon/$name"
-                    params={{ name: p.pokemon.name }}
-                    className="pokemon-card"
-                    aria-label={`${titleCase(p.pokemon.name)}, ${padId(id)}`}
-                  >
-                    <div className="pokemon-card__sprite">
-                      <img
-                        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`}
-                        alt=""
-                        width={450}
-                        height={450}
-                        loading="lazy"
-                        decoding="async"
-                        onError={(e) => {
-                          (e.currentTarget as HTMLImageElement).src =
-                            `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
-                        }}
-                      />
-                    </div>
-                    <div className="pokemon-card__id">{padId(id)}</div>
-                    <div className="pokemon-card__name">{titleCase(p.pokemon.name)}</div>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+    <div className="screen__hud" style={{ gridTemplateColumns: "1fr" }}>
+      <div>
+        <p className="hud-row">
+          <b>TYPE</b> · GEN {titleCase(data.generation.replace("generation-", "")).toUpperCase()}
+        </p>
+        <h1 className="hud-name">{info.display}</h1>
+        <div className="hud-genus">{info.description}</div>
+        <div className="cart-row">
+          <TypeCartridge name={data.name} asLink={false} />
         </div>
       </div>
-    </>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gap: "0.75rem",
+        }}
+      >
+        <RelationBlock label="Deals ×2 to" list={r.double_damage_to} />
+        <RelationBlock label="Deals ×½ to" list={r.half_damage_to} />
+        <RelationBlock label="Deals ×0 to" list={r.no_damage_to} />
+        <RelationBlock label="Takes ×2 from" list={r.double_damage_from} />
+        <RelationBlock label="Takes ×½ from" list={r.half_damage_from} />
+        <RelationBlock label="Takes ×0 from" list={r.no_damage_from} />
+      </div>
+
+      <div className="hud-card">
+        <div className="hud-card__title">
+          <span>Pokémon of this type</span>
+          <span>
+            {Math.min(60, data.pokemon.length)} / {data.pokemon.length}
+          </span>
+        </div>
+        <ul className="grid-cards">
+          {data.pokemon.slice(0, 60).map((p) => (
+            <li key={p.name}>
+              <Link
+                to="/pokemon/$name"
+                params={{ name: p.name }}
+                className="pokemon-card"
+                aria-label={`${titleCase(p.name)}, ${padId(p.id)}`}
+              >
+                <div className="pokemon-card__sprite">
+                  <img
+                    src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${p.id}.png`}
+                    alt=""
+                    width={450}
+                    height={450}
+                    loading="lazy"
+                    decoding="async"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src =
+                        `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png`;
+                    }}
+                  />
+                </div>
+                <div className="pokemon-card__id">{padId(p.id)}</div>
+                <div className="pokemon-card__name">{titleCase(p.name)}</div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 }
 
@@ -151,16 +142,16 @@ function TypeContentSkeleton({ urlName }: { urlName: string }) {
 }
 
 export function TypeDetailPage() {
-  const { id } = typeRoute.useParams();
-  const info = typeInfo(id);
+  const { name } = typeRoute.useParams();
+  const info = typeInfo(name);
   return (
     <ConsoleDevice
       title="POKÉ DEX · TYPE"
       subtitle={info.display}
       ariaLabel={`${info.display} type readout`}
     >
-      <Suspense fallback={<TypeContentSkeleton urlName={id} />}>
-        <TypeContent name={id.toLowerCase()} />
+      <Suspense fallback={<TypeContentSkeleton urlName={name} />}>
+        <TypeContent name={name.toLowerCase()} />
       </Suspense>
     </ConsoleDevice>
   );

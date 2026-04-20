@@ -1,18 +1,38 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Tooltip } from "radix-ui";
-import { abilityQuery, pokemonQuery, speciesQuery, typeQuery } from "~/api/queries";
+import {
+  abilityBundleQuery,
+  berryBundleQuery,
+  generationBundleQuery,
+  itemBundleQuery,
+  locationBundleQuery,
+  moveBundleQuery,
+  pokemonBundleQuery,
+  pokemonSummaryQuery,
+} from "~/api/queries";
 import { usePreferences } from "~/hooks/usePreferences";
 import { pickVoice, useVoices } from "~/hooks/useVoices";
-import type { AbilityDetail, Pokemon, PokemonSpecies, TypeDetail } from "~/types/pokeapi";
-import { cleanFlavor, englishEntry, titleCase } from "~/utils/formatters";
+import type { AbilityBundle } from "~/types/bundles";
+import { titleCase } from "~/utils/formatters";
+import {
+  berryNarrative,
+  generationNarrative,
+  itemNarrative,
+  locationNarrative,
+  moveNarrative,
+  pokemonNarrative,
+} from "~/utils/narrative";
 import { summarizeWithAi } from "~/utils/aiSummarize";
 import "~/styles/components/SpeakButton.css";
 
+export type SpeakKind = "pokemon" | "berry" | "item" | "move" | "location" | "generation";
+
 type Props = {
-  /** URL-param style identifier (name or id). The component fetches everything it needs itself. */
-  pokemonName: string;
-  /** Display label for a11y — usually the same as `pokemonName` title-cased. */
+  kind: SpeakKind;
+  /** URL-param style identifier (the entry's name). */
+  name: string;
+  /** Display label for a11y — usually the same as `name` title-cased. */
   displayName?: string;
 };
 
@@ -25,7 +45,7 @@ const LABELS: Record<Status, string> = {
   error: "Retry reading",
 };
 
-export function SpeakButton({ pokemonName, displayName }: Props) {
+export function SpeakButton({ kind, name, displayName }: Props) {
   const qc = useQueryClient();
   const { prefs } = usePreferences();
   const voices = useVoices();
@@ -43,13 +63,13 @@ export function SpeakButton({ pokemonName, displayName }: Props) {
     };
   }, [supported]);
 
-  // If the Pokémon changes (route change), cancel any in-flight speech so the
+  // If the entry changes (route change), cancel any in-flight speech so the
   // narrator doesn't keep reading about the previous one.
   useEffect(() => {
     if (!supported) return;
     window.speechSynthesis.cancel();
     setStatus("idle");
-  }, [pokemonName, supported]);
+  }, [kind, name, supported]);
 
   const handleClick = useCallback(async () => {
     if (!supported) return;
@@ -64,25 +84,7 @@ export function SpeakButton({ pokemonName, displayName }: Props) {
     abortRef.current = false;
 
     try {
-      const pokemon = await qc.ensureQueryData(pokemonQuery(pokemonName));
-      const [species, defenders, abilityDetails] = await Promise.all([
-        qc.ensureQueryData(speciesQuery(pokemon.species.name)).catch(() => undefined),
-        Promise.all(pokemon.types.map((t) => qc.ensureQueryData(typeQuery(t.type.name)))),
-        Promise.all(pokemon.abilities.map((a) => qc.ensureQueryData(abilityQuery(a.ability.name)))),
-      ]);
-
-      if (abortRef.current) return;
-
-      const narrative = buildNarrativeContext({
-        pokemon,
-        species,
-        defenders,
-        abilityDetails,
-      });
-      const aiResult = await summarizeWithAi(narrative.richContext);
-      const spokenText =
-        aiResult.source === "fallback" ? narrative.friendlyFallback : aiResult.text;
-
+      const spokenText = await resolveSpokenText({ kind, name, qc });
       if (abortRef.current) return;
 
       const utterance = new SpeechSynthesisUtterance(spokenText);
@@ -97,7 +99,6 @@ export function SpeakButton({ pokemonName, displayName }: Props) {
       utterance.addEventListener("end", () => setStatus("idle"));
       utterance.addEventListener("error", (event) => {
         const err = (event as SpeechSynthesisErrorEvent).error;
-        // "interrupted" / "canceled" fire when the user stops or navigates away.
         if (err === "interrupted" || err === "canceled") {
           setStatus("idle");
           return;
@@ -112,15 +113,15 @@ export function SpeakButton({ pokemonName, displayName }: Props) {
       setStatus("error");
       setErrorMessage(e instanceof Error ? e.message : "Unknown error");
     }
-  }, [qc, pokemonName, status, supported, voices, prefs.voice]);
+  }, [qc, kind, name, status, supported, voices, prefs.voice]);
 
   if (!supported) return null;
 
   const label = LABELS[status];
-  const display = displayName ?? titleCase(pokemonName);
+  const display = displayName ?? titleCase(name);
   const statusMessage =
     status === "preparing"
-      ? "Summarising entry on device…"
+      ? "Preparing voiceover…"
       : status === "speaking"
         ? "Reading entry"
         : status === "error"
@@ -137,7 +138,7 @@ export function SpeakButton({ pokemonName, displayName }: Props) {
             onClick={handleClick}
             disabled={status === "preparing"}
             aria-label={`${label} — ${display}`}
-            aria-describedby="speak-bezel-status"
+            aria-describedby={`speak-bezel-status-${kind}-${name}`}
           >
             <SpeakIcon status={status} />
           </button>
@@ -154,11 +155,88 @@ export function SpeakButton({ pokemonName, displayName }: Props) {
           </Tooltip.Content>
         </Tooltip.Portal>
       </Tooltip.Root>
-      <span id="speak-bezel-status" className="visually-hidden" role="status" aria-live="polite">
+      <span
+        id={`speak-bezel-status-${kind}-${name}`}
+        className="visually-hidden"
+        role="status"
+        aria-live="polite"
+      >
         {statusMessage}
       </span>
     </Tooltip.Provider>
   );
+}
+
+type QC = ReturnType<typeof useQueryClient>;
+
+async function resolveSpokenText(opts: {
+  kind: SpeakKind;
+  name: string;
+  qc: QC;
+}): Promise<string> {
+  const { kind, name, qc } = opts;
+
+  if (kind === "pokemon") {
+    const bundle = await qc.ensureQueryData(pokemonBundleQuery(name));
+
+    // Prefer the committed server-side summary when available — it reads best
+    // and we already paid for it. Fall back to browser AI otherwise.
+    if (bundle.has_summary) {
+      try {
+        const text = await qc.ensureQueryData(pokemonSummaryQuery(bundle.id));
+        const trimmed = text.trim();
+        if (trimmed) return trimmed;
+      } catch {
+        /* fall through to browser AI */
+      }
+    }
+
+    const abilities = await Promise.all(
+      bundle.abilities.map((a) =>
+        qc.ensureQueryData(abilityBundleQuery(a.name)).catch(() => null),
+      ),
+    );
+    const narrative = pokemonNarrative(
+      bundle,
+      abilities.filter(Boolean) as AbilityBundle[],
+    );
+    const ai = await summarizeWithAi(narrative.richContext, narrative.systemPrompt);
+    return ai.source === "fallback" ? narrative.friendlyFallback : ai.text;
+  }
+
+  if (kind === "berry") {
+    const b = await qc.ensureQueryData(berryBundleQuery(name));
+    const narrative = berryNarrative(b);
+    const ai = await summarizeWithAi(narrative.richContext, narrative.systemPrompt);
+    return ai.source === "fallback" ? narrative.friendlyFallback : ai.text;
+  }
+
+  if (kind === "item") {
+    const i = await qc.ensureQueryData(itemBundleQuery(name));
+    const narrative = itemNarrative(i);
+    const ai = await summarizeWithAi(narrative.richContext, narrative.systemPrompt);
+    return ai.source === "fallback" ? narrative.friendlyFallback : ai.text;
+  }
+
+  if (kind === "move") {
+    const m = await qc.ensureQueryData(moveBundleQuery(name));
+    const narrative = moveNarrative(m);
+    const ai = await summarizeWithAi(narrative.richContext, narrative.systemPrompt);
+    return ai.source === "fallback" ? narrative.friendlyFallback : ai.text;
+  }
+
+  if (kind === "location") {
+    const l = await qc.ensureQueryData(locationBundleQuery(name));
+    const narrative = locationNarrative(l);
+    const ai = await summarizeWithAi(narrative.richContext, narrative.systemPrompt);
+    return ai.source === "fallback" ? narrative.friendlyFallback : ai.text;
+  }
+
+  // generation
+  const g = await qc.ensureQueryData(generationBundleQuery(name));
+  const narrative = generationNarrative(g);
+  const ai = await summarizeWithAi(narrative.richContext, narrative.systemPrompt);
+  return ai.source === "fallback" ? narrative.friendlyFallback : ai.text;
 }
 
 function SpeakIcon({ status }: { status: Status }) {
@@ -203,91 +281,4 @@ function SpeakIcon({ status }: { status: Status }) {
       />
     </svg>
   );
-}
-
-// ── narrative builder ────────────────────────────────────────────────────
-
-type NarrativeResult = {
-  /** Rich structured prompt for the on-device model. */
-  richContext: string;
-  /** Conversational fallback when no AI is available. */
-  friendlyFallback: string;
-};
-
-function buildNarrativeContext({
-  pokemon,
-  species,
-  defenders,
-  abilityDetails,
-}: {
-  pokemon: Pokemon;
-  species: PokemonSpecies | undefined;
-  defenders: TypeDetail[];
-  abilityDetails: AbilityDetail[];
-}): NarrativeResult {
-  const name = titleCase(pokemon.name);
-  const types = pokemon.types.map((t) => titleCase(t.type.name));
-  const genus = species ? englishEntry(species.genera)?.genus : undefined;
-  const flavor = species ? englishEntry(species.flavor_text_entries)?.flavor_text : undefined;
-  const cleanedFlavor = flavor ? cleanFlavor(flavor) : undefined;
-
-  const habitat = species?.habitat ? titleCase(species.habitat.name) : undefined;
-
-  const abilityLines = abilityDetails
-    .map((a) => {
-      const ee = englishEntry(a.effect_entries);
-      const summary = ee?.short_effect ?? ee?.effect;
-      return summary ? `${titleCase(a.name)} — ${summary}` : titleCase(a.name);
-    })
-    .filter(Boolean);
-
-  const weakTo = new Set<string>();
-  for (const def of defenders) {
-    for (const w of def.damage_relations.double_damage_from) weakTo.add(titleCase(w.name));
-  }
-
-  const rarityBits: string[] = [];
-  if (species?.is_legendary) rarityBits.push("legendary");
-  if (species?.is_mythical) rarityBits.push("mythical");
-  if (species?.is_baby) rarityBits.push("a baby Pokémon");
-
-  // Rich prompt — includes everything we know so the on-device AI can pick what
-  // to highlight. We explicitly tell the model not to read numbers.
-  const richContext = [
-    `Name: ${name}.`,
-    genus ? `Category: ${genus}.` : "",
-    `Type: ${types.join(" and ")}.`,
-    rarityBits.length ? `Rarity: ${rarityBits.join(", ")}.` : "",
-    habitat ? `Habitat: ${habitat}.` : "",
-    cleanedFlavor ? `Dex entry: ${cleanedFlavor}` : "",
-    abilityLines.length ? `Abilities: ${abilityLines.join("; ")}.` : "",
-    weakTo.size > 0 ? `Commonly weak to: ${[...weakTo].join(", ")}.` : "",
-  ]
-    .filter(Boolean)
-    .join("\n");
-
-  // Conversational fallback — used when the AI tier returns `fallback` so we
-  // still get something that sounds natural when read aloud.
-  const typePhrase =
-    types.length === 2 ? `a ${types[0]} and ${types[1]} type` : `a ${types[0]} type`;
-  const fallbackParts: string[] = [];
-  fallbackParts.push(
-    genus
-      ? `This is ${name}, the ${genus.toLowerCase()}, ${typePhrase} Pokémon.`
-      : `This is ${name}, ${typePhrase} Pokémon.`,
-  );
-  if (cleanedFlavor) fallbackParts.push(cleanedFlavor);
-  if (abilityLines.length === 1) {
-    fallbackParts.push(`Its ability is ${abilityLines[0].split(" — ")[0]}.`);
-  } else if (abilityLines.length > 1) {
-    const names = abilityLines.map((l) => l.split(" — ")[0]);
-    fallbackParts.push(`It can have abilities like ${names.join(" or ")}.`);
-  }
-  if (rarityBits.length) {
-    fallbackParts.push(`It is considered ${rarityBits.join(" and ")}.`);
-  }
-
-  const friendlyFallback = fallbackParts.join(" ");
-
-  return { richContext, friendlyFallback };
 }

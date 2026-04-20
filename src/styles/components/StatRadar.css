@@ -39,10 +39,10 @@
 .radar__poly {
   stroke: var(--phosphor);
   stroke-width: 1.5;
-  filter: drop-shadow(0 0 6px rgba(182, 227, 191, 0.35));
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--phosphor) 35%, transparent));
 }
 .radar__dots circle {
-  fill: #fff;
+  fill: var(--screen-fg);
   stroke: var(--phosphor);
   stroke-width: 1;
 }

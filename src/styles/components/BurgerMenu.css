@@ -1,0 +1,102 @@
+.burger-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--case-ink) 25%, transparent);
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--case-ink);
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.burger-btn:hover,
+.burger-btn:focus-visible,
+.burger-btn[aria-expanded="true"] {
+  background: color-mix(in srgb, var(--case-ink) 10%, transparent);
+  border-color: color-mix(in srgb, var(--case-ink) 50%, transparent);
+  outline: none;
+}
+
+.burger-btn__bars {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 18px;
+}
+.burger-btn__bars span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  border-radius: 1px;
+  transition: transform 140ms ease, opacity 140ms ease;
+}
+.burger-btn[aria-expanded="true"] .burger-btn__bars span:nth-child(1) {
+  transform: translateY(5px) rotate(45deg);
+}
+.burger-btn[aria-expanded="true"] .burger-btn__bars span:nth-child(2) {
+  opacity: 0;
+}
+.burger-btn[aria-expanded="true"] .burger-btn__bars span:nth-child(3) {
+  transform: translateY(-5px) rotate(-45deg);
+}
+
+.burger-menu {
+  background: var(--screen-bg);
+  color: var(--screen-fg);
+  border: 1px solid color-mix(in srgb, var(--phosphor) 35%, transparent);
+  border-radius: 8px;
+  padding: 0.35rem;
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.45);
+  min-width: 12rem;
+  max-width: 16rem;
+  z-index: 50;
+  animation: burger-menu-in 140ms ease-out;
+}
+
+@keyframes burger-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.burger-menu__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.15rem;
+}
+.burger-menu__link {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--phosphor-dim);
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background 120ms ease, color 120ms ease;
+}
+.burger-menu__link:hover,
+.burger-menu__link:focus-visible {
+  color: var(--phosphor);
+  background: color-mix(in srgb, var(--phosphor) 10%, transparent);
+  outline: none;
+}
+.burger-menu__link--active {
+  color: var(--amber);
+  background: color-mix(in srgb, var(--amber) 14%, transparent);
+}
+.burger-menu__arrow {
+  fill: var(--screen-bg);
+}

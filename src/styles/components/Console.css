@@ -172,7 +172,7 @@
 
 .device__screen {
   background:
-    repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0, 0, 0, 0.18) 2px 3px),
+    repeating-linear-gradient(to bottom, transparent 0 2px, var(--screen-scanline) 2px 3px),
     radial-gradient(
       120% 80% at 50% -10%,
       color-mix(in srgb, var(--phosphor) 18%, transparent),
@@ -317,7 +317,7 @@
   color: var(--screen-fg);
   text-transform: uppercase;
   margin: 0.5rem 0 0.25rem;
-  text-shadow: 0 0 12px rgba(182, 227, 191, 0.15);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--phosphor) 15%, transparent);
 }
 
 .hud-genus {
@@ -352,8 +352,8 @@
   aspect-ratio: 1;
   max-width: 450px;
   max-height: 450px;
-  filter: drop-shadow(0 0 22px rgba(182, 227, 191, 0.35))
-    drop-shadow(0 0 2px rgba(255, 255, 255, 0.2));
+  filter: drop-shadow(0 0 22px color-mix(in srgb, var(--phosphor) 35%, transparent))
+    drop-shadow(0 0 2px color-mix(in srgb, var(--screen-fg) 20%, transparent));
 }
 .hud-sprite__corners span {
   position: absolute;
@@ -428,7 +428,7 @@
   background: linear-gradient(
     180deg,
     color-mix(in srgb, var(--phosphor) 5%, transparent),
-    rgba(0, 0, 0, 0.22)
+    var(--screen-shade)
   );
 }
 .hud-card__title {
@@ -507,7 +507,7 @@
 /* secondary screen panel (used outside the device for sub-pages) */
 .panel {
   background:
-    repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0, 0, 0, 0.18) 2px 3px),
+    repeating-linear-gradient(to bottom, transparent 0 2px, var(--screen-scanline) 2px 3px),
     linear-gradient(180deg, var(--screen-bg-2), var(--screen-bg));
   color: var(--screen-fg);
   border: 1px solid var(--case-3);

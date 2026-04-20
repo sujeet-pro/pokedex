@@ -152,3 +152,81 @@ export type EvolutionChain = {
   id: number;
   chain: EvolutionChainLink;
 };
+
+// ── Newly-supported resources (read by scripts, not by UI code) ─────
+
+export type BerryDetail = {
+  id: number;
+  name: string;
+  firmness: NamedResource;
+  flavors: { flavor: NamedResource; potency: number }[];
+  growth_time: number;
+  max_harvest: number;
+  natural_gift_power: number;
+  natural_gift_type: NamedResource;
+  size: number;
+  smoothness: number;
+  soil_dryness: number;
+  item: NamedResource;
+};
+
+export type VersionGroupedText = {
+  text?: string;
+  flavor_text?: string;
+  language: NamedResource;
+  version_group?: NamedResource;
+};
+
+export type ItemDetail = {
+  id: number;
+  name: string;
+  category: NamedResource;
+  cost: number;
+  fling_power: number | null;
+  fling_effect: NamedResource | null;
+  attributes: NamedResource[];
+  effect_entries: { effect: string; short_effect: string; language: NamedResource }[];
+  flavor_text_entries: VersionGroupedText[];
+  names: { name: string; language: NamedResource }[];
+  held_by_pokemon: { pokemon: NamedResource }[];
+  sprites: { default: string | null };
+};
+
+export type LocationDetail = {
+  id: number;
+  name: string;
+  region: NamedResource | null;
+  areas: NamedResource[];
+  names: { name: string; language: NamedResource }[];
+  game_indices: { game_index: number; generation: NamedResource }[];
+};
+
+export type MoveDetail = {
+  id: number;
+  name: string;
+  type: NamedResource;
+  damage_class: NamedResource;
+  power: number | null;
+  accuracy: number | null;
+  pp: number | null;
+  priority: number;
+  target: NamedResource;
+  generation: NamedResource;
+  effect_chance: number | null;
+  effect_entries: { effect: string; short_effect: string; language: NamedResource }[];
+  flavor_text_entries: VersionGroupedText[];
+  names: { name: string; language: NamedResource }[];
+  learned_by_pokemon: NamedResource[];
+};
+
+export type GenerationDetail = {
+  id: number;
+  name: string;
+  main_region: NamedResource;
+  version_groups: NamedResource[];
+  pokemon_species: NamedResource[];
+  moves: NamedResource[];
+  types: NamedResource[];
+  abilities: NamedResource[];
+  names: { name: string; language: NamedResource }[];
+};
