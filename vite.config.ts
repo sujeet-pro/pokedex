@@ -39,8 +39,8 @@ const DETAIL_RESOURCES: Array<{
 }> = [
   // Pokémon uses its own list route under /$lang/pokemon
   { bundleDir: "pokemon", list: "pokemon", detailPrefix: "pokemon" },
-  { bundleDir: "type", list: null, detailPrefix: "type" },
-  { bundleDir: "ability", list: null, detailPrefix: "ability" },
+  { bundleDir: "type", list: "types", detailPrefix: "type" },
+  { bundleDir: "ability", list: "abilities", detailPrefix: "ability" },
   { bundleDir: "pokemon-species", list: null, detailPrefix: "pokemon-species" },
   { bundleDir: "pokemon-form", list: null, detailPrefix: "pokemon-form" },
   { bundleDir: "berry", list: "berries", detailPrefix: "berry" },

@@ -153,75 +153,75 @@ function PokemonDetailPage() {
             ) : null}
           </div>
         </div>
-      </ConsoleDevice>
 
-      {data.evolution_chain ? (
-        <div className="panel">
-          <div className="panel__title">EVOLUTION</div>
-          <EvolutionChain root={data.evolution_chain} locale={lang} currentSlug={data.slug} />
-        </div>
-      ) : (
-        <p className="evo-empty">This Pokémon does not evolve.</p>
-      )}
-
-      <div className="two-column">
-        <div className="panel">
-          <div className="panel__title">
-            <span>ABILITIES</span>
-            <span>{data.abilities.length}</span>
+        {data.evolution_chain ? (
+          <div className="panel">
+            <div className="panel__title">EVOLUTION</div>
+            <EvolutionChain root={data.evolution_chain} locale={lang} currentSlug={data.slug} />
           </div>
-          <ul className="ability-list">
-            {data.abilities.map((a) => (
-              <li key={a.name}>
-                <AbilityButton ability={a} locale={lang} />
+        ) : (
+          <p className="evo-empty">This Pokémon does not evolve.</p>
+        )}
+
+        <div className="two-column">
+          <div className="panel">
+            <div className="panel__title">
+              <span>ABILITIES</span>
+              <span>{data.abilities.length}</span>
+            </div>
+            <ul className="ability-list">
+              {data.abilities.map((a) => (
+                <li key={a.name}>
+                  <AbilityButton ability={a} locale={lang} />
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="panel">
+            <div className="panel__title">
+              <span>DOSSIER</span>
+              <span>META</span>
+            </div>
+            <ul className="dossier-list">
+              <li>
+                <DossierField term="Habitat" value={data.species.habitat_display ?? "Unknown"} />
               </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="panel">
-          <div className="panel__title">
-            <span>DOSSIER</span>
-            <span>META</span>
-          </div>
-          <ul className="dossier-list">
-            <li>
-              <DossierField term="Habitat" value={data.species.habitat_display ?? "Unknown"} />
-            </li>
-            <li>
-              <DossierField term="Body shape" value={data.species.shape_display ?? "Unknown"} />
-            </li>
-            <li>
-              <DossierField term="Colour" value={data.species.color_display} />
-            </li>
-            <li>
-              <DossierField term="Growth rate" value={data.species.growth_rate_display} />
-            </li>
-            <li>
-              <DossierField
-                term="Egg groups"
-                value={data.species.egg_groups_display.join(", ") || "No Eggs"}
-              />
-            </li>
-            <li>
-              <DossierField term="Rarity" value={rarityLabel(data.species)} />
-            </li>
-          </ul>
-          <div className="dossier-tags">
-            <span className="pill">SPECIES · {data.species.display_name}</span>
-            {data.forms.length > 0 ? (
-              <span className="pill">FORM · {data.forms[0]!.display_name}</span>
-            ) : null}
+              <li>
+                <DossierField term="Body shape" value={data.species.shape_display ?? "Unknown"} />
+              </li>
+              <li>
+                <DossierField term="Colour" value={data.species.color_display} />
+              </li>
+              <li>
+                <DossierField term="Growth rate" value={data.species.growth_rate_display} />
+              </li>
+              <li>
+                <DossierField
+                  term="Egg groups"
+                  value={data.species.egg_groups_display.join(", ") || "No Eggs"}
+                />
+              </li>
+              <li>
+                <DossierField term="Rarity" value={rarityLabel(data.species)} />
+              </li>
+            </ul>
+            <div className="dossier-tags">
+              <span className="pill">SPECIES · {data.species.display_name}</span>
+              {data.forms.length > 0 ? (
+                <span className="pill">FORM · {data.forms[0]!.display_name}</span>
+              ) : null}
+            </div>
           </div>
         </div>
-      </div>
 
-      {data.summary_html ? (
-        <div className="panel">
-          <div className="panel__title">ENTRY</div>
-          <PokemonSummary ref={summaryRef} summaryHtml={data.summary_html} />
-        </div>
-      ) : null}
+        {data.summary_html ? (
+          <div className="panel">
+            <div className="panel__title">ENTRY</div>
+            <PokemonSummary ref={summaryRef} summaryHtml={data.summary_html} />
+          </div>
+        ) : null}
+      </ConsoleDevice>
 
       <div className="nav-buttons" style={{ marginTop: "2rem" }}>
         <Pager

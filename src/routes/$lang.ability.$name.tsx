@@ -1,3 +1,4 @@
+import { pokemonArtwork } from "~/lib/sprites";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { isLocale } from "~/types/locales";
@@ -20,8 +21,6 @@ export const Route = createFileRoute("/$lang/ability/$name")({
   head: ({ params }) => ({ meta: [{ title: `${params.name} · Ability · Pokédex` }] }),
 });
 
-const SPRITE_BASE =
-  "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
 
 function AbilityDetailPage() {
   const { lang, name } = Route.useParams();
@@ -77,7 +76,7 @@ function AbilityDetailPage() {
                 className="pokemon-card"
               >
                 <div className="pokemon-card__sprite">
-                  <img src={`${SPRITE_BASE}/${p.id}.png`} alt="" loading="lazy" width={96} height={96} />
+                  <img src={pokemonArtwork(p.id)} alt="" loading="lazy" width={96} height={96} />
                 </div>
                 <div className="pokemon-card__id">{padDex(p.id)}</div>
                 <div className="pokemon-card__name">{p.display_name}</div>

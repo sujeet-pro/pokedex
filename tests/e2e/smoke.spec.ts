@@ -7,10 +7,27 @@ test("root landing shows language picker", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Français" })).toBeVisible();
 });
 
-test("English home is reachable", async ({ page }) => {
+test("English home shows featured pokemon + browse button", async ({ page }) => {
   await page.goto("./en");
-  await expect(page.getByRole("navigation", { name: "Primary" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Pokémon" }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: "Pokédex" }).first()).toBeVisible();
+  await expect(page.locator(".hud-name").first()).toBeVisible();
+  await expect(page.getByRole("button", { name: "Browse" })).toBeVisible();
+});
+
+test("Pokemon list has filter bar", async ({ page }) => {
+  await page.goto("./en/pokemon");
+  await expect(page.locator(".filter-bar")).toBeVisible();
+  await expect(page.getByRole("button", { name: /Types/i })).toBeVisible();
+});
+
+test("Types landing is reachable", async ({ page }) => {
+  await page.goto("./en/types");
+  await expect(page.locator(".filter-bar")).toBeVisible();
+});
+
+test("Abilities landing is reachable", async ({ page }) => {
+  await page.goto("./en/abilities");
+  await expect(page.locator(".filter-bar")).toBeVisible();
 });
 
 test("Pokemon list renders", async ({ page }) => {

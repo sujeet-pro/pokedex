@@ -3,6 +3,7 @@ import type {
   PokemonIndexEntry,
   BundleAbilityEntry,
   BundleDefenderType,
+  Rarity,
 } from "../../src/types/bundles";
 import type { Locale } from "../../src/types/locales";
 import {
@@ -195,6 +196,14 @@ export function buildPokemonBundle(
     summary_html: readSummaryHtml(raw.id, lang),
   };
 
+  const rarity: PokemonIndexEntry["rarity"] = species.is_mythical
+    ? "mythical"
+    : species.is_legendary
+    ? "legendary"
+    : species.is_baby
+    ? "baby"
+    : "standard";
+
   const indexEntry: PokemonIndexEntry = {
     id: raw.id,
     name: raw.name,
@@ -202,6 +211,9 @@ export function buildPokemonBundle(
     slugs,
     display_name: displayName,
     types: types.map((t) => t.name),
+    abilities: bundle.abilities.map((a) => a.name),
+    rarity,
+    generation: species.generation.name,
   };
 
   return { bundle, indexEntry };

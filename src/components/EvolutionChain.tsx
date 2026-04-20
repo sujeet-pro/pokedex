@@ -9,8 +9,7 @@ type Props = {
   currentSlug?: string;
 };
 
-const SPRITE_BASE =
-  "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
+import { pokemonArtwork } from "~/lib/sprites";
 
 type Cell = { node: BundleEvoNode; depth: number; trigger?: string };
 
@@ -95,7 +94,7 @@ function EvoFrame({
   locale: Locale;
   current: boolean;
 }) {
-  const sprite = `${SPRITE_BASE}/${node.id}.png`;
+  const sprite = pokemonArtwork(node.id);
   return (
     <div data-current={current ? "true" : "false"}>
       <Link

@@ -107,13 +107,18 @@ export type PokemonBundle = {
   summary_html: string | null;
 };
 
+export type Rarity = "standard" | "legendary" | "mythical" | "baby";
+
 export type PokemonIndexEntry = {
   id: number;
   name: string;                    // canonical
   slug: string;                    // current-locale
   slugs: SlugMap;                  // cross-locale for card locale-switching
   display_name: string;
-  types: string[];                 // canonical slugs
+  types: string[];                 // canonical type slugs
+  abilities: string[];             // canonical ability slugs (for filtering)
+  rarity: Rarity;                  // legendary/mythical/baby/standard
+  generation: string;              // canonical (e.g. "generation-i")
 };
 
 /* ---------- Type ---------- */

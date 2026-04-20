@@ -3,14 +3,12 @@ import type { PokemonIndexEntry } from "~/types/bundles";
 import type { Locale } from "~/types/locales";
 import { TypeCartridge } from "./TypeCartridge";
 import { padDex } from "~/lib/formatters";
+import { pokemonArtwork } from "~/lib/sprites";
 
 type Props = { entry: PokemonIndexEntry; locale: Locale };
 
-const SPRITE_BASE =
-  "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
-
 export function PokemonCard({ entry, locale }: Props) {
-  const sprite = `${SPRITE_BASE}/${entry.id}.png`;
+  const sprite = pokemonArtwork(entry.id);
   return (
     <Link
       to="/$lang/pokemon/$name"
@@ -18,7 +16,7 @@ export function PokemonCard({ entry, locale }: Props) {
       className="pokemon-card"
     >
       <div className="pokemon-card__sprite">
-        <img src={sprite} alt="" loading="lazy" width={96} height={96} />
+        <img src={sprite} alt="" loading="lazy" width={192} height={192} />
       </div>
       <div className="pokemon-card__id">{padDex(entry.id)}</div>
       <div className="pokemon-card__name">{entry.display_name}</div>
