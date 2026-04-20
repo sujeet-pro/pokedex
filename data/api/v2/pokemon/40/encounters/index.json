@@ -1,0 +1,362 @@
+[
+    {
+        "location_area": {
+            "name": "cerulean-cave-2f",
+            "url": "/api/v2/location-area/324/"
+        },
+        "version_details": [
+            {
+                "encounter_details": [
+                    {
+                        "chance": 5,
+                        "condition_values": [],
+                        "max_level": 54,
+                        "method": {
+                            "name": "walk",
+                            "url": "/api/v2/encounter-method/1/"
+                        },
+                        "min_level": 54
+                    }
+                ],
+                "max_chance": 5,
+                "version": {
+                    "name": "red",
+                    "url": "/api/v2/version/1/"
+                }
+            },
+            {
+                "encounter_details": [
+                    {
+                        "chance": 5,
+                        "condition_values": [],
+                        "max_level": 54,
+                        "method": {
+                            "name": "walk",
+                            "url": "/api/v2/encounter-method/1/"
+                        },
+                        "min_level": 54
+                    }
+                ],
+                "max_chance": 5,
+                "version": {
+                    "name": "blue",
+                    "url": "/api/v2/version/2/"
+                }
+            },
+            {
+                "encounter_details": [
+                    {
+                        "chance": 5,
+                        "condition_values": [],
+                        "max_level": 54,
+                        "method": {
+                            "name": "walk",
+                            "url": "/api/v2/encounter-method/1/"
+                        },
+                        "min_level": 54
+                    }
+                ],
+                "max_chance": 5,
+                "version": {
+                    "name": "red-japan",
+                    "url": "/api/v2/version/44/"
+                }
+            },
+            {
+                "encounter_details": [
+                    {
+                        "chance": 5,
+                        "condition_values": [],
+                        "max_level": 54,
+                        "method": {
+                            "name": "walk",
+                            "url": "/api/v2/encounter-method/1/"
+                        },
+                        "min_level": 54
+                    }
+                ],
+                "max_chance": 5,
+                "version": {
+                    "name": "green-japan",
+                    "url": "/api/v2/version/45/"
+                }
+            }
+        ]
+    },
+    {
+        "location_area": {
+            "name": "dreamyard-area",
+            "url": "/api/v2/location-area/579/"
+        },
+        "version_details": [
+            {
+                "encounter_details": [
+                    {
+                        "chance": 5,
+                        "condition_values": [],
+                        "max_level": 59,
+                        "method": {
+                            "name": "grass-spots",
+                            "url": "/api/v2/encounter-method/9/"
+                        },
+                        "min_level": 59
+                    }
+                ],
+                "max_chance": 5,
+                "version": {
+                    "name": "black-2",
+                    "url": "/api/v2/version/21/"
+                }
+            },
+            {
+                "encounter_details": [
+                    {
+                        "chance": 5,
+                        "condition_values": [],
+                        "max_level": 59,
+                        "method": {
+                            "name": "grass-spots",
+                            "url": "/api/v2/encounter-method/9/"
+                        },
+                        "min_level": 59
+                    }
+                ],
+                "max_chance": 5,
+                "version": {
+                    "name": "white-2",
+                    "url": "/api/v2/version/22/"
+                }
+            }
+        ]
+    },
+    {
+        "location_area": {
+            "name": "unova-route-1-area",
+            "url": "/api/v2/location-area/623/"
+        },
+        "version_details": [
+            {
+                "encounter_details": [
+                    {
+                        "chance": 4,
+                        "condition_values": [],
+                        "max_level": 59,
+                        "method": {
+                            "name": "grass-spots",
+                            "url": "/api/v2/encounter-method/9/"
+                        },
+                        "min_level": 59
+                    },
+                    {
+                        "chance": 1,
+                        "condition_values": [],
+                        "max_level": 59,
+                        "method": {
+                            "name": "grass-spots",
+                            "url": "/api/v2/encounter-method/9/"
+                        },
+                        "min_level": 59
+                    }
+                ],
+                "max_chance": 5,
+                "version": {
+                    "name": "black-2",
+                    "url": "/api/v2/version/21/"
+                }
+            },
+            {
+                "encounter_details": [
+                    {
+                        "chance": 4,
+                        "condition_values": [],
+                        "max_level": 59,
+                        "method": {
+                            "name": "grass-spots",
+                            "url": "/api/v2/encounter-method/9/"
+                        },
+                        "min_level": 59
+                    },
+                    {
+                        "chance": 1,
+                        "condition_values": [],
+                        "max_level": 59,
+                        "method": {
+                            "name": "grass-spots",
+                            "url": "/api/v2/encounter-method/9/"
+                        },
+                        "min_level": 59
+                    }
+                ],
+                "max_chance": 5,
+                "version": {
+                    "name": "white-2",
+                    "url": "/api/v2/version/22/"
+                }
+            }
+        ]
+    },
+    {
+        "location_area": {
+            "name": "unova-route-2-area",
+            "url": "/api/v2/location-area/624/"
+        },
+        "version_details": [
+            {
+                "encounter_details": [
+                    {
+                        "chance": 4,
+                        "condition_values": [],
+                        "max_level": 59,
+                        "method": {
+                            "name": "grass-spots",
+                            "url": "/api/v2/encounter-method/9/"
+                        },
+                        "min_level": 59
+                    },
+                    {
+                        "chance": 1,
+                        "condition_values": [],
+                        "max_level": 59,
+                        "method": {
+                            "name": "grass-spots",
+                            "url": "/api/v2/encounter-method/9/"
+                        },
+                        "min_level": 59
+                    }
+                ],
+                "max_chance": 5,
+                "version": {
+                    "name": "black-2",
+                    "url": "/api/v2/version/21/"
+                }
+            },
+            {
+                "encounter_details": [
+                    {
+                        "chance": 4,
+                        "condition_values": [],
+                        "max_level": 59,
+                        "method": {
+                            "name": "grass-spots",
+                            "url": "/api/v2/encounter-method/9/"
+                        },
+                        "min_level": 59
+                    },
+                    {
+                        "chance": 1,
+                        "condition_values": [],
+                        "max_level": 59,
+                        "method": {
+                            "name": "grass-spots",
+                            "url": "/api/v2/encounter-method/9/"
+                        },
+                        "min_level": 59
+                    }
+                ],
+                "max_chance": 5,
+                "version": {
+                    "name": "white-2",
+                    "url": "/api/v2/version/22/"
+                }
+            }
+        ]
+    },
+    {
+        "location_area": {
+            "name": "unova-route-14-area",
+            "url": "/api/v2/location-area/648/"
+        },
+        "version_details": [
+            {
+                "encounter_details": [
+                    {
+                        "chance": 4,
+                        "condition_values": [],
+                        "max_level": 50,
+                        "method": {
+                            "name": "grass-spots",
+                            "url": "/api/v2/encounter-method/9/"
+                        },
+                        "min_level": 50
+                    },
+                    {
+                        "chance": 1,
+                        "condition_values": [],
+                        "max_level": 50,
+                        "method": {
+                            "name": "grass-spots",
+                            "url": "/api/v2/encounter-method/9/"
+                        },
+                        "min_level": 50
+                    }
+                ],
+                "max_chance": 5,
+                "version": {
+                    "name": "black",
+                    "url": "/api/v2/version/17/"
+                }
+            },
+            {
+                "encounter_details": [
+                    {
+                        "chance": 4,
+                        "condition_values": [],
+                        "max_level": 50,
+                        "method": {
+                            "name": "grass-spots",
+                            "url": "/api/v2/encounter-method/9/"
+                        },
+                        "min_level": 50
+                    },
+                    {
+                        "chance": 1,
+                        "condition_values": [],
+                        "max_level": 50,
+                        "method": {
+                            "name": "grass-spots",
+                            "url": "/api/v2/encounter-method/9/"
+                        },
+                        "min_level": 50
+                    }
+                ],
+                "max_chance": 5,
+                "version": {
+                    "name": "white",
+                    "url": "/api/v2/version/18/"
+                }
+            }
+        ]
+    },
+    {
+        "location_area": {
+            "name": "celadon-city-prize-corner",
+            "url": "/api/v2/location-area/1300/"
+        },
+        "version_details": [
+            {
+                "encounter_details": [
+                    {
+                        "chance": 100,
+                        "condition_values": [
+                            {
+                                "name": "coins-2680",
+                                "url": "/api/v2/encounter-condition-value/128/"
+                            }
+                        ],
+                        "max_level": 22,
+                        "method": {
+                            "name": "gift",
+                            "url": "/api/v2/encounter-method/18/"
+                        },
+                        "min_level": 22
+                    }
+                ],
+                "max_chance": 100,
+                "version": {
+                    "name": "yellow",
+                    "url": "/api/v2/version/3/"
+                }
+            }
+        ]
+    }
+]
