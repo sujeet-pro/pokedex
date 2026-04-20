@@ -1,30 +1,21 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const port = Number(process.env.PLAYWRIGHT_PORT ?? 4173);
-const basePath = "/pokedex/";
-
 export default defineConfig({
   testDir: "./tests/e2e",
-  // Keep runs deterministic: no retries locally, 2 retries in CI.
-  retries: process.env.CI ? 2 : 0,
-  reporter: process.env.CI ? [["line"], ["html", { open: "never" }]] : "list",
+  fullyParallel: true,
+  forbidOnly: Boolean(process.env["CI"]),
+  retries: process.env["CI"] ? 2 : 0,
+  workers: process.env["CI"] ? 1 : undefined,
+  reporter: process.env["CI"] ? "line" : "list",
   use: {
-    baseURL: `http://localhost:${port}${basePath}`,
+    baseURL: "http://localhost:4173/pokedex/",
     trace: "on-first-retry",
   },
-  // Spin up `vite preview` on demand. Reuse if already running locally.
   webServer: {
-    command: `npm run preview -- --port ${port}`,
-    url: `http://localhost:${port}${basePath}`,
-    reuseExistingServer: !process.env.CI,
+    command: "npm run preview",
+    url: "http://localhost:4173/pokedex/",
+    reuseExistingServer: !process.env["CI"],
     timeout: 120_000,
-    stdout: "ignore",
-    stderr: "pipe",
   },
-  projects: [
-    {
-      name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
-    },
-  ],
+  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 });

@@ -1,0 +1,30 @@
+export const en = {
+  app_title: "Pokédex",
+  tagline: "A retro handheld take on the national Pokédex.",
+  lang_switch_to_en: "English",
+  lang_switch_to_fr: "Français",
+  nav_home: "Home",
+  nav_pokemon: "Pokémon",
+  nav_search: "Search",
+  list_pokemon_heading: "All Pokémon",
+  list_pokemon_subtitle: "Every entry in the national Pokédex.",
+  detail_types: "Types",
+  detail_stats: "Base stats",
+  detail_abilities: "Abilities",
+  detail_pager_prev: "Previous",
+  detail_pager_next: "Next",
+  notfound_heading: "Page not found",
+  notfound_body: "We couldn't find the page you were looking for.",
+  notfound_home_link: "Back to home",
+  skip_to_content: "Skip to main content",
+  footer_attribution: "Data from PokéAPI. Sprites © The Pokémon Company.",
+  stat_hp: "HP",
+  stat_attack: "Attack",
+  stat_defense: "Defense",
+  "stat_special-attack": "Sp. Atk",
+  "stat_special-defense": "Sp. Def",
+  stat_speed: "Speed",
+} as const;
+
+export type MessageKey = keyof typeof en;
+export type Messages = Record<MessageKey, string>;

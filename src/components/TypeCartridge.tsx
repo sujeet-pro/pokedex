@@ -1,38 +1,16 @@
-import { Link } from "@tanstack/react-router";
-import { typeInfo } from "~/utils/typeInfo";
-import "~/styles/components/TypeCartridge.css";
+import { typeInfo } from "~/lib/typeInfo";
 
-type Props = {
-  name: string;
-  asLink?: boolean;
-  size?: "sm" | "md";
-};
+type Props = { name: string };
 
-export function TypeCartridge({ name, asLink = true, size = "md" }: Props) {
+export function TypeCartridge({ name }: Props) {
   const info = typeInfo(name);
-  const className = `cart cart--${size} cart--${info.name}`;
-  const inner = (
-    <>
-      <span className="cart__chip" aria-hidden="true" style={{ background: info.color }} />
-      <span className="cart__label">{info.display}</span>
-    </>
-  );
-
-  if (!asLink) {
-    return (
-      <span className={className} aria-label={`${info.display} type`}>
-        {inner}
-      </span>
-    );
-  }
   return (
-    <Link
-      to="/type/$name"
-      params={{ name: info.name }}
-      className={className}
-      aria-label={`View ${info.display} type`}
+    <span
+      className="type-pill"
+      style={{ "--type-color": info.color, color: info.textColor } as React.CSSProperties}
+      data-type={name}
     >
-      {inner}
-    </Link>
+      {name}
+    </span>
   );
 }

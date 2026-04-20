@@ -1,46 +1,19 @@
-import type { SVGProps } from "react";
+type Props = { className?: string; title?: string };
 
-/**
- * Simple flat pokéball glyph — uses currentColor for the outline and ring so
- * it inherits whatever colour the surrounding text uses. Top half filled red
- * (actually `--brand-accent` via CSS), bottom half transparent (just outline).
- */
-export function Pokeball({
-  size = 24,
-  ...props
-}: SVGProps<SVGSVGElement> & { size?: number }) {
+export function Pokeball({ className, title }: Props) {
   return (
     <svg
-      viewBox="0 0 24 24"
-      width={size}
-      height={size}
-      fill="none"
-      aria-hidden="true"
-      focusable="false"
-      {...props}
+      className={className ? `pokeball ${className}` : "pokeball"}
+      viewBox="0 0 64 64"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden={title ? undefined : true}
+      role={title ? "img" : undefined}
     >
-      {/* top hemisphere — filled */}
-      <path
-        d="M12 2a10 10 0 0 1 9.9 9H15a3 3 0 1 0-6 0H2.1A10 10 0 0 1 12 2Z"
-        fill="currentColor"
-      />
-      {/* bottom hemisphere — outlined */}
-      <path
-        d="M2.1 13H9a3 3 0 0 0 6 0h6.9a10 10 0 0 1-19.8 0Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-      />
-      {/* equator */}
-      <path
-        d="M2.1 11.5h6.9m6 0h6.9"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
-      {/* center ring */}
-      <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" strokeWidth="1.6" />
-      <circle cx="12" cy="12" r="1.1" fill="currentColor" />
+      {title ? <title>{title}</title> : null}
+      <circle cx="32" cy="32" r="28" fill="currentColor" opacity="0.15" />
+      <path d="M4 32a28 28 0 0 1 56 0H40a8 8 0 1 0-16 0H4Z" fill="currentColor" />
+      <circle cx="32" cy="32" r="6" fill="none" stroke="currentColor" strokeWidth="3" />
+      <path d="M4 32a28 28 0 0 0 56 0" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.3" />
     </svg>
   );
 }

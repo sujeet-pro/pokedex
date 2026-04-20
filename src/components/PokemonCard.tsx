@@ -1,44 +1,32 @@
 import { Link } from "@tanstack/react-router";
-import type { Pokemon } from "~/types/pokeapi";
-import { padId, titleCase } from "~/utils/formatters";
-import { Sprite } from "./Sprite";
+import type { PokemonIndexEntry } from "~/types/bundles";
+import type { Locale } from "~/types/locales";
 import { TypeCartridge } from "./TypeCartridge";
+import { padDex } from "~/lib/formatters";
 
-type Props = { pokemon: Pokemon };
+type Props = { entry: PokemonIndexEntry; locale: Locale };
 
-export function PokemonCard({ pokemon }: Props) {
-  const art =
-    pokemon.sprites.other?.["official-artwork"]?.front_default || pokemon.sprites.front_default;
+const SPRITE_BASE =
+  "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
+
+export function PokemonCard({ entry, locale }: Props) {
+  const sprite = `${SPRITE_BASE}/${entry.id}.png`;
   return (
     <Link
-      to="/pokemon/$name"
-      params={{ name: pokemon.name }}
+      to="/$lang/pokemon/$name"
+      params={{ lang: locale, name: entry.name }}
       className="pokemon-card"
-      aria-label={`${titleCase(pokemon.name)}, ${padId(pokemon.id)}`}
     >
-      <div className="pokemon-card__sprite">
-        <Sprite src={art} alt="" />
+      <div className="pokemon-card-sprite">
+        <img src={sprite} alt="" loading="lazy" width={96} height={96} />
       </div>
-      <div className="pokemon-card__id">{padId(pokemon.id)}</div>
-      <div className="pokemon-card__name">{titleCase(pokemon.name)}</div>
-      <div className="pokemon-card__types">
-        {pokemon.types.map((t) => (
-          <TypeCartridge key={t.type.name} name={t.type.name} asLink={false} size="sm" />
+      <div className="pokemon-card-dex">{padDex(entry.id)}</div>
+      <div className="pokemon-card-name">{entry.display_name}</div>
+      <div className="pokemon-card-types">
+        {entry.types.map((t) => (
+          <TypeCartridge key={t} name={t} />
         ))}
       </div>
     </Link>
-  );
-}
-
-export function PokemonCardSkeleton() {
-  return (
-    <div className="pokemon-card" aria-busy="true" aria-label="Loading Pokémon">
-      <div className="skeleton" style={{ aspectRatio: "1", borderRadius: "var(--radius-sm)" }} />
-      <div
-        className="skeleton"
-        style={{ height: "0.7rem", width: "40%", margin: "0.5rem auto 0" }}
-      />
-      <div className="skeleton" style={{ height: "0.9rem", width: "65%", margin: "0.3rem auto" }} />
-    </div>
   );
 }

@@ -1,9 +1,6 @@
 :root {
-  color-scheme: light dark;
-  --font-sans:
-    "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono:
-    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --font-sans: "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -14,294 +11,110 @@
   --transition: 160ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
 
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.15);
-  --shadow-md: 0 8px 20px rgb(0 0 0 / 0.2);
-  --shadow-lg: 0 18px 40px rgb(0 0 0 / 0.35);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / .15);
+  --shadow-md: 0 8px 20px rgb(0 0 0 / .2);
+  --shadow-lg: 0 18px 40px rgb(0 0 0 / .35);
 }
 
-/* ──────────────────────────────────────────────────────────────────────
-   Theming
-   Every screen-facing colour is driven by CSS vars. Variables are set
-   per-(theme × mode) combo so the console interior and page chrome
-   switch together. Three themes × two modes = six palettes below.
-   ────────────────────────────────────────────────────────────────────── */
-
-/* Shared per-theme casing (device body). Casing looks the same in both
-   modes — the shell is a physical object; only the screen changes. */
-:root[data-theme="red"] {
-  --case: #bb2a2a;
-  --case-2: #8f1e1e;
-  --case-3: #6c1515;
-  --case-hi: rgba(255, 160, 160, 0.28);
-  --case-ink: #ffe3e3;
-  --brand-accent: #ff5b5b;
-}
 :root[data-theme="blue"] {
   --case: #264ba0;
   --case-2: #1b3775;
   --case-3: #12255a;
-  --case-hi: rgba(160, 200, 255, 0.28);
+  --case-hi: rgba(160, 200, 255, .28);
   --case-ink: #dde6ff;
   --brand-accent: #5b9bff;
 }
+
+:root[data-theme="red"] {
+  --case: #bb2a2a;
+  --case-2: #8f1e1e;
+  --case-3: #6c1515;
+  --case-hi: rgba(255, 160, 160, .28);
+  --case-ink: #ffe3e3;
+  --brand-accent: #ff5b5b;
+}
+
 :root[data-theme="yellow"] {
   --case: #d4a61f;
   --case-2: #a7800e;
   --case-3: #755a00;
-  --case-hi: rgba(255, 232, 160, 0.3);
+  --case-hi: rgba(255, 232, 160, .30);
   --case-ink: #2a1f00;
   --brand-accent: #e0b53c;
 }
 
-/* Dark modes share a dark scanline + dark card pocket. */
 :root[data-mode="dark"] {
-  --screen-scanline: rgba(0, 0, 0, 0.18);
-  --screen-shade: rgba(0, 0, 0, 0.22);
-  --screen-shade-strong: rgba(0, 0, 0, 0.35);
-
-  /* List cards sit inside the dark casing, so use casing colours. */
+  --bg: #0b1024;
+  --bg-alt: #0f1735;
+  --text: #eef2ff;
+  --text-muted: #9aa7d9;
+  --border: rgba(255, 255, 255, .08);
+  --page-overlay: rgba(0, 0, 0, .4);
+  --screen-bg: #1a3a2a;
+  --screen-bg-2: #12281d;
+  --screen-fg: #c8f7c8;
+  --screen-fg-dim: #6ea57a;
+  --phosphor: #5df2a7;
+  --phosphor-dim: #2e9a68;
+  --amber: #f5c16c;
+  --warn: #ff7074;
+  --screen-rule: rgba(200, 247, 200, .15);
+  --screen-scanline: rgba(0, 0, 0, .18);
+  --screen-shade: rgba(0, 0, 0, .22);
+  --screen-shade-strong: rgba(0, 0, 0, .35);
   --card-bg: var(--case-3);
-  --card-bg-2: color-mix(in srgb, var(--case-3) 50%, #000);
   --card-ink: var(--case-ink);
-  --card-ink-dim: color-mix(in srgb, var(--case-ink) 65%, transparent);
-  --card-rule: color-mix(in srgb, var(--case-ink) 22%, transparent);
-  --card-pocket: color-mix(in srgb, black 55%, var(--screen-bg));
 }
-/* Light modes: scanlines barely visible; cards lift off the light page. */
+
 :root[data-mode="light"] {
-  --screen-scanline: rgba(0, 0, 0, 0.04);
-  --screen-shade: rgba(0, 0, 0, 0.04);
-  --screen-shade-strong: rgba(0, 0, 0, 0.08);
-
-  /* Cards on light bg stay light — use the screen surface tones. */
-  --card-bg: var(--screen-bg);
-  --card-bg-2: var(--screen-bg-2);
-  --card-ink: var(--screen-fg);
-  --card-ink-dim: var(--screen-fg-dim);
-  --card-rule: var(--screen-rule);
-  --card-pocket: color-mix(in srgb, var(--screen-bg-2) 80%, white);
+  --bg: #f4f6ff;
+  --bg-alt: #e9edff;
+  --text: #121626;
+  --text-muted: #546085;
+  --border: rgba(0, 0, 0, .1);
+  --page-overlay: rgba(255, 255, 255, .3);
+  --screen-bg: #e8f5e8;
+  --screen-bg-2: #d0e8d0;
+  --screen-fg: #1a3a2a;
+  --screen-fg-dim: #4c7a5a;
+  --phosphor: #147a48;
+  --phosphor-dim: #3d9972;
+  --amber: #a47215;
+  --warn: #c93e3e;
+  --screen-rule: rgba(26, 58, 42, .15);
+  --screen-scanline: rgba(0, 0, 0, .04);
+  --screen-shade: rgba(0, 0, 0, .04);
+  --screen-shade-strong: rgba(0, 0, 0, .08);
+  --card-bg: #fff;
+  --card-ink: #121626;
 }
 
-/* ── Red × Dark ────────────────────────────────────────────────────── */
-:root[data-theme="red"][data-mode="dark"] {
-  --bg: #120404;
-  --bg-alt: #1a0707;
-  --text: #f4eaea;
-  --text-muted: #b8a3a3;
-  --border: #35181a;
-  --page-overlay: rgba(0, 0, 0, 0.2);
+:root[data-scale="xs"] { font-size: 13px; }
+:root[data-scale="sm"] { font-size: 14.5px; }
+:root[data-scale="md"] { font-size: 16px; }
+:root[data-scale="lg"] { font-size: 17.5px; }
+:root[data-scale="xl"] { font-size: 19px; }
 
-  --screen-bg: #1a0707;
-  --screen-bg-2: #2a0d0d;
-  --screen-fg: #ffd9d9;
-  --screen-fg-dim: #d9a6a6;
-  --phosphor: #ff8f8f;
-  --phosphor-dim: #b9675f;
-  --amber: #f4c542;
-  --warn: #ff7a7a;
-  --screen-rule: rgba(255, 143, 143, 0.2);
-}
-
-/* ── Red × Light ───────────────────────────────────────────────────── */
-:root[data-theme="red"][data-mode="light"] {
-  --bg: #efe5e2;
-  --bg-alt: #e2d4d0;
-  --text: #1a0d0d;
-  --text-muted: #5a3b3a;
-  --border: #d7c6c2;
-  --page-overlay: rgba(0, 0, 0, 0.02);
-
-  --screen-bg: #fbeae6;
-  --screen-bg-2: #f3d5cf;
-  --screen-fg: #2a0d0d;
-  --screen-fg-dim: #5a2b2b;
-  --phosphor: #7e1f1f;
-  --phosphor-dim: #7a3535;
-  --amber: #7a4400;
-  --warn: #9e1b1b;
-  --screen-rule: rgba(126, 31, 31, 0.35);
-}
-
-/* ── Blue × Dark ───────────────────────────────────────────────────── */
-:root[data-theme="blue"][data-mode="dark"] {
-  --bg: #05091a;
-  --bg-alt: #0a1028;
-  --text: #e8ecff;
-  --text-muted: #a2aacb;
-  --border: #18224b;
-  --page-overlay: rgba(0, 0, 0, 0.22);
-
-  --screen-bg: #071030;
-  --screen-bg-2: #0b1a44;
-  --screen-fg: #e0edff;
-  --screen-fg-dim: #9fb6dc;
-  --phosphor: #6db7ff;
-  --phosphor-dim: #4a81be;
-  --amber: #f2d15b;
-  --warn: #ff9a9a;
-  --screen-rule: rgba(109, 183, 255, 0.22);
-}
-
-/* ── Blue × Light ──────────────────────────────────────────────────── */
-:root[data-theme="blue"][data-mode="light"] {
-  --bg: #e5e9f2;
-  --bg-alt: #d7dcea;
-  --text: #0d1228;
-  --text-muted: #404970;
-  --border: #c4cadb;
-  --page-overlay: rgba(0, 0, 0, 0.02);
-
-  --screen-bg: #eaf1ff;
-  --screen-bg-2: #d6e2f6;
-  --screen-fg: #071030;
-  --screen-fg-dim: #31406b;
-  --phosphor: #162d63;
-  --phosphor-dim: #3b528c;
-  --amber: #7a5500;
-  --warn: #9e1b1b;
-  --screen-rule: rgba(22, 45, 99, 0.35);
-}
-
-/* ── Yellow × Dark ─────────────────────────────────────────────────── */
-:root[data-theme="yellow"][data-mode="dark"] {
-  --bg: #140f03;
-  --bg-alt: #1c1605;
-  --text: #f8eccf;
-  --text-muted: #c4b07f;
-  --border: #3a2e0a;
-  --page-overlay: rgba(0, 0, 0, 0.22);
-
-  --screen-bg: #1f1603;
-  --screen-bg-2: #2d2008;
-  --screen-fg: #fbecbf;
-  --screen-fg-dim: #c2a36b;
-  --phosphor: #f4c542;
-  --phosphor-dim: #a88a33;
-  --amber: #ffdc73;
-  --warn: #ff8a6a;
-  --screen-rule: rgba(244, 197, 66, 0.22);
-}
-
-/* ── Yellow × Light ────────────────────────────────────────────────── */
-:root[data-theme="yellow"][data-mode="light"] {
-  --bg: #f2ead4;
-  --bg-alt: #e6dcba;
-  --text: #1c1507;
-  --text-muted: #5a4a1f;
-  --border: #d7cba6;
-  --page-overlay: rgba(0, 0, 0, 0.02);
-
-  --screen-bg: #fdf5d9;
-  --screen-bg-2: #f2e6b6;
-  --screen-fg: #2a1f00;
-  --screen-fg-dim: #5a4814;
-  --phosphor: #604700;
-  --phosphor-dim: #7a5f14;
-  --amber: #7a4f00;
-  --warn: #9e1b1b;
-  --screen-rule: rgba(96, 71, 0, 0.35);
-}
-
-/* font scale — only place root font-size is set */
-:root[data-scale="xs"] {
-  font-size: 13px;
-}
-:root[data-scale="sm"] {
-  font-size: 14.5px;
-}
-:root[data-scale="md"] {
-  font-size: 16px;
-}
-:root[data-scale="lg"] {
-  font-size: 17.5px;
-}
-:root[data-scale="xl"] {
-  font-size: 19px;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-}
-
-body {
-  font-family: var(--font-sans);
-  color: var(--text);
-  line-height: 1.55;
-  min-height: 100dvh;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  background:
-    radial-gradient(
-      1000px 800px at 20% 10%,
-      color-mix(in srgb, var(--case-2) 35%, transparent),
-      transparent 60%
-    ),
-    radial-gradient(
-      900px 700px at 100% 120%,
-      color-mix(in srgb, var(--case-3) 50%, transparent),
-      transparent 70%
-    ),
-    var(--bg);
-}
-
-a {
-  color: inherit;
-  text-decoration: underline;
-  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
-  text-underline-offset: 3px;
-}
-a:hover {
-  text-decoration-color: currentColor;
-}
-
-button {
-  font: inherit;
-  cursor: pointer;
-  border: 0;
-  background: transparent;
-  color: inherit;
-}
-
-img {
-  max-width: 100%;
-  display: block;
-  height: auto;
-}
-
-kbd {
-  display: inline-block;
-  padding: 0.1em 0.45em;
-  border: 1px solid var(--text-muted);
-  border-bottom-width: 2px;
-  border-radius: 4px;
-  background: var(--bg);
-  font-family: var(--font-mono);
-  font-size: 0.82em;
-  color: var(--text);
-  line-height: 1;
-  letter-spacing: 0.02em;
-}
+body { background: var(--bg); }
 
 :focus-visible {
   outline: 2px solid var(--phosphor);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
-.mono {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0;
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: .5rem 1rem;
+  background: var(--phosphor);
+  color: var(--bg);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
 }
+.skip-link:focus { left: 1rem; top: 1rem; }
 
 .visually-hidden {
   position: absolute;
@@ -310,66 +123,26 @@ kbd {
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip-path: inset(50%);
+  clip: rect(0 0 0 0);
   white-space: nowrap;
   border: 0;
 }
 
-.skip-link {
-  position: absolute;
-  inset-block-start: 0.5rem;
-  inset-inline-start: 0.5rem;
-  padding: 0.55rem 0.9rem;
-  background: var(--phosphor);
-  color: var(--screen-bg);
-  border-radius: var(--radius-sm);
-  font-weight: 700;
-  font-family: var(--font-mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  text-decoration: none;
-  transform: translateY(-200%);
-  transition: transform var(--transition);
-  z-index: 50;
-}
-.skip-link:focus-visible {
-  transform: translateY(0);
-  outline: 2px solid var(--screen-bg);
-  outline-offset: 2px;
-}
-
-/* Skeleton shimmer */
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--phosphor) 8%, transparent) 0%,
-    color-mix(in srgb, var(--phosphor) 18%, transparent) 50%,
-    color-mix(in srgb, var(--phosphor) 8%, transparent) 100%
-  );
-  background-size: 200% 100%;
-  border-radius: var(--radius-sm);
-  border: 1px dashed var(--screen-rule);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .skeleton {
-    animation: shimmer 1.6s infinite linear;
-  }
-}
-@keyframes shimmer {
-  from {
-    background-position: 200% 0;
-  }
-  to {
-    background-position: -200% 0;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    transition-duration: 0ms !important;
+  * {
     animation-duration: 0ms !important;
-    animation-iteration-count: 1 !important;
+    transition-duration: 0ms !important;
   }
+}
+
+a:hover { color: var(--phosphor); }
+
+code, kbd, pre { font-family: var(--font-mono); }
+
+kbd {
+  padding: .1em .35em;
+  border-radius: 4px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  font-size: .85em;
 }

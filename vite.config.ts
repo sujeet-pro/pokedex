@@ -1,42 +1,51 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import { fileURLToPath, URL } from "node:url";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import viteReact from "@vitejs/plugin-react";
+import { readdirSync, existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+
+const LOCALES = ["en", "fr"] as const;
+const UI_DATA_DIR = join(process.cwd(), "public", "ui-data", "v1");
+
+function readIndexSlugs(resource: string, lang: string): string[] {
+  const indexPath = join(UI_DATA_DIR, resource, lang, "_index.json");
+  if (!existsSync(indexPath)) return [];
+  const raw = JSON.parse(readFileSync(indexPath, "utf-8")) as {
+    entries?: Array<{ name: string }>;
+  };
+  return (raw.entries ?? []).map((e) => e.name);
+}
+
+function buildPrerenderPages(): Array<{ path: string }> {
+  const pages: Array<{ path: string }> = [{ path: "/" }];
+  for (const lang of LOCALES) {
+    pages.push({ path: `/${lang}` });
+    pages.push({ path: `/${lang}/pokemon` });
+    for (const slug of readIndexSlugs("pokemon", lang)) {
+      pages.push({ path: `/${lang}/pokemon/${slug}` });
+    }
+  }
+  return pages;
+}
 
 export default defineConfig({
   base: "/pokedex/",
+  server: { port: 3000 },
   plugins: [
-    react({
-      babel: {
-        plugins: [["babel-plugin-react-compiler", { target: "19" }]],
+    tanstackStart({
+      router: { basepath: "/pokedex" },
+      pages: buildPrerenderPages().map((p) => ({ ...p, prerender: { crawlLinks: false } })),
+      prerender: {
+        enabled: true,
+        concurrency: 8,
+        failOnError: true,
       },
     }),
+    viteReact(),
   ],
   resolve: {
     alias: {
-      "~": fileURLToPath(new URL("./src", import.meta.url)),
+      "~": join(process.cwd(), "src"),
     },
-  },
-  build: {
-    target: "es2022",
-    sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (!id.includes("node_modules")) return;
-          if (id.includes("@tanstack/react-query") || id.includes("@tanstack/query")) return "query";
-          if (id.includes("@tanstack/react-router") || id.includes("@tanstack/router") || id.includes("@tanstack/history")) return "router";
-          if (id.includes("radix-ui") || id.includes("@radix-ui")) return "radix";
-          if (id.includes("/react-dom/") || id.includes("/react/") || id.includes("scheduler")) return "react";
-        },
-      },
-    },
-  },
-  server: {
-    port: 5173,
-    open: true,
-  },
-  test: {
-    environment: "jsdom",
-    globals: true,
   },
 });
