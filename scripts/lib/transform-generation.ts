@@ -4,10 +4,13 @@ import { readGeneration, refIdSafe } from "./pokeapi";
 import { pickName } from "./localize";
 import {
   abilityDisplayName,
+  humanize,
   moveDisplayName,
   speciesDisplayName,
   typeDisplayName,
 } from "./name-cache";
+import { slugFor, slugMapFor } from "./slug-cache";
+import { slugify } from "./slugify";
 
 export function buildGenerationBundle(
   id: number,
@@ -23,6 +26,7 @@ export function buildGenerationBundle(
     const sid = refIdSafe(s) ?? 0;
     return {
       name: s.name,
+      slug: slugFor("pokemon", sid, s.name, lang),
       display_name: speciesDisplayName(sid, s.name, lang),
       id: sid,
     };
@@ -30,25 +34,43 @@ export function buildGenerationBundle(
 
   const moves = raw.moves.map((m) => {
     const mid = refIdSafe(m) ?? 0;
-    return { name: m.name, display_name: moveDisplayName(mid, m.name, lang) };
+    return {
+      name: m.name,
+      slug: slugFor("move", mid, m.name, lang),
+      display_name: moveDisplayName(mid, m.name, lang),
+    };
   });
 
   const abilities = raw.abilities.map((a) => {
     const aid = refIdSafe(a) ?? 0;
-    return { name: a.name, display_name: abilityDisplayName(aid, a.name, lang) };
+    return {
+      name: a.name,
+      slug: slugFor("ability", aid, a.name, lang),
+      display_name: abilityDisplayName(aid, a.name, lang),
+    };
   });
 
   const types = raw.types.map((t) => {
     const tid = refIdSafe(t) ?? 0;
-    return { name: t.name, display_name: typeDisplayName(tid, t.name, lang) };
+    return {
+      name: t.name,
+      slug: slugFor("type", tid, t.name, lang),
+      display_name: typeDisplayName(tid, t.name, lang),
+    };
   });
+
+  const slug = slugify(displayName, raw.name);
+  const slugs = slugMapFor("generation", raw.id, raw.name);
 
   const bundle: GenerationBundle = {
     kind: "generation",
     id: raw.id,
     name: raw.name,
+    slug,
+    slugs,
     display_name: displayName,
     main_region: mainRegion,
+    main_region_display: humanize(mainRegion),
     version_groups: raw.version_groups.map((v) => v.name),
     counts: {
       species: species.length,
@@ -65,6 +87,8 @@ export function buildGenerationBundle(
   const indexEntry: GenerationIndexEntry = {
     id: raw.id,
     name: raw.name,
+    slug,
+    slugs,
     display_name: displayName,
     main_region: mainRegion,
     species_count: species.length,

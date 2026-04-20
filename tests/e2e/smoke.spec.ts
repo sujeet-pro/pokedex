@@ -27,20 +27,24 @@ test("Pokemon detail — Bulbasaur (EN) renders widgets", async ({ page }) => {
   await expect(page.locator(".ability-btn")).toHaveCount(2);
 });
 
-test("Pokemon detail — Bulbizarre (FR) localized", async ({ page }) => {
-  await page.goto("./fr/pokemon/bulbasaur");
+test("Pokemon detail — FR uses localized slug", async ({ page }) => {
+  await page.goto("./fr/pokemon/bulbizarre");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(/bulbizarre/i);
   await expect(page.getByText("Pokémon Graine")).toBeVisible();
 });
 
-test("Type detail page renders", async ({ page }) => {
+test("Type detail — EN fire + FR feu", async ({ page }) => {
   await page.goto("./en/type/fire");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(/fire/i);
+  await page.goto("./fr/type/feu");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(/feu/i);
 });
 
-test("Ability detail page renders", async ({ page }) => {
+test("Ability detail — EN blaze + FR brasier", async ({ page }) => {
   await page.goto("./en/ability/blaze");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(/blaze/i);
+  await page.goto("./fr/ability/brasier");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(/brasier/i);
 });
 
 test("Search page renders input", async ({ page }) => {

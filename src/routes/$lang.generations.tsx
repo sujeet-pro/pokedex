@@ -25,7 +25,7 @@ function GenerationListPage() {
           <li key={entry.name}>
             <Link
               to="/$lang/generation/$name"
-              params={{ lang, name: entry.name }}
+              params={{ lang, name: entry.slug }}
               className="pokemon-card"
             >
               <div className="pokemon-card__name">{entry.display_name}</div>

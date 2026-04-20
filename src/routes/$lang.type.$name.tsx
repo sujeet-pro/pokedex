@@ -25,17 +25,19 @@ export const Route = createFileRoute("/$lang/type/$name")({
 const SPRITE_BASE =
   "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
 
-function TypeList({ title, names, locale }: { title: string; names: string[]; locale: string }) {
-  if (names.length === 0) return null;
+type TypeRef = { id: number; name: string; slug: string; display_name: string };
+
+function TypeList({ title, refs, locale }: { title: string; refs: TypeRef[]; locale: string }) {
+  if (refs.length === 0) return null;
   return (
     <div>
       <div className="hud-row">
         <b>{title}</b>
       </div>
       <ul className="pill-list" aria-label={title} style={{ marginTop: ".35rem" }}>
-        {names.map((n) => (
-          <li key={n}>
-            <TypeCartridge name={n} size="sm" locale={locale as never} asLink />
+        {refs.map((r) => (
+          <li key={r.name}>
+            <TypeCartridge name={r.name} size="sm" locale={locale as never} asLink />
           </li>
         ))}
       </ul>
@@ -91,9 +93,9 @@ function TypeDetailPage() {
                 <span>Attacking</span>
               </div>
               <div style={{ display: "grid", gap: ".75rem" }}>
-                <TypeList title="Super effective" names={data.relations.double_damage_to} locale={lang} />
-                <TypeList title="Not very effective" names={data.relations.half_damage_to} locale={lang} />
-                <TypeList title="No effect" names={data.relations.no_damage_to} locale={lang} />
+                <TypeList title="Super effective" refs={data.relations.double_damage_to} locale={lang} />
+                <TypeList title="Not very effective" refs={data.relations.half_damage_to} locale={lang} />
+                <TypeList title="No effect" refs={data.relations.no_damage_to} locale={lang} />
               </div>
             </div>
 
@@ -102,9 +104,9 @@ function TypeDetailPage() {
                 <span>Defending</span>
               </div>
               <div style={{ display: "grid", gap: ".75rem" }}>
-                <TypeList title="Weak to" names={data.relations.double_damage_from} locale={lang} />
-                <TypeList title="Resists" names={data.relations.half_damage_from} locale={lang} />
-                <TypeList title="Immune to" names={data.relations.no_damage_from} locale={lang} />
+                <TypeList title="Weak to" refs={data.relations.double_damage_from} locale={lang} />
+                <TypeList title="Resists" refs={data.relations.half_damage_from} locale={lang} />
+                <TypeList title="Immune to" refs={data.relations.no_damage_from} locale={lang} />
               </div>
             </div>
           </div>
@@ -118,7 +120,7 @@ function TypeDetailPage() {
             <li key={p.name}>
               <Link
                 to="/$lang/pokemon/$name"
-                params={{ lang, name: p.name }}
+                params={{ lang, name: p.slug }}
                 className="pokemon-card"
               >
                 <div className="pokemon-card__sprite">

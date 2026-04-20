@@ -74,12 +74,12 @@ async function buildPokemon(
   let count = 0;
   for (const id of ctx.orderedIds) {
     const { bundle, indexEntry } = buildPokemonBundle(id, lang, ctx);
-    writeJson(join(outDir, `${bundle.name}.json`), bundle);
+    writeJson(join(outDir, `${bundle.slug}.json`), bundle);
     indexEntries.push(indexEntry);
     // Search: tag with primary type
     const primaryType = bundle.types[0]?.name ?? undefined;
     search.push(
-      makeSearchEntry("pokemon", bundle.id, bundle.name, bundle.display_name, primaryType),
+      makeSearchEntry("pokemon", bundle.id, bundle.name, bundle.slug, bundle.display_name, primaryType),
     );
     count++;
     if (count % 100 === 0) {
@@ -104,7 +104,7 @@ async function buildSpeciesList(lang: Locale, ids: number[]): Promise<number> {
   for (const id of ids) {
     const bundle = buildSpeciesBundle(id, lang);
     if (!bundle) continue;
-    writeJson(join(outDir, `${bundle.name}.json`), bundle);
+    writeJson(join(outDir, `${bundle.slug}.json`), bundle);
     count++;
     if (count % 100 === 0) {
       process.stdout.write(`[${lang}] species ${count}/${ids.length}\n`);
@@ -121,7 +121,7 @@ async function buildForms(lang: Locale, ids: number[]): Promise<number> {
   for (const id of ids) {
     const bundle = buildFormBundle(id, lang);
     if (!bundle) continue;
-    writeJson(join(outDir, `${bundle.name}.json`), bundle);
+    writeJson(join(outDir, `${bundle.slug}.json`), bundle);
     count++;
     if (count % 100 === 0) {
       process.stdout.write(`[${lang}] forms ${count}/${ids.length}\n`);
@@ -143,13 +143,14 @@ async function buildTypes(
   for (const id of ids) {
     const out = buildTypeBundle(id, lang);
     if (!out) continue;
-    writeJson(join(outDir, `${out.bundle.name}.json`), out.bundle);
+    writeJson(join(outDir, `${out.bundle.slug}.json`), out.bundle);
     indexEntries.push(out.indexEntry);
     search.push(
       makeSearchEntry(
         "type",
         out.bundle.id,
         out.bundle.name,
+        out.bundle.slug,
         out.bundle.display_name,
         out.bundle.generation,
       ),
@@ -182,13 +183,14 @@ async function buildAbilities(
   for (const id of ids) {
     const out = buildAbilityBundle(id, lang);
     if (!out) continue;
-    writeJson(join(outDir, `${out.bundle.name}.json`), out.bundle);
+    writeJson(join(outDir, `${out.bundle.slug}.json`), out.bundle);
     indexEntries.push(out.indexEntry);
     search.push(
       makeSearchEntry(
         "ability",
         out.bundle.id,
         out.bundle.name,
+        out.bundle.slug,
         out.bundle.display_name,
       ),
     );
@@ -220,13 +222,14 @@ async function buildBerries(
   for (const id of ids) {
     const out = buildBerryBundle(id, lang);
     if (!out) continue;
-    writeJson(join(outDir, `${out.bundle.name}.json`), out.bundle);
+    writeJson(join(outDir, `${out.bundle.slug}.json`), out.bundle);
     indexEntries.push(out.indexEntry);
     search.push(
       makeSearchEntry(
         "berry",
         out.bundle.id,
         out.bundle.name,
+        out.bundle.slug,
         out.bundle.display_name,
         out.bundle.firmness,
       ),
@@ -259,13 +262,14 @@ async function buildItems(
   for (const id of ids) {
     const out = buildItemBundle(id, lang);
     if (!out) continue;
-    writeJson(join(outDir, `${out.bundle.name}.json`), out.bundle);
+    writeJson(join(outDir, `${out.bundle.slug}.json`), out.bundle);
     indexEntries.push(out.indexEntry);
     search.push(
       makeSearchEntry(
         "item",
         out.bundle.id,
         out.bundle.name,
+        out.bundle.slug,
         out.bundle.display_name,
         out.bundle.category,
       ),
@@ -298,13 +302,14 @@ async function buildMoves(
   for (const id of ids) {
     const out = buildMoveBundle(id, lang);
     if (!out) continue;
-    writeJson(join(outDir, `${out.bundle.name}.json`), out.bundle);
+    writeJson(join(outDir, `${out.bundle.slug}.json`), out.bundle);
     indexEntries.push(out.indexEntry);
     search.push(
       makeSearchEntry(
         "move",
         out.bundle.id,
         out.bundle.name,
+        out.bundle.slug,
         out.bundle.display_name,
         out.bundle.type,
       ),
@@ -339,7 +344,7 @@ async function buildLocations(
     if (!entry) continue;
     indexEntries.push(entry);
     search.push(
-      makeSearchEntry("location", entry.id, entry.name, entry.display_name, entry.region),
+      makeSearchEntry("location", entry.id, entry.name, entry.slug, entry.display_name, entry.region),
     );
     count++;
     if (count % 100 === 0) {
@@ -369,13 +374,14 @@ async function buildGenerations(
   for (const id of ids) {
     const out = buildGenerationBundle(id, lang);
     if (!out) continue;
-    writeJson(join(outDir, `${out.bundle.name}.json`), out.bundle);
+    writeJson(join(outDir, `${out.bundle.slug}.json`), out.bundle);
     indexEntries.push(out.indexEntry);
     search.push(
       makeSearchEntry(
         "generation",
         out.bundle.id,
         out.bundle.name,
+        out.bundle.slug,
         out.bundle.display_name,
         out.bundle.main_region,
       ),

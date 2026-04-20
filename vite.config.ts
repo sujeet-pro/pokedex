@@ -11,9 +11,9 @@ function readIndexSlugs(resource: string, lang: string): string[] {
   const indexPath = join(UI_DATA_DIR, resource, lang, "_index.json");
   if (existsSync(indexPath)) {
     const raw = JSON.parse(readFileSync(indexPath, "utf-8")) as {
-      entries?: Array<{ name: string }>;
+      entries?: Array<{ slug?: string; name?: string }>;
     };
-    return (raw.entries ?? []).map((e) => e.name);
+    return (raw.entries ?? []).map((e) => e.slug ?? e.name ?? "").filter(Boolean);
   }
   // Fallback: some resources (e.g. pokemon-species, pokemon-form) don't
   // emit a list _index.json but do publish per-slug JSON files. Derive

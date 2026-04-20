@@ -3,6 +3,8 @@ import type { ItemBundle, ItemIndexEntry } from "../../src/types/bundles";
 import { readItem, refIdSafe } from "./pokeapi";
 import { cleanFlavor, paragraphHtml, pickByLocale, pickEffect, pickName } from "./localize";
 import { itemCategoryDisplayName, pokemonDisplayName } from "./name-cache";
+import { slugFor, slugMapFor } from "./slug-cache";
+import { slugify } from "./slugify";
 
 export function buildItemBundle(
   id: number,
@@ -27,15 +29,21 @@ export function buildItemBundle(
     const pid = refIdSafe(h.pokemon) ?? 0;
     return {
       name: h.pokemon.name,
+      slug: slugFor("pokemon", pid, h.pokemon.name, lang),
       display_name: pokemonDisplayName(pid, h.pokemon.name, lang),
       id: pid,
     };
   });
 
+  const slug = slugify(displayName, raw.name);
+  const slugs = slugMapFor("item", raw.id, raw.name);
+
   const bundle: ItemBundle = {
     kind: "item",
     id: raw.id,
     name: raw.name,
+    slug,
+    slugs,
     display_name: displayName,
     cost: raw.cost,
     category: raw.category.name,
@@ -53,6 +61,8 @@ export function buildItemBundle(
   const indexEntry: ItemIndexEntry = {
     id: raw.id,
     name: raw.name,
+    slug,
+    slugs,
     display_name: displayName,
     category: raw.category.name,
     cost: raw.cost,

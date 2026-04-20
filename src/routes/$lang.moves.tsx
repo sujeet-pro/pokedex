@@ -26,7 +26,7 @@ function MoveListPage() {
           <li key={entry.name}>
             <Link
               to="/$lang/move/$name"
-              params={{ lang, name: entry.name }}
+              params={{ lang, name: entry.slug }}
               className="pokemon-card"
             >
               <div className="pokemon-card__name">{entry.display_name}</div>

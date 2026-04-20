@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-hotkeys";
 import { useRouter } from "@tanstack/react-router";
 import { LOCALES, DEFAULT_LOCALE, type Locale } from "~/types/locales";
+import { SearchDialogProvider, useSearchDialog } from "~/hooks/useSearchDialog";
 
 type Props = { children: ReactNode };
 
@@ -21,17 +22,6 @@ function detectLocale(pathname: string, base: string): Locale {
   return DEFAULT_LOCALE;
 }
 
-/** Focus the canonical global search input, if present on the page. */
-function focusSearch(event: Event) {
-  if (typeof document === "undefined") return;
-  const el = document.querySelector<HTMLElement>("[data-search-input]");
-  if (el) {
-    event.preventDefault();
-    el.focus();
-    if (el instanceof HTMLInputElement) el.select();
-  }
-}
-
 /** Click the anchor matching `rel=prev|next` on the current page if any. */
 function clickRel(rel: "prev" | "next") {
   if (typeof document === "undefined") return;
@@ -41,6 +31,7 @@ function clickRel(rel: "prev" | "next") {
 
 function HotkeyBindings({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const { open, setOpen } = useSearchDialog();
   const base = import.meta.env.BASE_URL.endsWith("/")
     ? import.meta.env.BASE_URL.slice(0, -1)
     : import.meta.env.BASE_URL;
@@ -56,16 +47,32 @@ function HotkeyBindings({ children }: { children: ReactNode }) {
     [router, base]
   );
 
+  const openSearchDialog = useCallback(
+    (e: Event) => {
+      e.preventDefault();
+      setOpen(true);
+    },
+    [setOpen]
+  );
+
+  const toggleSearchDialog = useCallback(
+    (e: Event) => {
+      e.preventDefault();
+      setOpen(!open);
+    },
+    [open, setOpen]
+  );
+
   useHotkeys(
     [
       {
         hotkey: "/",
-        callback: (e) => focusSearch(e),
+        callback: (e) => openSearchDialog(e),
         options: { ignoreInputs: true, preventDefault: false },
       },
       {
         hotkey: "Mod+K",
-        callback: (e) => focusSearch(e),
+        callback: (e) => toggleSearchDialog(e),
         options: { ignoreInputs: false, preventDefault: true },
       },
       {
@@ -101,7 +108,9 @@ function HotkeyBindings({ children }: { children: ReactNode }) {
 export function HotkeysProvider({ children }: Props) {
   return (
     <TanstackHotkeysProvider>
-      <HotkeyBindings>{children}</HotkeyBindings>
+      <SearchDialogProvider>
+        <HotkeyBindings>{children}</HotkeyBindings>
+      </SearchDialogProvider>
     </TanstackHotkeysProvider>
   );
 }

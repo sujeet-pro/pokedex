@@ -84,7 +84,7 @@ function GenerationDetailPage() {
               <li key={a.name}>
                 <Link
                   to="/$lang/ability/$name"
-                  params={{ lang, name: a.name }}
+                  params={{ lang, name: a.slug }}
                   className="pill"
                 >
                   {a.display_name}
@@ -103,7 +103,7 @@ function GenerationDetailPage() {
               <li key={p.name}>
                 <Link
                   to="/$lang/pokemon/$name"
-                  params={{ lang, name: p.name }}
+                  params={{ lang, name: p.slug }}
                   className="pokemon-card"
                 >
                   <div className="pokemon-card__sprite">
@@ -126,7 +126,7 @@ function GenerationDetailPage() {
               <li key={m.name}>
                 <Link
                   to="/$lang/move/$name"
-                  params={{ lang, name: m.name }}
+                  params={{ lang, name: m.slug }}
                   className="pill"
                 >
                   {m.display_name}

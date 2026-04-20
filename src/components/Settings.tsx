@@ -3,6 +3,7 @@ import type { Locale } from "~/types/locales";
 import { makeT } from "~/i18n";
 import { usePreferences } from "~/hooks/usePreferences";
 import { useVoices } from "~/hooks/useVoices";
+import { LocaleSwitcher } from "./LocaleSwitcher";
 import type {
   Direction,
   Mode,
@@ -42,6 +43,13 @@ export function Settings({ locale }: Props) {
           sideOffset={8}
           aria-label={t("settings_title")}
         >
+          <div className="settings__row">
+            <span className="settings__label">
+              {t("settings_language")}
+            </span>
+            <LocaleSwitcher locale={locale} />
+          </div>
+
           <div className="settings__row">
             <label className="settings__label" id="settings-theme-label">
               {t("settings_theme")}

@@ -93,7 +93,7 @@ function SpeciesDetailPage() {
               <li key={v.name}>
                 <Link
                   to="/$lang/pokemon/$name"
-                  params={{ lang, name: v.name }}
+                  params={{ lang, name: v.slug }}
                   className="pill"
                 >
                   {v.display_name}

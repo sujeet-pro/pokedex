@@ -100,7 +100,7 @@ function EvoFrame({
     <div data-current={current ? "true" : "false"}>
       <Link
         to="/$lang/pokemon/$name"
-        params={{ lang: locale, name: node.name }}
+        params={{ lang: locale, name: node.slug }}
         className="evo__frame"
         aria-current={current ? "page" : undefined}
       >

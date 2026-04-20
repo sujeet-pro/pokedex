@@ -14,7 +14,7 @@ export function PokemonCard({ entry, locale }: Props) {
   return (
     <Link
       to="/$lang/pokemon/$name"
-      params={{ lang: locale, name: entry.name }}
+      params={{ lang: locale, name: entry.slug }}
       className="pokemon-card"
     >
       <div className="pokemon-card__sprite">

@@ -168,7 +168,7 @@ function SearchPage() {
                   {to ? (
                     <Link
                       to={to}
-                      params={{ lang, name: entry.name }}
+                      params={{ lang, name: entry.slug }}
                       className="pokemon-card"
                     >
                       {body}

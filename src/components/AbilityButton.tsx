@@ -44,7 +44,7 @@ export function AbilityButton({ ability, locale }: Props) {
           <div className="info-pop__foot">
             <Link
               to="/$lang/ability/$name"
-              params={{ lang: locale, name: ability.name }}
+              params={{ lang: locale, name: ability.slug }}
               className="info-pop__link"
             >
               Open ability →

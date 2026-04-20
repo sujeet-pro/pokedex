@@ -12,6 +12,7 @@ import {
   speciesDisplayName,
   humanize,
 } from "./name-cache";
+import { slugFor } from "./slug-cache";
 
 function formatTrigger(detail: EvolutionDetail, lang: Locale): string {
   if (detail.min_level != null) {
@@ -31,10 +32,14 @@ function formatTrigger(detail: EvolutionDetail, lang: Locale): string {
 function walk(link: EvolutionChainLink, lang: Locale): BundleEvoNode {
   const speciesId = refIdSafe(link.species) ?? 0;
   const displayName = speciesDisplayName(speciesId, link.species.name, lang);
+  // The URL we link to is the Pokémon detail page (by the pokemon slug),
+  // since species share ids with their default Pokémon.
+  const slug = slugFor("pokemon", speciesId, link.species.name, lang);
   const firstDetail = link.evolution_details[0];
   const trigger = firstDetail ? formatTrigger(firstDetail, lang) : "";
   return {
     name: link.species.name,
+    slug,
     id: speciesId,
     display_name: displayName,
     trigger,

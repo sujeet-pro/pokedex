@@ -2,6 +2,9 @@ import type { Locale } from "../../src/types/locales";
 import type { LocationIndexEntry } from "../../src/types/bundles";
 import { readLocation, readLocationArea, refIdSafe } from "./pokeapi";
 import { pickName } from "./localize";
+import { humanize } from "./name-cache";
+import { slugMapFor } from "./slug-cache";
+import { slugify } from "./slugify";
 
 export function buildLocationIndexEntry(
   id: number,
@@ -23,11 +26,17 @@ export function buildLocationIndexEntry(
     return { name: a.name, display_name: areaDisplay };
   });
 
+  const slug = slugify(displayName, raw.name);
+  const slugs = slugMapFor("location", raw.id, raw.name);
+
   return {
     id: raw.id,
     name: raw.name,
+    slug,
+    slugs,
     display_name: displayName,
     region,
+    region_display: humanize(region),
     area_count: areas.length,
     areas,
   };

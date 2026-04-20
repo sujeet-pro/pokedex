@@ -2,7 +2,9 @@ import type { Locale } from "../../src/types/locales";
 import type { MoveBundle, MoveIndexEntry } from "../../src/types/bundles";
 import { readMove, refIdSafe } from "./pokeapi";
 import { cleanFlavor, paragraphHtml, pickByLocale, pickEffect, pickName } from "./localize";
-import { pokemonDisplayName } from "./name-cache";
+import { moveDamageClassDisplayName, pokemonDisplayName, typeDisplayName } from "./name-cache";
+import { slugFor, slugMapFor } from "./slug-cache";
+import { slugify } from "./slugify";
 
 export function buildMoveBundle(
   id: number,
@@ -23,18 +25,37 @@ export function buildMoveBundle(
     const pid = refIdSafe(p) ?? 0;
     return {
       name: p.name,
+      slug: slugFor("pokemon", pid, p.name, lang),
       display_name: pokemonDisplayName(pid, p.name, lang),
       id: pid,
     };
   });
 
+  const typeName = raw.type?.name ?? "unknown";
+  const typeId = raw.type ? refIdSafe(raw.type) : null;
+  const typeSlug = typeId != null ? slugFor("type", typeId, typeName, lang) : typeName;
+  const typeDisplay = typeId != null ? typeDisplayName(typeId, typeName, lang) : typeName;
+
+  const dmgClass = raw.damage_class?.name ?? "unknown";
+  const dmgClassId = raw.damage_class ? refIdSafe(raw.damage_class) : null;
+  const dmgClassDisplay =
+    dmgClassId != null ? moveDamageClassDisplayName(dmgClassId, dmgClass, lang) : dmgClass;
+
+  const slug = slugify(displayName, raw.name);
+  const slugs = slugMapFor("move", raw.id, raw.name);
+
   const bundle: MoveBundle = {
     kind: "move",
     id: raw.id,
     name: raw.name,
+    slug,
+    slugs,
     display_name: displayName,
-    type: raw.type?.name ?? "unknown",
-    damage_class: raw.damage_class?.name ?? "unknown",
+    type: typeName,
+    type_slug: typeSlug,
+    type_display: typeDisplay,
+    damage_class: dmgClass,
+    damage_class_display: dmgClassDisplay,
     power: raw.power,
     accuracy: raw.accuracy,
     pp: raw.pp,
@@ -50,9 +71,11 @@ export function buildMoveBundle(
   const indexEntry: MoveIndexEntry = {
     id: raw.id,
     name: raw.name,
+    slug,
+    slugs,
     display_name: displayName,
-    type: bundle.type,
-    damage_class: bundle.damage_class,
+    type: typeName,
+    damage_class: dmgClass,
     power: raw.power,
     accuracy: raw.accuracy,
     pp: raw.pp,

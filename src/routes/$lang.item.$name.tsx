@@ -93,7 +93,7 @@ function ItemDetailPage() {
               <li key={p.name}>
                 <Link
                   to="/$lang/pokemon/$name"
-                  params={{ lang, name: p.name }}
+                  params={{ lang, name: p.slug }}
                   className="pokemon-card"
                 >
                   <div className="pokemon-card__sprite">

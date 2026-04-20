@@ -82,3 +82,263 @@
 .hud-name-row .speak-bezel {
   margin-left: auto;
 }
+
+.search-dialog__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  z-index: 60;
+  animation: search-dialog-overlay-in 0.14s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-dialog__overlay {
+    animation: none;
+  }
+}
+
+@keyframes search-dialog-overlay-in {
+  0% { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.search-dialog {
+  position: fixed;
+  top: 10vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(640px, calc(100vw - 2rem));
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--screen-bg-2) 0%, var(--screen-bg) 100%);
+  color: var(--screen-fg);
+  border: 1px solid var(--phosphor);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 61;
+  outline: none;
+  overflow: hidden;
+  animation: search-dialog-in 0.14s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-dialog {
+    animation: none;
+  }
+}
+
+@keyframes search-dialog-in {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+.search-dialog__body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.search-dialog__field {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--screen-rule);
+}
+
+.search-dialog__results {
+  overflow: auto;
+  padding: 0.25rem 0.5rem;
+  flex: 1;
+  min-height: 0;
+}
+
+.search-dialog__menu {
+  position: static;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  max-height: none;
+  overflow: visible;
+  padding: 0;
+}
+
+.search-dialog__group-header {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--phosphor-dim);
+  padding: 0.6rem 0.75rem 0.35rem;
+  list-style: none;
+}
+
+.search-dialog__option {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.6rem;
+  list-style: none;
+}
+
+.search-dialog__option-kind {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  padding: 0.2rem 0.5rem;
+}
+
+.search-dialog__option-name {
+  text-transform: none;
+  letter-spacing: 0.04em;
+  color: var(--screen-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-dialog__option-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--phosphor-dim);
+}
+
+.search-dialog__empty {
+  padding: 1.25rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  color: var(--phosphor-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.search-dialog__loading {
+  padding: 1rem;
+}
+
+.search-dialog__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 0.55rem 0.85rem;
+  border-top: 1px solid var(--screen-rule);
+  background: rgba(0, 0, 0, 0.25);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--phosphor-dim);
+}
+
+.search-dialog__footer kbd {
+  margin-right: 0.15rem;
+}
+
+/* Pokemon detail layout polish (match v2 reference) */
+
+.hud-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--phosphor-dim);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  margin: 0 0 .75rem;
+}
+
+.hud-meta-row b {
+  color: var(--screen-fg);
+  font-weight: 700;
+  margin-right: .35rem;
+}
+
+.two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: start;
+  margin-top: 1rem;
+}
+
+@media (width < 900px) {
+  .two-column { grid-template-columns: 1fr; }
+}
+
+.dossier-tags {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+  margin-top: .75rem;
+  padding-top: .6rem;
+  border-top: 1px dashed var(--screen-rule);
+}
+
+.dossier-tags .pill {
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+
+.evo-empty {
+  margin: 1rem 0 0;
+  padding: 1rem 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--phosphor-dim);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  border: 1px dashed var(--screen-rule);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--phosphor) 4%, transparent);
+}
+
+.evo-empty:before {
+  content: "> ";
+  color: var(--amber);
+}
+
+/* Search trigger (button-styled like an input) in the navbar. */
+.navbar__search {
+  flex: 1 1 280px;
+  min-width: 0;
+  max-width: 420px;
+}
+
+.navbar__search .search__input {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  position: relative;
+  padding-right: 3.2rem;
+  min-height: 36px;
+  cursor: pointer;
+}
+
+.navbar__search .search__input:hover {
+  border-color: var(--phosphor);
+}
+
+.navbar__search .search__input > span:first-child {
+  color: color-mix(in srgb, var(--case-ink) 60%, transparent);
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (width < 720px) {
+  .navbar__search { display: none; }
+}

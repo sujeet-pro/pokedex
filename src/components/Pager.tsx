@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { Locale } from "~/types/locales";
 
-type Entry = { name: string; id: number } | null;
+type Entry = { name: string; slug: string; id: number; display_name?: string } | null;
 type Props = {
   locale: Locale;
   prev: Entry;
@@ -18,7 +18,7 @@ export function Pager({ locale, prev, next, prevLabel, nextLabel, labelText, to 
       {prev ? (
         <Link
           to={to}
-          params={{ lang: locale, name: prev.name }}
+          params={{ lang: locale, name: prev.slug }}
           className="pill-button pager__prev"
           rel="prev"
         >
@@ -33,7 +33,7 @@ export function Pager({ locale, prev, next, prevLabel, nextLabel, labelText, to 
       {next ? (
         <Link
           to={to}
-          params={{ lang: locale, name: next.name }}
+          params={{ lang: locale, name: next.slug }}
           className="pill-button pager__next"
           rel="next"
         >
