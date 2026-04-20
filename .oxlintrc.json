@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn",
+    "style": "off"
+  },
+  "env": {
+    "browser": true,
+    "es2024": true
+  },
+  "plugins": ["react", "react-hooks", "typescript", "unicorn"],
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-uses-react": "off",
+    "react/no-unknown-property": "off",
+    "no-console": "warn",
+    "react/jsx-key": "error"
+  }
+}

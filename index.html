@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" data-theme="blue" data-mode="light" data-scale="md" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/pokedex/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#1e6feb" />
+    <meta
+      name="description"
+      content="A modern Pokédex: search, browse and explore every Pokémon, type, ability, and species."
+    />
+    <title>Pokédex</title>
+    <script>
+      (function () {
+        try {
+          var root = document.documentElement;
+          var p = JSON.parse(localStorage.getItem("pokedex.prefs") || "{}");
+          if (p.theme) root.dataset.theme = p.theme;
+          if (p.mode) root.dataset.mode = p.mode;
+          if (p.scale) root.dataset.scale = p.scale;
+          if (p.dir) root.dir = p.dir;
+        } catch (e) {}
+        // Restore the original URL after the GitHub Pages 404 redirect trick
+        try {
+          var q = new URLSearchParams(window.location.search);
+          var dest = q.get("__redirect");
+          if (dest) {
+            q.delete("__redirect");
+            var extra = q.toString();
+            var base = "/pokedex" + dest;
+            window.history.replaceState(null, "", base + (extra ? "&" + extra : ""));
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

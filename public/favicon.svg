@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-label="Pokédex">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff5a5a"/>
+      <stop offset="1" stop-color="#cc1f1f"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="url(#g)"/>
+  <path d="M2 32 A30 30 0 0 1 62 32 Z" fill="#222"/>
+  <rect x="0" y="30" width="64" height="4" fill="#111"/>
+  <circle cx="32" cy="32" r="10" fill="#fff" stroke="#111" stroke-width="3"/>
+  <circle cx="32" cy="32" r="4" fill="#eee" stroke="#111" stroke-width="2"/>
+</svg>

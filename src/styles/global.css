@@ -1,0 +1,215 @@
+:root {
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.08);
+  --shadow-md: 0 4px 16px rgb(0 0 0 / 0.12);
+  --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.18);
+  --transition: 160ms ease;
+  color-scheme: light dark;
+}
+
+/* Theme tokens — primary color + derivatives */
+:root[data-theme="blue"] {
+  --brand-50: #e8f0ff;
+  --brand-100: #cfdfff;
+  --brand-500: #1e6feb;
+  --brand-600: #1758c0;
+  --brand-700: #123f8a;
+  --brand-contrast: #ffffff;
+}
+:root[data-theme="yellow"] {
+  --brand-50: #fff8e0;
+  --brand-100: #ffedb3;
+  --brand-500: #f4c542;
+  --brand-600: #d4a61f;
+  --brand-700: #a67e13;
+  --brand-contrast: #1a1600;
+}
+:root[data-theme="red"] {
+  --brand-50: #ffe9e9;
+  --brand-100: #ffc9c9;
+  --brand-500: #e54e4e;
+  --brand-600: #c23434;
+  --brand-700: #8b2323;
+  --brand-contrast: #ffffff;
+}
+
+/* Light mode surface tokens */
+:root[data-mode="light"] {
+  --bg: #fafbfc;
+  --surface: #ffffff;
+  --surface-2: #f2f4f8;
+  --text: #12151c;
+  --text-muted: #5a6170;
+  --border: #e3e6ec;
+  --scrim: rgb(0 0 0 / 0.04);
+}
+
+/* Dark mode surface tokens */
+:root[data-mode="dark"] {
+  --bg: #0e1016;
+  --surface: #181b23;
+  --surface-2: #212531;
+  --text: #ecedf1;
+  --text-muted: #9aa0ac;
+  --border: #2b2f3b;
+  --scrim: rgb(255 255 255 / 0.04);
+}
+
+/* Font scale */
+:root[data-scale="xs"] { font-size: 13px; }
+:root[data-scale="sm"] { font-size: 14.5px; }
+:root[data-scale="md"] { font-size: 16px; }
+:root[data-scale="lg"] { font-size: 17.5px; }
+:root[data-scale="xl"] { font-size: 19px; }
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: var(--brand-600);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  inset-block-start: 0.5rem;
+  inset-inline-start: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  background: var(--brand-500);
+  color: var(--brand-contrast);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  transform: translateY(-200%);
+  transition: transform var(--transition);
+  z-index: 50;
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--brand-contrast);
+  outline-offset: 2px;
+}
+
+kbd {
+  display: inline-block;
+  padding: 0.1em 0.4em;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--surface-2);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85em;
+  color: var(--text);
+  line-height: 1;
+}
+
+/* Type colors — used for type pill badges */
+.type-badge {
+  display: inline-block;
+  padding: 0.2em 0.7em;
+  border-radius: 999px;
+  font-size: 0.82em;
+  font-weight: 600;
+  color: white;
+  text-transform: capitalize;
+  text-shadow: 0 1px 0 rgb(0 0 0 / 0.25);
+  letter-spacing: 0.02em;
+}
+.type-badge--normal { background: #a8a77a; }
+.type-badge--fire { background: #ee8130; }
+.type-badge--water { background: #6390f0; }
+.type-badge--electric { background: #f7d02c; color: #222; text-shadow: none; }
+.type-badge--grass { background: #7ac74c; }
+.type-badge--ice { background: #96d9d6; color: #222; text-shadow: none; }
+.type-badge--fighting { background: #c22e28; }
+.type-badge--poison { background: #a33ea1; }
+.type-badge--ground { background: #e2bf65; color: #222; text-shadow: none; }
+.type-badge--flying { background: #a98ff3; }
+.type-badge--psychic { background: #f95587; }
+.type-badge--bug { background: #a6b91a; }
+.type-badge--rock { background: #b6a136; }
+.type-badge--ghost { background: #735797; }
+.type-badge--dragon { background: #6f35fc; }
+.type-badge--dark { background: #705746; }
+.type-badge--steel { background: #b7b7ce; color: #222; text-shadow: none; }
+.type-badge--fairy { background: #d685ad; }
+.type-badge--stellar { background: #40b5a5; }
+.type-badge--unknown { background: #68a090; }
+
+/* Skeleton shimmer */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-2) 0%,
+    color-mix(in srgb, var(--surface-2) 70%, var(--bg)) 50%,
+    var(--surface-2) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: var(--radius-md);
+}
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+  * { transition: none !important; animation: none !important; }
+}

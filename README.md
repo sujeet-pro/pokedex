@@ -1,52 +1,107 @@
 # Pokédex
 
-This is a web pokédex, inspired from the original one. The Pokédex is an electronic device designed to catalogue and provide information regarding the various species of Pokémon featured in the Pokémon video game, anime and manga series.
+A modern, accessible Pokédex web app. Browse, search, and explore every Pokémon,
+type, ability, species, and form. Powered by the [PokéAPI](https://pokeapi.co).
 
-## Features of this Pokédex
-### In general
- * Responsive web application
- * All the apis are being cached.
- * This can be build using `npm run build:prod` for prod build
- * For serving it locally `npm start` would work
- * This is being deployed to `firebase hosting`
- * This deployment is automated using `travis`
- * For analytics,  `Google analytics` is being used with default settings.
+**Live:** https://projects.sujeet.pro/pokedex
 
-### Personalization
+## Versions
 
-* Support for multiple themes
-  * Blue theme
-  * Yellow theme
-  * Red theme
-  * On theme change, the theme color for the browser bar (in android devices) also updates.
-* Support for day and night mode
-* Support for different font-sizes (5 -> extra small, small, medium, large and extra-large)
-* Content direction change (left-to-right & left-to-right)
+- **v1** (tag `v1`, branch `v1-angular`) — the original Angular 8 + Firebase implementation.
+- **v2** (current `master`) — a rewrite in React 19 with Vite and TanStack libraries.
 
-### Pokémon: Search and Featured
-* Homepage features `Pokémon of the day`.
-* Autocomplete on names at home page. selecting one will directly take you to Pokémon details.
-* Search Page: Will provide list of Pokémon, based on search query. Examples
-  * Searching ["Ven"](https://Pokédex.sujeetjaiswal.com/search?q=ven) for Pokémon with `ven` in their name
-  * Searching ["All"](https://Pokédex.sujeetjaiswal.com/search?q=all) for listing all the Pokémon
-  * Searchin ["qwert"](https://Pokédex.sujeetjaiswal.com/search?q=qerty) will not match and results in a no content message.
+## Stack (v2)
 
-### Other Details
-* The application follow the following url pattern `https://Pokédex.sujeetjaiswal.com/:content-type/:content-id`
-  * Examples:
-  * Pokémon: venusaur[https://Pokédex.sujeetjaiswal.com/Pokémon/venusaur](https://Pokédex.sujeetjaiswal.com/Pokémon/venusaur)
-  * Type: poison [https://Pokédex.sujeetjaiswal.com/Pokémon-species/3](https://Pokédex.sujeetjaiswal.com/Pokémon-species/3)
-  * [https://Pokédex.sujeetjaiswal.com/Pokémon-species/3](https://Pokédex.sujeetjaiswal.com/Pokémon-species/3)
-  * Form: venusaur[https://Pokédex.sujeetjaiswal.com/Pokémon-form/3](https://Pokédex.sujeetjaiswal.com/Pokémon-form/3)
-  * Ability: overgrow [https://Pokédex.sujeetjaiswal.com/ability/65](https://Pokédex.sujeetjaiswal.com/ability/65)
-  * For an invalid type or id, the page will not render anything and shows the corresponding error of type or id.
-  * For an invalid route, it would display a [page-not-found](https://Pokédex.sujeetjaiswal.com/invalid-page) error page
+Built on [Vite+](https://viteplus.dev/) — a unified toolchain combining Vite, Vitest, and oxc.
 
-## Performance consideration
-* All the Pokéapi is cached in the indexed DB.
-* All the apis, when fetching the data i.e. in progress will also be locally cached in memory, in order to avoid any duplicate request.
+| Concern        | Tool                                                           |
+| -------------- | -------------------------------------------------------------- |
+| Dev server     | [Vite 6](https://vitejs.dev/) (Rolldown internals)             |
+| Build          | Vite → Rolldown                                                |
+| Language       | TypeScript (100%), type-checked with `@typescript/native-preview` (`tsgo`, Go port) |
+| Lint           | [oxlint](https://oxc.rs/docs/guide/usage/linter)               |
+| Format         | [oxfmt](https://oxc.rs/docs/guide/usage/formatter)             |
+| Test           | [Vitest](https://vitest.dev)                                   |
+| UI             | React 19 (+ React Compiler)                                    |
+| Primitives     | [Radix UI](https://www.radix-ui.com/) (Popover, ToggleGroup, VisuallyHidden) |
+| Routing        | [TanStack Router](https://tanstack.com/router) (type-safe)     |
+| Data           | [TanStack Query](https://tanstack.com/query)                   |
+| Hotkeys        | [TanStack Hotkeys](https://tanstack.com/hotkeys)               |
 
-## Thing to do:
-* Creating user friendly pages for other pages, similar to that of pokemon details page. (eg. ability, move, type, species, etc).
-* Making it a progressive web application. (All the configurations are done, only the registry is in pending state)
+## Features
 
+- **Pokémon of the day** on the home page — deterministic per UTC date
+- **Autocomplete search** by partial name (listbox with keyboard navigation)
+- **Search page** at `/search?q=...` — partial match or `all`
+- **Detail pages** for Pokémon, types, abilities, species, and forms
+- **Evolution chains** rendered on Pokémon detail
+- **Personalization**
+  - 3 themes: blue, yellow, red (also updates `theme-color` meta)
+  - Light / dark mode
+  - 5 text sizes (XS → XL)
+  - LTR / RTL direction toggle
+  - Preferences persist in `localStorage` and apply before first render (no FOUC)
+- **Keyboard shortcuts**
+  - `/` — focus the global search
+  - `g` `h` — go home
+  - `g` `s` — go to search
+  - `Esc` — close popovers / autocomplete menus
+- **Accessibility — WCAG 2.2 AA targeted**
+  - Skip-to-content link
+  - Semantic landmarks (`<header>`, `<nav>`, `<main>`, `<footer>`)
+  - Visible focus, ≥ 3:1 focus contrast
+  - Live regions for async result counts
+  - ARIA combobox pattern for autocomplete
+  - `prefers-reduced-motion` honored
+  - Radix primitives for focus trap + ESC dismissal on menus
+- **Performance**
+  - React Compiler handles memoization
+  - Code-splitting via Vite manual chunks (react / router / query)
+  - `content-visibility: auto` on card grids
+  - Deferred values for pagination transitions
+  - Lazy image loading + error fallbacks
+
+## Scripts
+
+```
+npm run dev         # start Vite dev server
+npm run build       # typecheck + production build
+npm run preview     # preview the production build
+npm run lint        # oxlint
+npm run format      # oxfmt
+npm run typecheck   # tsgo
+npm run check       # lint + format check + typecheck
+npm test            # vitest
+```
+
+## Project layout
+
+```
+src/
+├── api/            # PokéAPI client + query factories
+├── components/     # Reusable UI pieces (cards, autocomplete, settings, …)
+├── hooks/          # useLocalStorage, useDebounced, usePreferences
+├── pages/          # One file per route component
+├── router.tsx      # TanStack Router definition
+├── styles/         # global.css + layout.css (CSS custom properties, tokens)
+├── types/          # PokéAPI types
+└── utils/          # Formatters and small helpers
+```
+
+## Deployment
+
+Static build in `dist/` is published to GitHub Pages by
+`.github/workflows/deploy.yml` on every push to `master`. The app expects to be
+served from the path `/pokedex/` — configured via Vite's `base` option.
+
+Deep-link support on GitHub Pages uses a `public/404.html` redirect shim that
+stashes the original path in `?__redirect=…` and the SPA reads it on boot.
+
+> If you serve this from a different base, update `base` in `vite.config.ts`
+> and the repo prefix in `public/404.html` / `index.html`.
+
+## Data source
+
+All content comes from [PokéAPI](https://pokeapi.co/docs/v2). Pokémon is a
+trademark of Nintendo / Game Freak / The Pokémon Company — this project is a
+fan-made educational demo.
