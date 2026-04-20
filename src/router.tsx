@@ -75,8 +75,11 @@ const routeTree = rootRoute.addChildren([
   formRoute,
 ]);
 
+const basepath = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
+
 export const router = createRouter({
   routeTree,
+  basepath,
   defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
   scrollRestoration: true,
