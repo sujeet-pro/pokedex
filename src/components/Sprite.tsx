@@ -1,7 +1,6 @@
 type Props = {
   src: string | null | undefined;
   alt: string;
-  size?: number;
   priority?: boolean;
 };
 
@@ -15,13 +14,17 @@ const FALLBACK =
     </svg>`,
   );
 
-export function Sprite({ src, alt, size = 192, priority = false }: Props) {
+// Intrinsic size drives the aspect-ratio reservation the browser uses
+// to avoid CLS. Display size is controlled purely by CSS on the container.
+const INTRINSIC = 450;
+
+export function Sprite({ src, alt, priority = false }: Props) {
   return (
     <img
       src={src || FALLBACK}
       alt={alt}
-      width={size}
-      height={size}
+      width={INTRINSIC}
+      height={INTRINSIC}
       loading={priority ? "eager" : "lazy"}
       decoding="async"
       fetchPriority={priority ? "high" : "auto"}

@@ -5,7 +5,13 @@ import { listPokemonQuery } from "~/api/queries";
 import { useDebounced } from "~/hooks/useDebounced";
 import { titleCase } from "~/utils/formatters";
 
-export function Autocomplete({ placeholder = "Search Pokémon…" }: { placeholder?: string }) {
+type Props = {
+  placeholder?: string;
+  /** Optional glyph rendered on the right side of the input — e.g. "⌘" or "Ctrl". */
+  kbdHint?: string;
+};
+
+export function Autocomplete({ placeholder = "Search Pokémon…", kbdHint }: Props) {
   const navigate = useNavigate();
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
@@ -82,7 +88,7 @@ export function Autocomplete({ placeholder = "Search Pokémon…" }: { placehold
       <input
         id="global-search"
         ref={inputRef}
-        className="search__input"
+        className={`search__input${kbdHint ? " search__input--has-kbd" : ""}`}
         type="search"
         autoComplete="off"
         placeholder={placeholder}
@@ -102,6 +108,12 @@ export function Autocomplete({ placeholder = "Search Pokémon…" }: { placehold
           open && suggestions.length > 0 ? `${listboxId}-opt-${active}` : undefined
         }
       />
+      {kbdHint && (
+        <kbd className="search__kbd" aria-hidden="true">
+          <span>{kbdHint}</span>
+          <span>K</span>
+        </kbd>
+      )}
       {open && suggestions.length > 0 && (
         <ul className="search__menu" id={listboxId} role="listbox" aria-label="Pokémon suggestions">
           {suggestions.map((s, i) => (

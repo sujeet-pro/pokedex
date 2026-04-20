@@ -1,9 +1,10 @@
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { listPokemonQuery } from "~/api/queries";
 import { searchRoute } from "~/router";
-import { titleCase } from "~/utils/formatters";
+import { ConsoleDevice } from "~/components/ConsoleDevice";
+import { padId, titleCase } from "~/utils/formatters";
 
 const MAX_RESULTS = 100;
 
@@ -25,8 +26,11 @@ function Results({ query }: { query: string }) {
   if (!query) {
     return (
       <div className="error-state">
-        <h2>Type something to search</h2>
-        <p>Try a name like “ven”, “char”, “pika”, or just “all”.</p>
+        <h2>&gt; Awaiting input</h2>
+        <p>
+          Try a name like &ldquo;ven&rdquo;, &ldquo;char&rdquo;, &ldquo;pika&rdquo;, or
+          &ldquo;all&rdquo;.
+        </p>
       </div>
     );
   }
@@ -34,18 +38,18 @@ function Results({ query }: { query: string }) {
   if (matches.length === 0) {
     return (
       <div className="error-state" role="status" aria-live="polite">
-        <h2>No Pokémon matched “{query}”</h2>
-        <p>Try a different search term.</p>
+        <h2>&gt; No match for &ldquo;{query}&rdquo;</h2>
+        <p>Try a different query.</p>
       </div>
     );
   }
 
   return (
     <>
-      <p style={{ color: "var(--text-muted)" }} aria-live="polite">
+      <p className="catalog-head__count" aria-live="polite" style={{ margin: "0 0 0.75rem" }}>
         {matches.length} {matches.length === 1 ? "result" : "results"}
       </p>
-      <ul className="grid-cards" style={{ listStyle: "none", padding: 0, margin: 0 }}>
+      <ul className="grid-cards">
         {matches.map((r) => {
           const id = idFromUrl(r.url);
           return (
@@ -54,14 +58,14 @@ function Results({ query }: { query: string }) {
                 to="/pokemon/$name"
                 params={{ name: r.name }}
                 className="pokemon-card"
-                aria-label={`${titleCase(r.name)}, #${String(id).padStart(4, "0")}`}
+                aria-label={`${titleCase(r.name)}, ${padId(id)}`}
               >
                 <div className="pokemon-card__sprite">
                   <img
                     src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`}
                     alt=""
-                    width={192}
-                    height={192}
+                    width={450}
+                    height={450}
                     loading="lazy"
                     decoding="async"
                     onError={(e) => {
@@ -70,10 +74,8 @@ function Results({ query }: { query: string }) {
                     }}
                   />
                 </div>
-                <div>
-                  <div className="pokemon-card__id">#{String(id).padStart(4, "0")}</div>
-                  <div className="pokemon-card__name">{titleCase(r.name)}</div>
-                </div>
+                <div className="pokemon-card__id">{padId(id)}</div>
+                <div className="pokemon-card__name">{titleCase(r.name)}</div>
               </Link>
             </li>
           );
@@ -88,18 +90,37 @@ export function SearchPage() {
   const query = (q ?? "").trim();
 
   return (
-    <>
-      <h1 className="page-title">Search</h1>
-      <p className="page-lede">
-        {query ? (
-          <>
-            Results for <strong>“{query}”</strong>
-          </>
-        ) : (
-          "Find Pokémon by name — partial matches are supported."
-        )}
-      </p>
-      <Results query={query} />
-    </>
+    <ConsoleDevice
+      title="POKÉ DEX · SEARCH"
+      subtitle={query ? `filter · "${query}"` : "enter a query"}
+      ariaLabel="Search Pokémon"
+    >
+      <div>
+        <p className="hud-row">
+          <b>MODE</b> · TEXT MATCH · MAX {MAX_RESULTS}
+        </p>
+        <h1 className="hud-name">Search</h1>
+        <p className="hud-flavor">
+          {query
+            ? `Showing matches for "${query}".`
+            : "Find Pokémon by name — partial matches are supported. Focus the navbar field with /."}
+        </p>
+
+        <div style={{ marginTop: "1rem" }}>
+          <Suspense
+            fallback={
+              <div
+                className="skeleton"
+                style={{ height: "18rem" }}
+                aria-busy="true"
+                aria-label="Loading Pokémon list"
+              />
+            }
+          >
+            <Results query={query} />
+          </Suspense>
+        </div>
+      </div>
+    </ConsoleDevice>
   );
 }

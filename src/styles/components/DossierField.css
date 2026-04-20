@@ -1,0 +1,64 @@
+.dossier-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+@media (width < 480px) {
+  .dossier-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dossier-field {
+  width: 100%;
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.55rem 0.75rem;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--screen-rule);
+  border-radius: var(--radius-sm);
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    transform 120ms ease;
+}
+
+.dossier-field:hover {
+  border-color: var(--phosphor);
+  transform: translateY(-1px);
+}
+
+.dossier-field:focus-visible {
+  outline: none;
+  border-color: var(--phosphor);
+  box-shadow:
+    0 0 0 2px var(--screen-bg),
+    0 0 0 4px var(--phosphor);
+}
+
+.dossier-field[data-state="open"] {
+  border-color: var(--amber);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--amber) 30%, transparent);
+}
+
+.dossier-field__term {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--phosphor-dim);
+}
+
+.dossier-field__value {
+  color: var(--screen-fg);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: capitalize;
+  font-variant-numeric: tabular-nums;
+}

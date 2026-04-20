@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en" data-theme="paper" data-type="fire">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Option C — Elemental Dossier · preview</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    /* neutral base */
+    --bg: #f6f1ea;
+    --ink: #141110;
+    --ink-2: #3a2f28;
+    --mute: #7a6a5e;
+    --rule: #d9cfc2;
+    --card: #fffaf2;
+
+    /* type palette — overridden per [data-type] */
+    --type: #e15a1f;
+    --type-soft: #ffd9c4;
+    --type-2:    #a4361b;
+    --type-ink:  #2a0f04;
+  }
+  /* per-type themes (only fire/flying shown for demo) */
+  [data-type="fire"]    { --type:#e15a1f; --type-soft:#ffdcc4; --type-2:#a4361b; --type-ink:#2a0f04; }
+  [data-type="water"]   { --type:#3a7cd4; --type-soft:#c4dbff; --type-2:#1f4f9a; --type-ink:#0a1f40; }
+  [data-type="grass"]   { --type:#5ea04a; --type-soft:#d1ecc4; --type-2:#39702a; --type-ink:#0e2a08; }
+  [data-type="electric"]{ --type:#d9b020; --type-soft:#ffe89a; --type-2:#9a7a0a; --type-ink:#2a1f00; }
+  [data-type="psychic"] { --type:#e24070; --type-soft:#ffc4d2; --type-2:#9a2040; --type-ink:#2a0a18; }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Open Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    background:
+      radial-gradient(120% 50% at 50% -10%, var(--type-soft) 0, transparent 60%),
+      radial-gradient(60% 40% at 100% 100%, color-mix(in srgb, var(--type-soft) 60%, transparent) 0, transparent 80%),
+      var(--bg);
+    min-height: 100vh;
+  }
+  .mono { font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+  a { color: inherit; }
+
+  header.nav {
+    display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px;
+    padding: 16px clamp(20px, 5vw, 64px); background: color-mix(in srgb, var(--bg) 80%, transparent);
+    border-bottom: 1px solid var(--rule); position: sticky; top: 0; z-index: 5;
+    backdrop-filter: saturate(140%) blur(6px);
+  }
+  .brand {
+    font-weight: 800; letter-spacing: -0.01em; display: inline-flex; align-items: center; gap: 10px;
+  }
+  .brand::before { content: ""; width: 14px; height: 14px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fff 0 20%, var(--type) 80%);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--type) 30%, transparent);
+  }
+  .nav__crumbs { color: var(--mute); font-size: 13px; text-align: center; }
+  .nav__crumbs b { color: var(--ink); }
+  .nav__meta { color: var(--mute); font-size: 12px; }
+  .nav__meta kbd { background: var(--card); border: 1px solid var(--rule); border-radius: 4px; padding: 2px 6px; font-size: 11px; color: var(--ink); }
+
+  /* ── hero banner ─────────────────────────────────────── */
+  .hero {
+    max-width: 1280px; margin: 0 auto; padding: clamp(24px, 5vw, 72px) clamp(20px, 5vw, 64px) 24px;
+    display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(24px, 4vw, 48px); align-items: center;
+  }
+  @media (max-width: 960px) { .hero { grid-template-columns: 1fr; } }
+
+  .hero__eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--type-2);
+    padding: 4px 10px; border: 1px solid color-mix(in srgb, var(--type) 30%, transparent);
+    border-radius: 999px; background: color-mix(in srgb, var(--type-soft) 50%, transparent);
+  }
+  .hero__eyebrow::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--type); }
+
+  .hero__id { color: var(--mute); font-size: 13px; margin: 14px 0 6px; letter-spacing: 0.08em; }
+  .hero__id b { color: var(--type-2); }
+
+  h1.hero__name {
+    margin: 0; font-weight: 800; letter-spacing: -0.04em; line-height: 0.9;
+    font-size: clamp(56px, 10vw, 140px);
+    background: linear-gradient(180deg, var(--ink) 0 60%, var(--type) 140%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero__genus { font-size: 16px; color: var(--ink-2); margin: 12px 0 20px; }
+  .hero__genus::before { content: "— "; color: var(--mute); }
+
+  .hero__flavor {
+    font-size: 18px; line-height: 1.55; max-width: 48ch; color: var(--ink-2); margin: 0 0 22px;
+  }
+
+  .types { display: flex; gap: 10px; margin: 0 0 24px; }
+  .type {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 8px 14px 8px 10px; border-radius: 999px; font-size: 13px;
+    font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--type-ink); background: var(--tp-soft, var(--type-soft));
+    border: 1px solid color-mix(in srgb, var(--tp, var(--type)) 50%, transparent);
+  }
+  .type svg { width: 14px; height: 14px; }
+  .type--fire   { --tp: #e15a1f; --tp-soft: #ffdcc4; }
+  .type--flying { --tp: #8f82d8; --tp-soft: #e0dcf7; color: #20174a; }
+
+  .hero__meta { display: grid; grid-template-columns: repeat(4, auto); gap: 22px; margin: 8px 0 0; }
+  .hero__meta div { }
+  .hero__meta dt { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mute); margin-bottom: 2px; }
+  .hero__meta dd { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.01em; color: var(--ink); }
+  .hero__meta dd .mono { font-weight: 600; font-size: 16px; color: var(--ink-2); }
+
+  /* ── radial infographic ──────────────────────────────── */
+  .info {
+    position: relative; aspect-ratio: 1/1; display: grid; place-items: center;
+  }
+  .info svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.08)); }
+  .info__art {
+    position: absolute; width: 48%; aspect-ratio: 1; display: grid; place-items: center;
+    pointer-events: none;
+  }
+  .info__art img { width: 100%; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.25)); }
+  .info__caption {
+    position: absolute; top: calc(50% + 18%); left: 50%; transform: translateX(-50%);
+    font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--mute);
+    letter-spacing: 0.16em; text-transform: uppercase;
+  }
+
+  /* ── dossier grid below ──────────────────────────────── */
+  .dossier {
+    max-width: 1280px; margin: 24px auto; padding: 0 clamp(20px, 5vw, 64px);
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  }
+  @media (max-width: 960px) { .dossier { grid-template-columns: 1fr; } }
+  .card-d {
+    background: var(--card); border: 1px solid var(--rule); border-radius: 18px; padding: 22px 22px 20px;
+    display: grid; gap: 12px; position: relative; overflow: hidden;
+  }
+  .card-d::before {
+    content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: linear-gradient(90deg, var(--type), transparent 70%);
+  }
+  .card-d h2 {
+    margin: 0; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute); font-weight: 700;
+  }
+  .card-d .title {
+    font-size: 18px; font-weight: 800; letter-spacing: -0.01em; color: var(--ink);
+  }
+
+  /* evolution timeline — vertical nodes */
+  .evo {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-items: center;
+    padding: 6px 0 0;
+  }
+  .evo__node { text-align: center; }
+  .evo__puck {
+    aspect-ratio: 1; max-width: 120px; margin: 0 auto; border-radius: 50%;
+    background: radial-gradient(closest-side, var(--type-soft), transparent 70%);
+    display: grid; place-items: center;
+    border: 1px dashed color-mix(in srgb, var(--type) 40%, transparent);
+  }
+  .evo__puck img { width: 90%; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.12)); }
+  .evo__node[data-current="true"] .evo__puck {
+    background: radial-gradient(closest-side, var(--type-soft) 0 60%, transparent 80%);
+    border: 1px solid var(--type);
+    box-shadow: 0 0 0 3px #fff, 0 0 0 4px color-mix(in srgb, var(--type) 60%, transparent);
+  }
+  .evo__name { font-weight: 700; margin-top: 8px; font-size: 14px; }
+  .evo__id { font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--mute); }
+  .evo__arrow {
+    text-align: center; font-family: "JetBrains Mono", monospace;
+    font-size: 10px; letter-spacing: 0.08em; color: var(--type-2);
+    grid-column: span 3; display: none; /* horizontal layout handled by row position */
+  }
+
+  /* abilities as pills */
+  .abilities { display: grid; gap: 8px; }
+  .ability {
+    display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px;
+    padding: 10px 12px; border-radius: 10px; background: color-mix(in srgb, var(--type-soft) 40%, transparent);
+    border: 1px solid color-mix(in srgb, var(--type) 20%, transparent);
+  }
+  .ability__name { font-weight: 700; font-size: 15px; }
+  .ability__effect { grid-column: 1 / -1; font-size: 13px; color: var(--ink-2); }
+  .tag { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--type-2); font-weight: 700; }
+  .tag--hidden { color: #fff; background: var(--ink); padding: 2px 8px; border-radius: 999px; }
+
+  /* habitat pictogram row */
+  .pic-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .pic {
+    display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: center;
+    padding: 10px 12px; border-radius: 10px; border: 1px solid var(--rule); background: #fff;
+  }
+  .pic svg { width: 32px; height: 32px; color: var(--type); }
+  .pic dt { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mute); margin: 0; }
+  .pic dd { margin: 0; font-weight: 700; font-size: 14px; text-transform: capitalize; }
+
+  /* ── catalog grid ────────────────────────────────────── */
+  .catalog {
+    max-width: 1280px; margin: 28px auto 72px; padding: 24px clamp(20px, 5vw, 64px) 0;
+    border-top: 1px solid var(--rule);
+  }
+  .catalog h2 { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute); margin: 0 0 16px; }
+  .cat-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px;
+    list-style: none; padding: 0; margin: 0;
+  }
+  .cat-card {
+    --tp: #9a9a7a; --tp-soft: #efeedd;
+    border-radius: 18px; padding: 18px; background:
+      radial-gradient(120% 60% at 50% 0%, var(--tp-soft), transparent 70%),
+      var(--card);
+    border: 1px solid color-mix(in srgb, var(--tp) 20%, var(--rule));
+    display: grid; gap: 6px; position: relative; overflow: hidden;
+  }
+  .cat-card::after {
+    content: ""; position: absolute; inset: auto 0 0 0; height: 3px;
+    background: linear-gradient(90deg, var(--tp), transparent 70%);
+  }
+  .cat-card__art {
+    aspect-ratio: 1; display: grid; place-items: center;
+  }
+  .cat-card__art img { width: 78%; filter: drop-shadow(0 10px 12px rgba(0,0,0,0.12)); transition: transform 240ms ease-out; }
+  .cat-card:hover .cat-card__art img { transform: translateY(-4px) scale(1.02); }
+  .cat-card__id { font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--mute); }
+  .cat-card__name { font-size: 17px; font-weight: 800; letter-spacing: -0.01em; }
+  .cat-card__pips { display: flex; gap: 4px; margin-top: 4px; }
+  .cat-card__pip {
+    padding: 2px 8px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    border-radius: 999px; color: var(--ink);
+    background: color-mix(in srgb, var(--p, #ccc) 35%, #fff);
+    border: 1px solid color-mix(in srgb, var(--p, #ccc) 55%, transparent);
+    font-weight: 700;
+  }
+  .p-normal   { --p:#9a9a7a; }  .p-fire     { --p:#e15a1f; }  .p-water    { --p:#3a7cd4; }
+  .p-electric { --p:#d9b020; }  .p-grass    { --p:#5ea04a; }  .p-ice      { --p:#7bb8b6; }
+  .p-fighting { --p:#b02820; }  .p-poison   { --p:#8b359f; }  .p-ground   { --p:#c09848; }
+  .p-flying   { --p:#8f82d8; }  .p-psychic  { --p:#e24070; }  .p-bug      { --p:#8aa015; }
+  .p-rock     { --p:#9a8830; }  .p-ghost    { --p:#5a4a78; }  .p-dragon   { --p:#5a2dd4; }
+  .p-dark     { --p:#5a4638; }  .p-steel    { --p:#9696a8; }  .p-fairy    { --p:#b06c8a; }
+
+  /* per-card tinting via data-type */
+  .cat-card[data-tp="fire"]    { --tp:#e15a1f; --tp-soft:#ffe0cc; }
+  .cat-card[data-tp="water"]   { --tp:#3a7cd4; --tp-soft:#d1e3ff; }
+  .cat-card[data-tp="grass"]   { --tp:#5ea04a; --tp-soft:#d4edc6; }
+  .cat-card[data-tp="electric"]{ --tp:#d9b020; --tp-soft:#fff0b8; }
+  .cat-card[data-tp="psychic"] { --tp:#e24070; --tp-soft:#ffc9d9; }
+  .cat-card[data-tp="dragon"]  { --tp:#5a2dd4; --tp-soft:#d9cdff; }
+  .cat-card[data-tp="ghost"]   { --tp:#5a4a78; --tp-soft:#dcd6ed; }
+  .cat-card[data-tp="ice"]     { --tp:#7bb8b6; --tp-soft:#d4efee; }
+  .cat-card[data-tp="poison"]  { --tp:#8b359f; --tp-soft:#ead1f2; }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <span class="brand">Pokédex</span>
+  <span class="nav__crumbs">Kanto / <b>#0006</b> / Charizard</span>
+  <span class="nav__meta"><kbd>/</kbd> search · <kbd>?</kbd> shortcuts</span>
+</header>
+
+<section class="hero">
+  <!-- LEFT: identity -->
+  <div>
+    <span class="hero__eyebrow">Entry · Flame Pokémon</span>
+    <div class="hero__id mono">NO. <b>0006</b> · GEN I · KANTO</div>
+    <h1 class="hero__name">Charizard</h1>
+    <p class="hero__genus">Flies in search of strong opponents.</p>
+
+    <div class="types">
+      <span class="type type--fire">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1c1.2 3 4 4.2 4 7.5A4 4 0 0 1 8 13a2 2 0 0 1-2-2c0-1 1-1.5 1-3 0-1.5-1.2-2.2-1-3.5.3-1.6 2-2.3 2-3.5Z" fill="currentColor" /></svg>
+        Fire
+      </span>
+      <span class="type type--flying">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 11c3-1 5-4 7-7 0 3 3 5 7 6-4 0-6 2-7 5-1-2-3-3-7-4Z" fill="currentColor" /></svg>
+        Flying
+      </span>
+    </div>
+
+    <p class="hero__flavor">
+      Spits fire that is hot enough to melt boulders. When it becomes furious, the flame at the tip of its tail burns pale blue.
+    </p>
+
+    <dl class="hero__meta">
+      <div><dt>Height</dt><dd>1.70<span class="mono"> m</span></dd></div>
+      <div><dt>Weight</dt><dd>90.5<span class="mono"> kg</span></dd></div>
+      <div><dt>Catch</dt><dd class="mono">45</dd></div>
+      <div><dt>Base XP</dt><dd class="mono">240</dd></div>
+    </dl>
+  </div>
+
+  <!-- RIGHT: the radial infographic -->
+  <div class="info" id="infographic" aria-label="Charizard infographic">
+    <svg viewBox="0 0 420 420" role="img" aria-label="Radial stats and weakness wheel">
+      <defs>
+        <radialGradient id="plate" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#fff" stop-opacity="1"/>
+          <stop offset="80%" stop-color="#fff" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="statFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--type)"/>
+          <stop offset="100%" stop-color="var(--type-2)"/>
+        </linearGradient>
+      </defs>
+
+      <!-- faint plate under sprite -->
+      <circle cx="210" cy="210" r="110" fill="url(#plate)"/>
+      <circle cx="210" cy="210" r="108" fill="none" stroke="var(--type-soft)" stroke-width="1"/>
+
+      <!-- stat ring scaffolding + wedges drawn by JS -->
+      <g id="stat-ring"></g>
+
+      <!-- weakness wheel drawn by JS -->
+      <g id="weak-wheel"></g>
+
+      <!-- tick labels for stats -->
+      <g id="stat-labels" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--ink-2)" text-anchor="middle"></g>
+
+      <!-- outer ring decoration -->
+      <circle cx="210" cy="210" r="205" fill="none" stroke="color-mix(in srgb, var(--type) 15%, transparent)" stroke-width="1"/>
+      <circle cx="210" cy="210" r="165" fill="none" stroke="color-mix(in srgb, var(--type) 25%, transparent)" stroke-width="1"/>
+    </svg>
+    <div class="info__art" aria-hidden="true">
+      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png" alt="" />
+    </div>
+    <div class="info__caption">Base stats · matchups</div>
+  </div>
+</section>
+
+<!-- dossier cards -->
+<section class="dossier">
+  <div class="card-d">
+    <h2>Evolution</h2>
+    <div class="evo">
+      <div class="evo__node">
+        <div class="evo__puck"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/4.png" alt=""></div>
+        <div class="evo__name">Charmander</div>
+        <div class="evo__id">#0004 · lvl 16 →</div>
+      </div>
+      <div class="evo__node">
+        <div class="evo__puck"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/5.png" alt=""></div>
+        <div class="evo__name">Charmeleon</div>
+        <div class="evo__id">#0005 · lvl 36 →</div>
+      </div>
+      <div class="evo__node" data-current="true">
+        <div class="evo__puck"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png" alt=""></div>
+        <div class="evo__name">Charizard</div>
+        <div class="evo__id">#0006 · final</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-d">
+    <h2>Abilities</h2>
+    <div class="abilities">
+      <div class="ability">
+        <span class="ability__name">Blaze</span>
+        <span class="tag">Standard</span>
+        <span class="ability__effect">Powers up Fire-type moves when HP is below ⅓.</span>
+      </div>
+      <div class="ability">
+        <span class="ability__name">Solar Power</span>
+        <span class="tag tag--hidden">Hidden</span>
+        <span class="ability__effect">Boosts Sp. Atk in harsh sunlight, at the cost of HP.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-d">
+    <h2>Habitat · Growth</h2>
+    <div class="pic-row">
+      <dl class="pic">
+        <svg viewBox="0 0 32 32" aria-hidden="true" fill="currentColor"><path d="M2 26 L11 12 L16 20 L20 16 L30 26 Z"/><circle cx="24" cy="8" r="3"/></svg>
+        <div><dt>Habitat</dt><dd>Mountain</dd></div>
+      </dl>
+      <dl class="pic">
+        <svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="16" cy="9" r="4"/><path d="M16 13 L16 26 M10 18 L22 18 M12 26 L20 26"/></svg>
+        <div><dt>Shape</dt><dd>Upright</dd></div>
+      </dl>
+      <dl class="pic">
+        <svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="16" cy="18" rx="10" ry="12"/></svg>
+        <div><dt>Egg groups</dt><dd>Monster · Dragon</dd></div>
+      </dl>
+      <dl class="pic">
+        <svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 24 C10 10 22 10 28 24"/><path d="M4 24 L4 28 M28 24 L28 28"/></svg>
+        <div><dt>Growth</dt><dd>Medium Slow</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- catalog: type-tinted cards -->
+<section class="catalog">
+  <h2>Catalog · Kanto starters &amp; finals</h2>
+  <ul class="cat-grid">
+    <li class="cat-card" data-tp="grass">
+      <div class="cat-card__art"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/3.png" alt=""></div>
+      <div class="cat-card__id">#0003</div><div class="cat-card__name">Venusaur</div>
+      <div class="cat-card__pips"><span class="cat-card__pip p-grass">Grass</span><span class="cat-card__pip p-poison">Poison</span></div>
+    </li>
+    <li class="cat-card" data-tp="fire">
+      <div class="cat-card__art"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png" alt=""></div>
+      <div class="cat-card__id">#0006</div><div class="cat-card__name">Charizard</div>
+      <div class="cat-card__pips"><span class="cat-card__pip p-fire">Fire</span><span class="cat-card__pip p-flying">Flying</span></div>
+    </li>
+    <li class="cat-card" data-tp="water">
+      <div class="cat-card__art"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/9.png" alt=""></div>
+      <div class="cat-card__id">#0009</div><div class="cat-card__name">Blastoise</div>
+      <div class="cat-card__pips"><span class="cat-card__pip p-water">Water</span></div>
+    </li>
+    <li class="cat-card" data-tp="electric">
+      <div class="cat-card__art"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" alt=""></div>
+      <div class="cat-card__id">#0025</div><div class="cat-card__name">Pikachu</div>
+      <div class="cat-card__pips"><span class="cat-card__pip p-electric">Electric</span></div>
+    </li>
+    <li class="cat-card" data-tp="ghost">
+      <div class="cat-card__art"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/94.png" alt=""></div>
+      <div class="cat-card__id">#0094</div><div class="cat-card__name">Gengar</div>
+      <div class="cat-card__pips"><span class="cat-card__pip p-ghost">Ghost</span><span class="cat-card__pip p-poison">Poison</span></div>
+    </li>
+    <li class="cat-card" data-tp="psychic">
+      <div class="cat-card__art"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png" alt=""></div>
+      <div class="cat-card__id">#0150</div><div class="cat-card__name">Mewtwo</div>
+      <div class="cat-card__pips"><span class="cat-card__pip p-psychic">Psychic</span></div>
+    </li>
+    <li class="cat-card" data-tp="dragon">
+      <div class="cat-card__art"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/149.png" alt=""></div>
+      <div class="cat-card__id">#0149</div><div class="cat-card__name">Dragonite</div>
+      <div class="cat-card__pips"><span class="cat-card__pip p-dragon">Dragon</span><span class="cat-card__pip p-flying">Flying</span></div>
+    </li>
+    <li class="cat-card" data-tp="ice">
+      <div class="cat-card__art"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/144.png" alt=""></div>
+      <div class="cat-card__id">#0144</div><div class="cat-card__name">Articuno</div>
+      <div class="cat-card__pips"><span class="cat-card__pip p-ice">Ice</span><span class="cat-card__pip p-flying">Flying</span></div>
+    </li>
+  </ul>
+
+  <p style="margin-top:48px;color:var(--mute);font-size:12px;letter-spacing:0.06em;">
+    <a href="./index.html" style="color:var(--ink);text-decoration:underline;">← back to options</a>
+  </p>
+</section>
+
+<script>
+  // Build the radial infographic: stat wedges + 18-slice weakness wheel.
+  (function () {
+    const cx = 210, cy = 210;
+    const statInner = 115;   // inner radius of stat wedges
+    const statMax   = 160;   // outer radius at max value (150 cap for visuals)
+    const weakInner = 170;   // inner radius of weakness ring
+    const weakMin   = 172;   // outer at ×0
+    const weakMax   = 205;   // outer at ×4
+
+    // stat data: [label, value, angle_center_deg]
+    const stats = [
+      { label: "HP",    value: 78,  angle: 0 },
+      { label: "ATK",   value: 84,  angle: 60 },
+      { label: "DEF",   value: 78,  angle: 120 },
+      { label: "SPE",   value: 100, angle: 180 },
+      { label: "S.DEF", value: 85,  angle: 240 },
+      { label: "S.ATK", value: 109, angle: 300 },
+    ];
+
+    // weakness (Charizard) — 18 types
+    const TYPES = [
+      ["normal",   "#9a9a7a", 1],
+      ["fire",     "#e15a1f", 0.5],
+      ["water",    "#3a7cd4", 2],
+      ["electric", "#d9b020", 2],
+      ["grass",    "#5ea04a", 0.25],
+      ["ice",      "#7bb8b6", 1],
+      ["fighting", "#b02820", 0.5],
+      ["poison",   "#8b359f", 1],
+      ["ground",   "#c09848", 0],
+      ["flying",   "#8f82d8", 1],
+      ["psychic",  "#e24070", 1],
+      ["bug",      "#8aa015", 0.25],
+      ["rock",     "#9a8830", 4],
+      ["ghost",    "#5a4a78", 1],
+      ["dragon",   "#5a2dd4", 1],
+      ["dark",     "#5a4638", 1],
+      ["steel",    "#9696a8", 0.5],
+      ["fairy",    "#b06c8a", 0.5],
+    ];
+
+    const deg2rad = d => (d - 90) * Math.PI / 180; // 0° = top
+
+    function pt(cx, cy, r, aDeg) {
+      const a = deg2rad(aDeg);
+      return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+    }
+
+    // wedge from a1 to a2 between rInner and rOuter
+    function wedge(cx, cy, rInner, rOuter, a1, a2) {
+      const [x1i, y1i] = pt(cx, cy, rInner, a1);
+      const [x1o, y1o] = pt(cx, cy, rOuter, a1);
+      const [x2o, y2o] = pt(cx, cy, rOuter, a2);
+      const [x2i, y2i] = pt(cx, cy, rInner, a2);
+      const large = (a2 - a1) > 180 ? 1 : 0;
+      return [
+        "M", x1i, y1i,
+        "L", x1o, y1o,
+        "A", rOuter, rOuter, 0, large, 1, x2o, y2o,
+        "L", x2i, y2i,
+        "A", rInner, rInner, 0, large, 0, x1i, y1i,
+        "Z"
+      ].join(" ");
+    }
+
+    const ring = document.getElementById("stat-ring");
+    const labels = document.getElementById("stat-labels");
+
+    // Stat wedges: 6 wedges each 60°.
+    stats.forEach((s, i) => {
+      const a1 = s.angle - 28;
+      const a2 = s.angle + 28;
+      // full "track"
+      const track = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      track.setAttribute("d", wedge(cx, cy, statInner, statMax, a1, a2));
+      track.setAttribute("fill", "color-mix(in srgb, var(--type-soft) 70%, transparent)");
+      track.setAttribute("stroke", "color-mix(in srgb, var(--type) 20%, transparent)");
+      track.setAttribute("stroke-width", "1");
+      ring.appendChild(track);
+
+      // fill ramp (value/150)
+      const ratio = Math.min(1, s.value / 150);
+      const r = statInner + (statMax - statInner) * ratio;
+      const fill = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      fill.setAttribute("d", wedge(cx, cy, statInner, r, a1 + 2, a2 - 2));
+      fill.setAttribute("fill", "url(#statFill)");
+      ring.appendChild(fill);
+
+      // label + value (outside the track)
+      const [lx, ly] = pt(cx, cy, statMax + 2, s.angle);
+      const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      label.setAttribute("x", lx);
+      label.setAttribute("y", ly - 3);
+      label.textContent = s.label;
+      label.setAttribute("fill", "var(--ink-2)");
+      labels.appendChild(label);
+
+      const val = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      val.setAttribute("x", lx);
+      val.setAttribute("y", ly + 8);
+      val.textContent = s.value;
+      val.setAttribute("fill", "var(--type-2)");
+      val.setAttribute("font-weight", "700");
+      labels.appendChild(val);
+    });
+
+    // Weakness wheel — 18 slices of 20°
+    const wheel = document.getElementById("weak-wheel");
+    const sliceArc = 360 / TYPES.length; // 20°
+    TYPES.forEach(([name, color, mult], i) => {
+      const a1 = i * sliceArc - sliceArc / 2;
+      const a2 = a1 + sliceArc - 2; // small gap
+      // outer radius per multiplier
+      const rOut = {
+        0:     weakMin + 2,
+        0.25:  weakMin + 4,
+        0.5:   weakMin + 10,
+        1:     weakMin + 16,
+        2:     weakMin + 24,
+        4:     weakMax
+      }[mult];
+      const slice = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      slice.setAttribute("d", wedge(cx, cy, weakInner, rOut, a1 + 1, a2));
+      // stronger multiplier = more saturated
+      const opacity = mult === 0 ? 0.35 : Math.min(1, 0.35 + mult * 0.22);
+      slice.setAttribute("fill", color);
+      slice.setAttribute("fill-opacity", opacity);
+      slice.setAttribute("stroke", "#fff");
+      slice.setAttribute("stroke-width", "0.5");
+      wheel.appendChild(slice);
+
+      if (mult >= 2 || mult === 0) {
+        // mark strong multipliers with a small label outside
+        const [lx, ly] = pt(cx, cy, weakMax + 8, i * sliceArc);
+        const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        t.setAttribute("x", lx);
+        t.setAttribute("y", ly + 3);
+        t.setAttribute("font-family", "JetBrains Mono, monospace");
+        t.setAttribute("font-size", "9");
+        t.setAttribute("text-anchor", "middle");
+        t.setAttribute("fill", mult === 0 ? "var(--mute)" : color);
+        t.setAttribute("font-weight", "700");
+        t.textContent = mult === 0 ? name.slice(0, 3) + " 0" : name.slice(0, 3) + " ×" + (mult === 0.5 ? "½" : mult === 0.25 ? "¼" : mult);
+        wheel.appendChild(t);
+      }
+    });
+
+    // tiny inner tick marks at wheel boundary
+    const boundary = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    boundary.setAttribute("cx", cx); boundary.setAttribute("cy", cy);
+    boundary.setAttribute("r", weakInner - 1);
+    boundary.setAttribute("fill", "none");
+    boundary.setAttribute("stroke", "color-mix(in srgb, var(--type) 30%, transparent)");
+    boundary.setAttribute("stroke-dasharray", "1 3");
+    wheel.appendChild(boundary);
+  })();
+</script>
+
+</body>
+</html>

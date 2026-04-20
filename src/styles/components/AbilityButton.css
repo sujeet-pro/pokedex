@@ -1,0 +1,72 @@
+.ability-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.ability-btn {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--screen-rule);
+  border-radius: var(--radius-sm);
+  color: var(--screen-fg);
+  font-family: var(--font-mono);
+  text-align: start;
+  cursor: pointer;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease,
+    transform 120ms ease;
+}
+
+.ability-btn:hover {
+  border-color: var(--phosphor);
+  transform: translateY(-1px);
+}
+
+.ability-btn:focus-visible {
+  outline: none;
+  border-color: var(--phosphor);
+  box-shadow:
+    0 0 0 2px var(--screen-bg),
+    0 0 0 4px var(--phosphor);
+}
+
+.ability-btn[data-state="open"] {
+  border-color: var(--amber);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--amber) 30%, transparent);
+}
+
+.ability-btn__name {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: capitalize;
+}
+
+.ability-btn__tag {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+
+.ability-btn--std .ability-btn__tag {
+  color: var(--phosphor-dim);
+  border-color: var(--screen-rule);
+}
+
+.ability-btn--hidden .ability-btn__tag {
+  color: var(--amber);
+  border-color: var(--amber);
+  background: color-mix(in srgb, var(--amber) 10%, transparent);
+}

@@ -1,0 +1,53 @@
+.cart {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 6px 14px 6px 8px;
+  background: color-mix(in srgb, var(--phosphor) 10%, transparent);
+  border: 1px solid var(--phosphor);
+  color: var(--screen-fg);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%);
+  transition:
+    background 120ms ease,
+    color 120ms ease,
+    transform 120ms ease;
+}
+
+.cart:hover,
+.cart:focus-visible {
+  background: color-mix(in srgb, var(--phosphor) 18%, transparent);
+  color: var(--screen-fg);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.cart:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--screen-bg),
+    0 0 0 4px var(--phosphor);
+}
+
+.cart__chip {
+  width: 10px;
+  height: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.cart--sm {
+  padding: 4px 10px 4px 6px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+.cart--sm .cart__chip {
+  width: 8px;
+  height: 8px;
+}

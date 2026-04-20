@@ -18,15 +18,23 @@ export type Preferences = {
   mode: Mode;
   scale: Scale;
   dir: Dir;
+  /** Name of a SpeechSynthesisVoice; `null` = auto-pick a sensible default. */
+  voice: string | null;
 };
 
 const STORAGE_KEY = "pokedex.prefs";
-const DEFAULTS: Preferences = { theme: "blue", mode: "light", scale: "md", dir: "ltr" };
+const DEFAULTS: Preferences = {
+  theme: "red",
+  mode: "dark",
+  scale: "md",
+  dir: "ltr",
+  voice: null,
+};
 
 const THEME_COLOR: Record<Theme, string> = {
-  blue: "#1e6feb",
-  yellow: "#f4c542",
-  red: "#e54e4e",
+  blue: "#264ba0",
+  yellow: "#d4a61f",
+  red: "#bb2a2a",
 };
 
 type Ctx = {
@@ -35,6 +43,7 @@ type Ctx = {
   setMode: (m: Mode) => void;
   setScale: (s: Scale) => void;
   setDir: (d: Dir) => void;
+  setVoice: (v: string | null) => void;
   reset: () => void;
 };
 
@@ -73,11 +82,12 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
   const setMode = useCallback((mode: Mode) => setPrefs((p) => ({ ...p, mode })), []);
   const setScale = useCallback((scale: Scale) => setPrefs((p) => ({ ...p, scale })), []);
   const setDir = useCallback((dir: Dir) => setPrefs((p) => ({ ...p, dir })), []);
+  const setVoice = useCallback((voice: string | null) => setPrefs((p) => ({ ...p, voice })), []);
   const reset = useCallback(() => setPrefs(DEFAULTS), []);
 
   const value = useMemo<Ctx>(
-    () => ({ prefs, setTheme, setMode, setScale, setDir, reset }),
-    [prefs, setTheme, setMode, setScale, setDir, reset],
+    () => ({ prefs, setTheme, setMode, setScale, setDir, setVoice, reset }),
+    [prefs, setTheme, setMode, setScale, setDir, setVoice, reset],
   );
 
   return <PreferencesContext value={value}>{children}</PreferencesContext>;

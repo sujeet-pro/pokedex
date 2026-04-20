@@ -1,8 +1,19 @@
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useHotkey, useHotkeySequence } from "@tanstack/react-hotkeys";
 import { Autocomplete } from "./Autocomplete";
 import { SettingsMenu } from "./Settings";
+
+const IS_MAC = typeof navigator !== "undefined" && /Mac|iPhone|iPad|iPod/.test(navigator.platform);
+const CMD_KEY_LABEL = IS_MAC ? "⌘" : "Ctrl";
+
+function focusSearch() {
+  const input = document.getElementById("global-search");
+  if (input instanceof HTMLInputElement) {
+    input.focus();
+    input.select();
+  }
+}
 
 export function Layout({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
@@ -15,9 +26,22 @@ export function Layout({ children }: { children: ReactNode }) {
   });
   useHotkey("/", (e) => {
     e.preventDefault();
-    const input = document.getElementById("global-search");
-    if (input instanceof HTMLInputElement) input.focus();
+    focusSearch();
   });
+
+  // Cmd+K (Mac) / Ctrl+K (Windows/Linux) — universal "open search" shortcut.
+  // Done with a native listener so it overrides the browser's default
+  // (Cmd+K focuses the Chrome omnibox in search-engine mode on Mac).
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key.toLowerCase() === "k" && (e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey) {
+        e.preventDefault();
+        focusSearch();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   return (
     <div className="app">
@@ -27,10 +51,10 @@ export function Layout({ children }: { children: ReactNode }) {
       <header className="navbar">
         <div className="container navbar__inner">
           <Link to="/" className="navbar__brand" aria-label="Pokédex home">
-            Pokédex
+            Poké Dex
           </Link>
           <div className="navbar__search">
-            <Autocomplete />
+            <Autocomplete kbdHint={CMD_KEY_LABEL} />
           </div>
           <div className="navbar__spacer" aria-hidden="true" />
           <div className="navbar__controls">
@@ -43,16 +67,17 @@ export function Layout({ children }: { children: ReactNode }) {
       </main>
       <footer className="footer">
         <div className="container">
-          <p style={{ margin: 0 }}>
+          <p>
             Data from{" "}
             <a href="https://pokeapi.co" target="_blank" rel="noreferrer noopener">
               PokéAPI
             </a>
             . Pokémon © Nintendo / Game Freak.
           </p>
-          <p style={{ margin: "0.35rem 0 0", fontSize: "0.8em" }}>
-            Keyboard shortcuts: <kbd>/</kbd> focus search · <kbd>g</kbd> <kbd>h</kbd> home ·{" "}
-            <kbd>g</kbd> <kbd>s</kbd> search
+          <p>
+            Shortcuts: <kbd>{CMD_KEY_LABEL}</kbd>
+            <kbd>K</kbd> search · <kbd>/</kbd> search · <kbd>g</kbd> <kbd>h</kbd> home ·{" "}
+            <kbd>g</kbd> <kbd>s</kbd> browse · <kbd>Esc</kbd> closes popovers
           </p>
         </div>
       </footer>

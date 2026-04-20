@@ -1,11 +1,13 @@
+import { useMemo } from "react";
 import { Popover, ToggleGroup, VisuallyHidden } from "radix-ui";
 import {
-  usePreferences,
+  type Dir,
   type Mode,
   type Scale,
   type Theme,
-  type Dir,
+  usePreferences,
 } from "~/hooks/usePreferences";
+import { useVoices } from "~/hooks/useVoices";
 
 const THEMES: Theme[] = ["blue", "yellow", "red"];
 const SCALES: Scale[] = ["xs", "sm", "md", "lg", "xl"];
@@ -13,7 +15,16 @@ const MODES: Mode[] = ["light", "dark"];
 const DIRS: Dir[] = ["ltr", "rtl"];
 
 export function SettingsMenu() {
-  const { prefs, setTheme, setMode, setScale, setDir } = usePreferences();
+  const { prefs, setTheme, setMode, setScale, setDir, setVoice } = usePreferences();
+  const voices = useVoices();
+
+  const speechSupported = typeof window !== "undefined" && "speechSynthesis" in window;
+
+  const englishVoices = useMemo(
+    () => voices.filter((v) => v.lang.toLowerCase().startsWith("en")),
+    [voices],
+  );
+  const voiceList = englishVoices.length > 0 ? englishVoices : voices;
 
   return (
     <Popover.Root>
@@ -103,6 +114,31 @@ export function SettingsMenu() {
               ))}
             </ToggleGroup.Root>
           </div>
+
+          {speechSupported && (
+            <div className="settings__row">
+              <label className="settings__label" htmlFor="voice-select">
+                Speech voice
+              </label>
+              <select
+                id="voice-select"
+                className="settings__select"
+                value={prefs.voice ?? ""}
+                onChange={(e) => setVoice(e.target.value || null)}
+                disabled={voiceList.length === 0}
+              >
+                <option value="">Auto · pick best available</option>
+                {voiceList.map((v) => (
+                  <option key={`${v.name}-${v.lang}`} value={v.name}>
+                    {v.name} ({v.lang}){v.localService ? "" : " · network"}
+                  </option>
+                ))}
+              </select>
+              <small className="settings__hint">
+                Used by the speaker button on entry pages. Voices come from your browser / OS.
+              </small>
+            </div>
+          )}
 
           <Popover.Arrow className="settings__arrow" />
         </Popover.Content>

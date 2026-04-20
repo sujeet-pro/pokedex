@@ -1,13 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-label="Pokédex">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ff5a5a"/>
-      <stop offset="1" stop-color="#cc1f1f"/>
+    <linearGradient id="pb-red" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ee5a5a"/>
+      <stop offset="1" stop-color="#bb2a2a"/>
+    </linearGradient>
+    <linearGradient id="pb-cream" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f5f4f0"/>
+      <stop offset="1" stop-color="#d8d5cb"/>
     </linearGradient>
   </defs>
-  <circle cx="32" cy="32" r="30" fill="url(#g)"/>
-  <path d="M2 32 A30 30 0 0 1 62 32 Z" fill="#222"/>
-  <rect x="0" y="30" width="64" height="4" fill="#111"/>
-  <circle cx="32" cy="32" r="10" fill="#fff" stroke="#111" stroke-width="3"/>
-  <circle cx="32" cy="32" r="4" fill="#eee" stroke="#111" stroke-width="2"/>
+  <!-- Upper half — red -->
+  <path d="M2 32 A30 30 0 0 0 62 32 L2 32 Z" fill="url(#pb-red)"/>
+  <!-- Lower half — cream -->
+  <path d="M2 32 A30 30 0 0 1 62 32 L2 32 Z" fill="url(#pb-cream)"/>
+  <!-- Outer ring -->
+  <circle cx="32" cy="32" r="30" fill="none" stroke="#0a0d0b" stroke-width="3"/>
+  <!-- Belt across the middle -->
+  <rect x="2" y="29" width="60" height="6" fill="#0a0d0b"/>
+  <!-- Centre button -->
+  <circle cx="32" cy="32" r="9" fill="#f5f4f0" stroke="#0a0d0b" stroke-width="3"/>
+  <!-- Phosphor core — ties the favicon to the console screen colour -->
+  <circle cx="32" cy="32" r="3.2" fill="#b6e3bf" stroke="#0a0d0b" stroke-width="1.5"/>
 </svg>
