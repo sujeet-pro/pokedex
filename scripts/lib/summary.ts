@@ -10,12 +10,38 @@ export function readSummaryHtml(id: number, lang: Locale): string | null {
   if (!existsSync(path)) return null;
   const text = readFileSync(path, "utf-8");
   if (!text.trim()) return null;
-  return wrapWordsAsSpans(text);
+  return wrapTextAsHtml(text);
 }
 
-// Wrap every whitespace-separated word in <span data-w="<char-offset>"> tokens.
-// Whitespace is preserved between tokens.
-function wrapWordsAsSpans(text: string): string {
+/**
+ * Split the source text on blank lines into paragraphs, wrap each paragraph
+ * in `<p>…</p>`, and tokenise words inside as `<span data-w="<char-offset>">`.
+ * `data-w` is the offset into the *original* source text; the SpeakButton
+ * binary-searches these against the `charIndex` the TTS engine emits on its
+ * boundary events. A literal `\n` between `<p>` elements keeps paragraphs
+ * separated by a single space after `DOMParser.textContent` + whitespace
+ * collapse, which matches the engine's idea of a word break.
+ */
+function wrapTextAsHtml(text: string): string {
+  const out: string[] = [];
+  const re = /\n\s*\n/g;
+  let start = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    const para = text.slice(start, m.index);
+    if (para.trim().length > 0) {
+      out.push(`<p>${wrapWordsAsSpans(para, start)}</p>`);
+    }
+    start = m.index + m[0].length;
+  }
+  const tail = text.slice(start);
+  if (tail.trim().length > 0) {
+    out.push(`<p>${wrapWordsAsSpans(tail, start)}</p>`);
+  }
+  return out.join("\n");
+}
+
+function wrapWordsAsSpans(text: string, baseOffset: number): string {
   const tokens: string[] = [];
   let i = 0;
   while (i < text.length) {
@@ -26,10 +52,10 @@ function wrapWordsAsSpans(text: string): string {
       tokens.push(text.slice(i, j));
       i = j;
     } else {
-      const start = i;
+      const wordStart = i;
       while (i < text.length && !/\s/.test(text[i]!)) i++;
-      const word = text.slice(start, i);
-      tokens.push(`<span data-w="${start}">${escapeHtml(word)}</span>`);
+      const word = text.slice(wordStart, i);
+      tokens.push(`<span data-w="${baseOffset + wordStart}">${escapeHtml(word)}</span>`);
     }
   }
   return tokens.join("");

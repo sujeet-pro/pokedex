@@ -4,7 +4,7 @@ import viteReact from "@vitejs/plugin-react";
 import { readdirSync, existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const LOCALES = ["en", "fr"] as const;
+const LOCALES = ["en", "es"] as const;
 const UI_DATA_DIR = join(process.cwd(), "public", "ui-data", "v1");
 
 function readIndexSlugs(resource: string, lang: string): string[] {

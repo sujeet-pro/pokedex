@@ -43,5 +43,5 @@ export function useRegisterEntity(entity: CurrentEntity | null): void {
     setEntity(entity);
     return () => setEntity(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [entity?.resource, entity?.slugs.en, entity?.slugs.fr]);
+  }, [entity?.resource, entity?.slugs.en, entity?.slugs.es]);
 }

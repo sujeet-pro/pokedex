@@ -53,21 +53,21 @@ const KIND_LABELS_EN: Record<ResourceKind, string> = {
   generation: "Generations",
 };
 
-const KIND_LABELS_FR: Record<ResourceKind, string> = {
+const KIND_LABELS_ES: Record<ResourceKind, string> = {
   pokemon: "Pokémon",
-  "pokemon-species": "Espèces",
-  "pokemon-form": "Formes",
-  type: "Types",
-  ability: "Talents",
-  berry: "Baies",
-  item: "Objets",
-  move: "Capacités",
-  location: "Lieux",
-  generation: "Générations",
+  "pokemon-species": "Especies",
+  "pokemon-form": "Formas",
+  type: "Tipos",
+  ability: "Habilidades",
+  berry: "Bayas",
+  item: "Objetos",
+  move: "Movimientos",
+  location: "Lugares",
+  generation: "Generaciones",
 };
 
 function kindLabel(kind: ResourceKind, locale: Locale): string {
-  return locale === "fr" ? KIND_LABELS_FR[kind] : KIND_LABELS_EN[kind];
+  return locale === "es" ? KIND_LABELS_ES[kind] : KIND_LABELS_EN[kind];
 }
 
 function normalize(value: string): string {
@@ -103,12 +103,42 @@ function urlFor(entry: EntryWithSlug, locale: Locale): string {
   }
 }
 
-function Spinner() {
+function SearchDialogSkeleton({ locale }: { locale: Locale }) {
+  const t = makeT(locale);
+  const rowWidths = ["72%", "58%", "80%", "46%", "64%", "52%", "74%", "60%"];
   return (
-    <div className="search-dialog__loading" role="status" aria-live="polite">
-      <div className="skeleton" style={{ height: "1.25rem", width: "60%" }} />
-      <div className="skeleton" style={{ height: "1.25rem", width: "80%", marginTop: ".5rem" }} />
-      <div className="skeleton" style={{ height: "1.25rem", width: "45%", marginTop: ".5rem" }} />
+    <div className="search-dialog__body" aria-busy="true" aria-live="polite">
+      <div className="search search-dialog__field">
+        <div className="search-dialog__input-skeleton" aria-hidden />
+      </div>
+      <div className="search-dialog__results" role="presentation">
+        <ul className="search__menu search-dialog__menu" aria-hidden>
+          <li className="search-dialog__group-header search-dialog__group-header--skeleton">
+            <span className="skeleton" style={{ display: "inline-block", height: "0.7rem", width: "5rem" }} />
+          </li>
+          {rowWidths.map((w, i) => (
+            <li key={i} className="search-dialog__option search-dialog__option--skeleton">
+              <span className="skeleton search-dialog__option-kind-skeleton" />
+              <span className="skeleton search-dialog__option-name-skeleton" style={{ width: w }} />
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="search-dialog__footer" aria-hidden>
+        <span>
+          <kbd>↑</kbd>
+          <kbd>↓</kbd> {locale === "es" ? "navegar" : "navigate"}
+        </span>
+        <span>
+          <kbd>↵</kbd> {locale === "es" ? "abrir" : "open"}
+        </span>
+        <span>
+          <kbd>esc</kbd> {locale === "es" ? "cerrar" : "close"}
+        </span>
+      </div>
+      <span className="visually-hidden" role="status">
+        {t("search_placeholder")}
+      </span>
     </div>
   );
 }
@@ -208,24 +238,48 @@ function SearchDialogBody({ locale, onOpenChange }: BodyProps) {
     [router, locale, onOpenChange]
   );
 
+  const trimmedQuery = deferredQuery.trim();
+  const showSearchAll = trimmedQuery.length > 0;
+
+  const goToSearchPage = useCallback(() => {
+    onOpenChange(false);
+    router.navigate({
+      to: "/$lang/search",
+      params: { lang: locale },
+      search: { q: trimmedQuery },
+    });
+  }, [router, locale, onOpenChange, trimmedQuery]);
+
+  // Total navigable rows = 1 (search-all) + flat results (when query is set)
+  const totalRows = (showSearchAll ? 1 : 0) + flat.length;
+
+  // Clamp active index if the row count shrinks (e.g. query cleared).
+  useEffect(() => {
+    if (totalRows === 0) return;
+    if (activeIndex >= totalRows) setActiveIndex(0);
+  }, [activeIndex, totalRows]);
+
   const handleInputKeyDown = useCallback(
     (event: KeyboardEvent<HTMLInputElement>) => {
-      if (flat.length === 0) return;
+      if (totalRows === 0) return;
       if (event.key === "ArrowDown") {
         event.preventDefault();
-        setActiveIndex((i) => (i + 1) % flat.length);
+        setActiveIndex((i) => (i + 1) % totalRows);
       } else if (event.key === "ArrowUp") {
         event.preventDefault();
-        setActiveIndex((i) => (i - 1 + flat.length) % flat.length);
+        setActiveIndex((i) => (i - 1 + totalRows) % totalRows);
       } else if (event.key === "Enter") {
-        const entry = flat[activeIndex];
-        if (entry) {
-          event.preventDefault();
-          goTo(entry);
+        event.preventDefault();
+        if (showSearchAll && activeIndex === 0) {
+          goToSearchPage();
+          return;
         }
+        const resultIndex = showSearchAll ? activeIndex - 1 : activeIndex;
+        const entry = flat[resultIndex];
+        if (entry) goTo(entry);
       }
     },
-    [activeIndex, flat, goTo]
+    [activeIndex, flat, goTo, showSearchAll, goToSearchPage, totalRows]
   );
 
   // Close on route change.
@@ -234,7 +288,7 @@ function SearchDialogBody({ locale, onOpenChange }: BodyProps) {
     return unsub;
   }, [router, onOpenChange]);
 
-  const isEmpty = flat.length === 0;
+  const isEmpty = totalRows === 0;
   const listboxId = "search-dialog-listbox";
   const activeOptionId = isEmpty ? undefined : `search-dialog-option-${activeIndex}`;
 
@@ -275,6 +329,37 @@ function SearchDialogBody({ locale, onOpenChange }: BodyProps) {
             {(() => {
               let idx = 0;
               const rendered: React.ReactNode[] = [];
+
+              if (showSearchAll) {
+                const i = idx;
+                const isActive = i === activeIndex;
+                rendered.push(
+                  <li
+                    key="search-all"
+                    ref={(node) => {
+                      if (node) optionsRef.current.set(i, node);
+                      else optionsRef.current.delete(i);
+                    }}
+                    id={`search-dialog-option-${i}`}
+                    role="option"
+                    aria-selected={isActive}
+                    className={`search__option search-dialog__option search-dialog__option--all${
+                      isActive ? " search__option--active" : ""
+                    }`}
+                    onMouseEnter={() => setActiveIndex(i)}
+                    onClick={goToSearchPage}
+                  >
+                    <span className="search-dialog__option-kind pill" aria-hidden>
+                      ⏎
+                    </span>
+                    <span className="search-dialog__option-name">
+                      {t("search_all_cta")} <em>“{trimmedQuery}”</em>
+                    </span>
+                  </li>
+                );
+                idx += 1;
+              }
+
               for (const group of grouped) {
                 rendered.push(
                   <li
@@ -327,13 +412,13 @@ function SearchDialogBody({ locale, onOpenChange }: BodyProps) {
       <div className="search-dialog__footer" aria-hidden>
         <span>
           <kbd>↑</kbd>
-          <kbd>↓</kbd> {locale === "fr" ? "naviguer" : "navigate"}
+          <kbd>↓</kbd> {locale === "es" ? "navegar" : "navigate"}
         </span>
         <span>
-          <kbd>↵</kbd> {locale === "fr" ? "ouvrir" : "open"}
+          <kbd>↵</kbd> {locale === "es" ? "abrir" : "open"}
         </span>
         <span>
-          <kbd>esc</kbd> {locale === "fr" ? "fermer" : "close"}
+          <kbd>esc</kbd> {locale === "es" ? "cerrar" : "close"}
         </span>
       </div>
     </div>
@@ -358,7 +443,7 @@ export function SearchDialog({ open, onOpenChange, locale }: Props) {
             <Dialog.Title>{t("search_placeholder")}</Dialog.Title>
             <Dialog.Description>{t("search_open_hint")}</Dialog.Description>
           </VisuallyHidden.Root>
-          <Suspense fallback={<Spinner />}>
+          <Suspense fallback={<SearchDialogSkeleton locale={locale} />}>
             <SearchDialogBody locale={locale} onOpenChange={onOpenChange} />
           </Suspense>
         </Dialog.Content>

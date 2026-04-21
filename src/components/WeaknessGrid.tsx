@@ -1,9 +1,12 @@
 import { Popover } from "radix-ui";
+import { Link } from "@tanstack/react-router";
 import type { BundleDefenderType } from "~/types/bundles";
+import type { Locale } from "~/types/locales";
 import { typeInfo } from "~/lib/typeInfo";
 
 type Props = {
   defenders: BundleDefenderType[];
+  locale: Locale;
 };
 
 const ATTACKING_TYPES = [
@@ -67,7 +70,7 @@ function computeCells(defenders: BundleDefenderType[]): CellData[] {
  * rounded multiplier; clicking a cell opens a Radix popover with the
  * per-defender breakdown.
  */
-export function WeaknessGrid({ defenders }: Props) {
+export function WeaknessGrid({ defenders, locale }: Props) {
   const cells = computeCells(defenders);
 
   return (
@@ -103,7 +106,7 @@ export function WeaknessGrid({ defenders }: Props) {
                       >
                         {info.short}
                       </span>
-                      <div>
+                      <div className="weak__pop-titles">
                         <p className="weak__pop-title">{cell.attacker}</p>
                         <p className="weak__pop-mult">
                           <span className={`weak__pop-badge weak__pop-badge--${mod}`}>
@@ -112,6 +115,9 @@ export function WeaknessGrid({ defenders }: Props) {
                           <span>Defending multiplier</span>
                         </p>
                       </div>
+                      <Popover.Close className="weak__pop-close" aria-label="Close">
+                        ×
+                      </Popover.Close>
                     </div>
 
                     {cell.breakdown.length > 1 ? (
@@ -149,9 +155,13 @@ export function WeaknessGrid({ defenders }: Props) {
                     ) : null}
 
                     <div className="weak__pop-foot">
-                      <Popover.Close className="weak__pop-close" aria-label="Close">
-                        Close
-                      </Popover.Close>
+                      <Link
+                        to="/$lang/type/$name"
+                        params={{ lang: locale, name: cell.attacker }}
+                        className="weak__pop-link"
+                      >
+                        Open type →
+                      </Link>
                     </div>
                     <Popover.Arrow className="weak__pop-arrow" width={14} height={7} />
                   </Popover.Content>

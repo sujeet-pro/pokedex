@@ -36,16 +36,10 @@ export function BurgerMenu({ locale }: Props) {
       <DropdownMenu.Trigger asChild>
         <button
           type="button"
-          className="pill-button burger-trigger"
+          className="icon-button"
           aria-label={t("nav_browse")}
         >
-          <svg
-            viewBox="0 0 24 24"
-            width={16}
-            height={16}
-            aria-hidden
-            style={{ display: "block" }}
-          >
+          <svg viewBox="0 0 24 24" aria-hidden>
             <path
               d="M3 6h18M3 12h18M3 18h18"
               fill="none"
@@ -54,13 +48,12 @@ export function BurgerMenu({ locale }: Props) {
               strokeLinecap="round"
             />
           </svg>
-          <span className="burger-trigger__label">{t("nav_browse")}</span>
         </button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
           className="browse-menu"
-          align="end"
+          align="start"
           sideOffset={8}
           aria-label={t("nav_browse")}
         >

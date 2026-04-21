@@ -16,7 +16,7 @@ import { slugFor } from "./slug-cache";
 
 function formatTrigger(detail: EvolutionDetail, lang: Locale): string {
   if (detail.min_level != null) {
-    return lang === "fr" ? `Niv. ${detail.min_level}` : `LVL ${detail.min_level}`;
+    return lang === "es" ? `Niv. ${detail.min_level}` : `LVL ${detail.min_level}`;
   }
   if (detail.item) {
     const id = refIdSafe(detail.item);

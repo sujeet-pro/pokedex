@@ -7,10 +7,8 @@ import { ErrorBoundary } from "./ErrorBoundary";
 import { SearchDialog } from "./SearchDialog";
 import { PreferencesProvider } from "~/hooks/usePreferences";
 import { useSearchDialog } from "~/hooks/useSearchDialog";
-import {
-  CurrentEntityProvider,
-  type CurrentEntity,
-} from "~/hooks/useCurrentEntity";
+import { CurrentEntityProvider, type CurrentEntity } from "~/hooks/useCurrentEntity";
+import { SpeakerProvider } from "~/hooks/useSpeaker";
 import { HotkeysProvider } from "./HotkeysProvider";
 import { makeT } from "~/i18n";
 
@@ -41,9 +39,11 @@ export function Layout({ locale, children }: Props) {
   return (
     <PreferencesProvider>
       <CurrentEntityProvider entity={entity} setEntity={setEntity}>
-        <HotkeysProvider>
-          <LayoutShell locale={locale}>{children}</LayoutShell>
-        </HotkeysProvider>
+        <SpeakerProvider>
+          <HotkeysProvider>
+            <LayoutShell locale={locale}>{children}</LayoutShell>
+          </HotkeysProvider>
+        </SpeakerProvider>
       </CurrentEntityProvider>
     </PreferencesProvider>
   );

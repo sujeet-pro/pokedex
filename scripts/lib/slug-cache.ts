@@ -94,7 +94,7 @@ export function slugMapForRef(kind: Kind, ref: NamedRef): SlugMap {
   const id = refIdSafe(ref);
   if (id == null) {
     const base = slugify(ref.name, ref.name);
-    return { en: base, fr: base } as SlugMap;
+    return { en: base, es: base } as SlugMap;
   }
   return slugMapFor(kind, id, ref.name);
 }

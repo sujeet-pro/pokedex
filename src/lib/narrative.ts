@@ -25,8 +25,20 @@ export type Narrative = {
 /* -------------------------------------------------------------------- */
 
 const SYSTEM_PROMPTS: Record<Locale, string> = {
-  en: "Speak warmly in 2-4 sentences, like a Pokédex entry. No numbers, no lists, no markdown.",
-  fr: "Parle chaleureusement en 2 à 4 phrases, comme une notice du Pokédex. Pas de chiffres, pas de listes, pas de markdown.",
+  en:
+    "You are a warm Pokédex storyteller writing prose meant to be read aloud for three to five minutes. " +
+    "From the structured profile below, write a single flowing story in five paragraphs separated by blank lines, " +
+    "between six hundred and eight hundred words. Speak in second person, present tense. " +
+    "Cover, in order: opening portrait (silhouette, colours, demeanour, typing); origin and habitat with regional folklore; " +
+    "daily life and temperament; battle craft (abilities in plain language, what its typing means for matchups); " +
+    "and a closing reflection. Never read numeric stats aloud. No markdown, lists, headings, quotes, URLs, or preamble.",
+  es:
+    "Eres un narrador cálido del Pokédex que escribe prosa pensada para leerse en voz alta durante tres a cinco minutos. " +
+    "A partir del perfil estructurado a continuación, escribe una sola historia fluida en cinco párrafos separados por líneas en blanco, " +
+    "entre seiscientas y ochocientas palabras. Habla en segunda persona y en presente. " +
+    "Cubre, en orden: primer retrato (silueta, colores, actitud, tipo); origen y hábitat con folclore regional; " +
+    "vida cotidiana y temperamento; destreza en combate (habilidades explicadas con palabras sencillas y lo que significa su tipo frente a otros); " +
+    "y una reflexión final. Nunca leas cifras en voz alta. Sin markdown, listas, títulos, comillas, URL ni preámbulos.",
 };
 
 function systemPrompt(locale: Locale): string {
@@ -60,63 +72,118 @@ export function pokemonNarrative(bundle: PokemonBundle, locale: Locale): Narrati
   const typeNames = bundle.types.map((t) => titleCase(t.name));
   const typeLine = joinList(typeNames);
   const abilityNames = bundle.abilities.filter((a) => !a.is_hidden).map((a) => a.display_name);
+  const hiddenAbility = bundle.abilities.find((a) => a.is_hidden)?.display_name ?? "";
   const abilityLine = joinList(abilityNames);
   const habitat = bundle.species.habitat ? titleCase(bundle.species.habitat) : "";
   const genus = bundle.species.genus;
   const color = bundle.species.color ? titleCase(bundle.species.color) : "";
+  const shape = bundle.species.shape ? titleCase(bundle.species.shape) : "";
+  const generation = titleCase(bundle.species.generation.replace(/^generation-/, ""));
+  const eggGroups = joinList(bundle.species.egg_groups.map(titleCase));
+  const flavor = (bundle.species.flavor_text ?? "").replace(/\s+/g, " ").trim();
+
+  const weaknesses = new Set<string>();
+  const resists = new Set<string>();
+  const immune = new Set<string>();
+  for (const def of bundle.defenders) {
+    for (const w of def.double_damage_from) weaknesses.add(titleCase(w));
+    for (const w of def.half_damage_from) resists.add(titleCase(w));
+    for (const w of def.no_damage_from) immune.add(titleCase(w));
+  }
+
+  const evoNames: string[] = [];
+  if (bundle.evolution_chain) {
+    const walk = (node: typeof bundle.evolution_chain): void => {
+      if (!node) return;
+      evoNames.push(node.display_name);
+      for (const child of node.evolves_to) walk(child);
+    };
+    walk(bundle.evolution_chain);
+  }
+  const evoLine = joinList(evoNames);
 
   const richContextLines: string[] = [
     `Name: ${bundle.display_name}`,
     `Kind: ${genus || "Pokémon"}`,
     `Types: ${typeLine || "Unknown"}`,
+    `Generation: ${generation}`,
   ];
   if (habitat) richContextLines.push(`Habitat: ${habitat}`);
-  if (color) richContextLines.push(`Color: ${color}`);
+  if (shape) richContextLines.push(`Body shape: ${shape}`);
+  if (color) richContextLines.push(`Body colour: ${color}`);
   if (abilityLine) richContextLines.push(`Signature abilities: ${abilityLine}`);
+  if (hiddenAbility) richContextLines.push(`Hidden ability: ${hiddenAbility}`);
+  if (eggGroups) richContextLines.push(`Egg groups: ${eggGroups}`);
+  if (evoLine && evoNames.length > 1) {
+    richContextLines.push(`Evolution line: ${evoLine}`);
+  }
+  if (weaknesses.size > 0) richContextLines.push(`Weak to: ${[...weaknesses].join(", ")}`);
+  if (resists.size > 0) richContextLines.push(`Resists: ${[...resists].join(", ")}`);
+  if (immune.size > 0) richContextLines.push(`Immune to: ${[...immune].join(", ")}`);
   if (bundle.species.is_legendary) richContextLines.push("Status: Legendary");
   else if (bundle.species.is_mythical) richContextLines.push("Status: Mythical");
+  else if (bundle.species.is_baby) richContextLines.push("Status: Baby Pokémon");
+  if (flavor) richContextLines.push(`Pokédex flavour text: ${flavor}`);
 
   const richContext = richContextLines.join("\n");
 
   let friendlyFallback: string;
-  if (locale === "fr") {
+  if (locale === "es") {
     const pieces: string[] = [];
     pieces.push(
-      `${bundle.display_name} est un Pokémon ${genus ? `de catégorie ${genus.toLowerCase()}` : "étonnant"}${
-        typeLine ? ` de type ${typeLine}` : ""
-      }.`
+      `Te presento a ${bundle.display_name}, un Pokémon ${genus ? `de la categoría ${genus.toLowerCase()}` : "sorprendente"}${
+        typeLine ? ` de tipo ${typeLine}` : ""
+      }${color ? `, con pelaje ${color.toLowerCase()}` : ""}.`,
     );
     if (habitat) {
-      pieces.push(`On le rencontre souvent dans un habitat de type ${habitat.toLowerCase()}.`);
+      pieces.push(`Los entrenadores suelen encontrarlo en hábitats de tipo ${habitat.toLowerCase()}, donde se siente como en casa.`);
     } else {
-      pieces.push("Il se fait remarquer par son allure unique et son caractère bien trempé.");
+      pieces.push("Destaca por su silueta única y por un carácter muy propio.");
+    }
+    if (flavor) {
+      pieces.push(flavor);
     }
     if (abilityLine) {
-      pieces.push(`Il est réputé pour son talent ${abilityLine}.`);
+      pieces.push(`En combate se apoya en su habilidad ${abilityLine}, que puede inclinar la balanza en el momento justo.`);
     } else if (bundle.species.is_legendary) {
-      pieces.push("La légende dit que peu de dresseurs ont eu la chance de le croiser.");
+      pieces.push("La leyenda cuenta que solo unos pocos entrenadores han logrado cruzarse con él.");
     } else {
-      pieces.push("Sa silhouette fait partie des plus reconnaissables du Pokédex.");
+      pieces.push("Su perfil es uno de los más reconocibles del Pokédex.");
+    }
+    if (weaknesses.size > 0) {
+      pieces.push(`Aun así conviene cuidarlo de los ataques de tipo ${[...weaknesses].slice(0, 3).join(", ").toLowerCase()}, y un buen entrenador lo tiene en cuenta.`);
+    }
+    if (evoNames.length > 1) {
+      pieces.push(`Forma parte de una línea evolutiva que reúne a ${joinList(evoNames)}.`);
     }
     friendlyFallback = pieces.join(" ");
   } else {
     const pieces: string[] = [];
     pieces.push(
-      `${bundle.display_name} is a ${genus ? genus.toLowerCase() : "remarkable Pokémon"}${
+      `Meet ${bundle.display_name}, a ${genus ? genus.toLowerCase() : "remarkable Pokémon"}${
         typeLine ? ` with a ${typeLine} typing` : ""
-      }.`
+      }${color ? ` and a ${color.toLowerCase()} coat` : ""}.`,
     );
     if (habitat) {
-      pieces.push(`Trainers often come across it in ${habitat.toLowerCase()} habitats.`);
+      pieces.push(`Trainers often come across it in ${habitat.toLowerCase()} habitats, where it feels most at home.`);
     } else {
       pieces.push("It is known for a striking silhouette and a temperament all its own.");
     }
+    if (flavor) {
+      pieces.push(flavor);
+    }
     if (abilityLine) {
-      pieces.push(`It is celebrated for the ${abilityLine} ability.`);
+      pieces.push(`In battle it leans on its ${abilityLine} ability, which can tip a fight at just the right moment.`);
     } else if (bundle.species.is_legendary) {
       pieces.push("Legend whispers that only a lucky few ever cross its path.");
     } else {
       pieces.push("Its profile is one of the most recognisable in the Pokédex.");
+    }
+    if (weaknesses.size > 0) {
+      pieces.push(`It still has to watch for ${[...weaknesses].slice(0, 3).join(", ").toLowerCase()} attacks, and a careful trainer plans around them.`);
+    }
+    if (evoNames.length > 1) {
+      pieces.push(`It belongs to an evolution line that includes ${joinList(evoNames)}.`);
     }
     friendlyFallback = pieces.join(" ");
   }
@@ -145,24 +212,24 @@ export function berryNarrative(bundle: BerryBundle, locale: Locale): Narrative {
   const richContext = richContextLines.join("\n");
 
   let friendlyFallback: string;
-  if (locale === "fr") {
+  if (locale === "es") {
     const pieces: string[] = [];
     pieces.push(
-      `La baie ${bundle.display_name} est une petite merveille${
-        firmness ? ` à la chair ${firmness.toLowerCase()}` : ""
+      `La baya ${bundle.display_name} es una pequeña maravilla${
+        firmness ? ` de pulpa ${firmness.toLowerCase()}` : ""
       }.`
     );
     if (flavorLine) {
-      pieces.push(`Elle se reconnaît à ses notes ${flavorLine.toLowerCase()}.`);
+      pieces.push(`Se reconoce por sus notas ${flavorLine.toLowerCase()}.`);
     } else {
-      pieces.push("Sa saveur est subtile et difficile à décrire.");
+      pieces.push("Su sabor es sutil y difícil de describir.");
     }
     if (giftType) {
       pieces.push(
-        `Utilisée en Don Naturel, elle libère une puissance du type ${giftType.toLowerCase()}.`
+        `Usada en Don Natural, libera un golpe de tipo ${giftType.toLowerCase()}.`
       );
     } else {
-      pieces.push("Elle trouve sa place dans la besace de nombreux dresseurs.");
+      pieces.push("Ha encontrado un hueco en la mochila de muchos entrenadores.");
     }
     friendlyFallback = pieces.join(" ");
   } else {
@@ -205,14 +272,14 @@ export function itemNarrative(bundle: ItemBundle, locale: Locale): Narrative {
   const richContext = richContextLines.join("\n");
 
   let friendlyFallback: string;
-  if (locale === "fr") {
+  if (locale === "es") {
     const pieces: string[] = [];
     pieces.push(
-      `${bundle.display_name} est un objet${category ? ` de la catégorie ${category.toLowerCase()}` : ""}.`
+      `${bundle.display_name} es un objeto${category ? ` de la categoría ${category.toLowerCase()}` : ""}.`
     );
-    pieces.push("Il peut donner un vrai coup de pouce au bon moment d'un combat ou d'une aventure.");
+    pieces.push("En el momento justo puede dar un empujón decisivo en un combate o en una aventura.");
     if (holder) {
-      pieces.push(`On le retrouve parfois porté par ${holder}.`);
+      pieces.push(`A veces se ve en manos de ${holder}.`);
     }
     friendlyFallback = pieces.join(" ");
   } else {
@@ -245,15 +312,15 @@ export function moveNarrative(bundle: MoveBundle, locale: Locale): Narrative {
   const richContext = richContextLines.join("\n");
 
   let friendlyFallback: string;
-  if (locale === "fr") {
+  if (locale === "es") {
     const pieces: string[] = [];
     pieces.push(
-      `${bundle.display_name} est une capacité${moveType ? ` de type ${moveType.toLowerCase()}` : ""}${
-        damageClass ? `, de la catégorie ${damageClass.toLowerCase()}` : ""
+      `${bundle.display_name} es un movimiento${moveType ? ` de tipo ${moveType.toLowerCase()}` : ""}${
+        damageClass ? `, de la categoría ${damageClass.toLowerCase()}` : ""
       }.`
     );
-    pieces.push("Maîtrisée, elle peut renverser l'issue d'un combat en un instant.");
-    pieces.push("Beaucoup de dresseurs la gardent en réserve pour les moments décisifs.");
+    pieces.push("Dominado, puede darle la vuelta a un combate en un instante.");
+    pieces.push("Muchos entrenadores lo guardan para los momentos decisivos.");
     friendlyFallback = pieces.join(" ");
   } else {
     const pieces: string[] = [];
@@ -285,17 +352,17 @@ export function locationNarrative(entry: LocationIndexEntry, locale: Locale): Na
   const richContext = richContextLines.join("\n");
 
   let friendlyFallback: string;
-  if (locale === "fr") {
+  if (locale === "es") {
     const pieces: string[] = [];
     pieces.push(
-      `${entry.display_name} est un lieu${region ? ` de la région de ${region}` : ""} qui ne laisse personne indifférent.`
+      `${entry.display_name} es un lugar${region ? ` de la región de ${region}` : ""} que no deja indiferente a nadie.`
     );
     if (areaLine) {
-      pieces.push(`On y découvre notamment ${areaLine}.`);
+      pieces.push(`Aquí se descubren zonas como ${areaLine}.`);
     } else {
-      pieces.push("Ses paysages recèlent plus d'un secret pour les voyageurs attentifs.");
+      pieces.push("Sus paisajes esconden más de un secreto para los viajeros atentos.");
     }
-    pieces.push("Beaucoup de dresseurs gardent un souvenir ému de leur passage ici.");
+    pieces.push("Muchos entrenadores recuerdan con cariño su paso por aquí.");
     friendlyFallback = pieces.join(" ");
   } else {
     const pieces: string[] = [];
@@ -328,15 +395,15 @@ export function generationNarrative(bundle: GenerationBundle, locale: Locale): N
   const richContext = richContextLines.join("\n");
 
   let friendlyFallback: string;
-  if (locale === "fr") {
+  if (locale === "es") {
     const pieces: string[] = [];
     pieces.push(
-      `${bundle.display_name} est une génération${region ? ` centrée sur la région de ${region}` : ""} qui a marqué les dresseurs.`
+      `${bundle.display_name} es una generación${region ? ` centrada en la región de ${region}` : ""} que dejó huella entre los entrenadores.`
     );
     if (versionGroups) {
-      pieces.push(`On la retrouve dans les aventures de ${versionGroups}.`);
+      pieces.push(`Se recuerda por aventuras como ${versionGroups}.`);
     }
-    pieces.push("Elle a enrichi le Pokédex de nouvelles créatures, capacités et talents.");
+    pieces.push("Aportó nuevas criaturas, movimientos y habilidades al Pokédex.");
     friendlyFallback = pieces.join(" ");
   } else {
     const pieces: string[] = [];

@@ -2,18 +2,22 @@ import { pokemonArtwork } from "~/lib/sprites";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { isLocale } from "~/types/locales";
-import { generationBundleQuery } from "~/lib/queries";
+import { generationBundleQuery, generationIndexQuery } from "~/lib/queries";
 import { BundleError } from "~/lib/bundles";
 import { padDex } from "~/lib/formatters";
 import { ConsoleDevice } from "~/components/ConsoleDevice";
 import { TypeCartridge } from "~/components/TypeCartridge";
 import { ReadoutGrid } from "~/components/ReadoutGrid";
+import { EntityPager } from "~/components/EntityPager";
 
 export const Route = createFileRoute("/$lang/generation/$name")({
   loader: async ({ context, params }) => {
     if (!isLocale(params.lang)) throw notFound();
     try {
-      await context.queryClient.ensureQueryData(generationBundleQuery(params.lang, params.name));
+      await Promise.all([
+        context.queryClient.ensureQueryData(generationBundleQuery(params.lang, params.name)),
+        context.queryClient.ensureQueryData(generationIndexQuery(params.lang)),
+      ]);
     } catch (err) {
       if (err instanceof BundleError && err.status === 404) throw notFound();
       throw err;
@@ -28,6 +32,7 @@ function GenerationDetailPage() {
   const { lang, name } = Route.useParams();
   if (!isLocale(lang)) return null;
   const { data } = useSuspenseQuery(generationBundleQuery(lang, name));
+  const { data: index } = useSuspenseQuery(generationIndexQuery(lang));
 
   return (
     <>
@@ -135,6 +140,14 @@ function GenerationDetailPage() {
           </ul>
         </div>
       ) : null}
+
+      <EntityPager
+        locale={lang}
+        entries={index.entries}
+        currentSlug={data.slug}
+        to="/$lang/generation/$name"
+        labelText={data.display_name}
+      />
     </>
   );
 }

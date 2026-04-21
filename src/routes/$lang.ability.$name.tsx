@@ -2,16 +2,20 @@ import { pokemonArtwork } from "~/lib/sprites";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { isLocale } from "~/types/locales";
-import { abilityBundleQuery } from "~/lib/queries";
+import { abilityBundleQuery, abilityIndexQuery } from "~/lib/queries";
 import { BundleError } from "~/lib/bundles";
 import { padDex } from "~/lib/formatters";
 import { ConsoleDevice } from "~/components/ConsoleDevice";
+import { EntityPager } from "~/components/EntityPager";
 
 export const Route = createFileRoute("/$lang/ability/$name")({
   loader: async ({ context, params }) => {
     if (!isLocale(params.lang)) throw notFound();
     try {
-      await context.queryClient.ensureQueryData(abilityBundleQuery(params.lang, params.name));
+      await Promise.all([
+        context.queryClient.ensureQueryData(abilityBundleQuery(params.lang, params.name)),
+        context.queryClient.ensureQueryData(abilityIndexQuery(params.lang)),
+      ]);
     } catch (err) {
       if (err instanceof BundleError && err.status === 404) throw notFound();
       throw err;
@@ -26,6 +30,7 @@ function AbilityDetailPage() {
   const { lang, name } = Route.useParams();
   if (!isLocale(lang)) return null;
   const { data } = useSuspenseQuery(abilityBundleQuery(lang, name));
+  const { data: index } = useSuspenseQuery(abilityIndexQuery(lang));
 
   return (
     <>
@@ -90,6 +95,14 @@ function AbilityDetailPage() {
           ))}
         </ul>
       </div>
+
+      <EntityPager
+        locale={lang}
+        entries={index.entries}
+        currentSlug={data.slug}
+        to="/$lang/ability/$name"
+        labelText={data.display_name}
+      />
     </>
   );
 }

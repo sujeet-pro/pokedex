@@ -30,8 +30,14 @@ type SummarizerStatic = {
     format?: "plain-text" | "markdown";
     length?: "short" | "medium" | "long";
     sharedContext?: string;
+    /** Chrome Summarizer currently supports "en", "es", and "ja" only. */
+    outputLanguage?: string;
+    expectedInputLanguages?: string[];
   }) => Promise<SummarizerSession>;
 };
+
+/** Output languages the Chrome Summarizer API supports today. */
+const SUMMARIZER_OUTPUT_LANGS = new Set(["en", "es", "ja"]);
 
 declare global {
   interface Window {
@@ -66,11 +72,6 @@ export async function summarizeWithAi(
   systemPrompt?: string,
   locale: Locale = "en"
 ): Promise<{ text: string; source: AiSource }> {
-  // Locale is accepted for API symmetry (the caller's system prompt is already
-  // localized via narrative builders). Referenced here so strict unused-var
-  // rules stay happy while keeping the signature stable.
-  void locale;
-
   if (typeof window === "undefined") {
     return { text: rawContext, source: "fallback" };
   }
@@ -96,24 +97,31 @@ export async function summarizeWithAi(
     // fall through to Summarizer
   }
 
-  // 2) Summarizer API
-  try {
-    const sm = window.Summarizer;
-    if (sm && (await isReady(sm.availability))) {
-      const summarizer = await sm.create({
-        type: "tldr",
-        format: "plain-text",
-        length: "medium",
-        sharedContext: systemPrompt,
-      });
-      const text = await summarizer.summarize(rawContext);
-      const trimmed = text.trim();
-      if (trimmed.length > 0) {
-        return { text: trimmed, source: "summarizer" };
+  // 2) Summarizer API — request the longest output it offers so the read-aloud
+  //    feels closer to the story-style narration we'd get from the Prompt API.
+  //    Chrome only supports en/es/ja here today, so skip it for unsupported
+  //    locales (Prompt API above already handled fr where available).
+  if (SUMMARIZER_OUTPUT_LANGS.has(locale)) {
+    try {
+      const sm = window.Summarizer;
+      if (sm && (await isReady(sm.availability))) {
+        const summarizer = await sm.create({
+          type: "tldr",
+          format: "plain-text",
+          length: "long",
+          sharedContext: systemPrompt,
+          outputLanguage: locale,
+          expectedInputLanguages: [locale],
+        });
+        const text = await summarizer.summarize(rawContext);
+        const trimmed = text.trim();
+        if (trimmed.length > 0) {
+          return { text: trimmed, source: "summarizer" };
+        }
       }
+    } catch {
+      // fall through to fallback
     }
-  } catch {
-    // fall through to fallback
   }
 
   return { text: rawContext, source: "fallback" };

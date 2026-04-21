@@ -16,7 +16,7 @@ export function Sprite({ src, alt, priority, width, height }: Props) {
       decoding={priority ? "sync" : "async"}
       width={width}
       height={height}
-      {...(priority ? { fetchpriority: "high" } : {})}
+      {...(priority ? { fetchPriority: "high" as const } : {})}
     />
   );
 }

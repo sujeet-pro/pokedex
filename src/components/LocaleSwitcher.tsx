@@ -86,7 +86,7 @@ export function LocaleSwitcher({ locale }: Props) {
       {LOCALES.map((loc) => {
         const href = buildLocalizedHref(loc, entity);
         const active = loc === locale;
-        const label = loc === "en" ? t("lang_switch_to_en") : t("lang_switch_to_fr");
+        const label = loc === "en" ? t("lang_switch_to_en") : t("lang_switch_to_es");
         return (
           <a
             key={loc}

@@ -48,12 +48,23 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: ReactNode }) {
+  // BOOT_PREFS_SCRIPT rewrites data-theme/data-mode/data-scale/dir from
+  // localStorage before React hydrates. Suppress the hydration warning on
+  // <html> and <body> since the mutation is intentional and has to happen
+  // pre-paint to avoid a flash of wrong theme.
   return (
-    <html lang="en" data-theme="red" data-mode="dark" data-scale="md" dir="ltr">
+    <html
+      lang="en"
+      data-theme="red"
+      data-mode="dark"
+      data-scale="md"
+      dir="ltr"
+      suppressHydrationWarning
+    >
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         {children}
         <Scripts />
       </body>

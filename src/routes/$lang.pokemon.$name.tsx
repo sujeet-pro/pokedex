@@ -6,6 +6,7 @@ import { pokemonBundleQuery } from "~/lib/queries";
 import { BundleError } from "~/lib/bundles";
 import { makeT } from "~/i18n";
 import { padDex } from "~/lib/formatters";
+import { pokemonArtwork } from "~/lib/sprites";
 import { ConsoleDevice } from "~/components/ConsoleDevice";
 import { HudSprite } from "~/components/HudSprite";
 import { ReadoutGrid } from "~/components/ReadoutGrid";
@@ -16,10 +17,13 @@ import { EvolutionChain } from "~/components/EvolutionChain";
 import { AbilityButton } from "~/components/AbilityButton";
 import { DossierField } from "~/components/DossierField";
 import { SpeakButton } from "~/components/SpeakButton";
+import { SummaryPopover } from "~/components/SummaryPopover";
+import { InlineSpeakButton } from "~/components/InlineSpeakButton";
 import { PokemonSummary } from "~/components/PokemonSummary";
 import { Pager } from "~/components/Pager";
 import { pokemonNarrative } from "~/lib/narrative";
 import { useRegisterEntity } from "~/hooks/useCurrentEntity";
+import { useSummary } from "~/hooks/useSummary";
 
 export const Route = createFileRoute("/$lang/pokemon/$name")({
   loader: async ({ context, params }) => {
@@ -40,7 +44,11 @@ function romanGeneration(slug: string): string {
   return part.replaceAll("-", " ");
 }
 
-function rarityLabel(data: { is_legendary: boolean; is_mythical: boolean; is_baby: boolean }): string {
+function rarityLabel(data: {
+  is_legendary: boolean;
+  is_mythical: boolean;
+  is_baby: boolean;
+}): string {
   if (data.is_mythical) return "Mythical";
   if (data.is_legendary) return "Legendary";
   if (data.is_baby) return "Baby";
@@ -54,12 +62,22 @@ function PokemonDetailPage() {
   const t = makeT(lang);
   const { data } = useSuspenseQuery(pokemonBundleQuery(lang, name));
 
-  useRegisterEntity(
-    useMemo(
-      () => ({ resource: "pokemon", slugs: data.slugs }),
-      [data.slugs],
-    ),
-  );
+  useRegisterEntity(useMemo(() => ({ resource: "pokemon", slugs: data.slugs }), [data.slugs]));
+
+  // Resolve the displayed summary: bundle-shipped HTML when available,
+  // otherwise an on-device AI / friendly-fallback pass that we kick off
+  // during an idle callback. The SpeakButton, SummaryPopover and the
+  // entry-panel InlineSpeakButton all share this cache entry.
+  const { html: resolvedSummaryHtml, source: summarySource } = useSummary({
+    kind: "pokemon",
+    slug: data.slug,
+    locale: lang,
+    bundleHtml: data.summary_html,
+    narrativeBuilder: () => pokemonNarrative(data, lang),
+  });
+
+  const onDeviceLabel =
+    lang === "es" ? "Resumen generado en el dispositivo" : "On-Device Summary Generation";
 
   const artwork = data.sprites.official_artwork ?? data.sprites.front_default;
   const heightM = (data.height / 10).toFixed(1);
@@ -73,23 +91,42 @@ function PokemonDetailPage() {
         title="POKÉ DEX · SCANNER"
         subtitle={`read · ${data.id}`}
         headerAction={
-          <SpeakButton
-            kind="pokemon"
-            slug={data.slug}
-            displayName={data.display_name}
-            locale={lang}
-            summaryHtml={data.summary_html}
-            summaryContainerRef={summaryRef}
-            narrativeBuilder={() => pokemonNarrative(data, lang)}
-          />
+          <>
+            <SummaryPopover
+              kind="pokemon"
+              slug={data.slug}
+              displayName={data.display_name}
+              locale={lang}
+              bundleHtml={data.summary_html}
+              narrativeBuilder={() => pokemonNarrative(data, lang)}
+            />
+            <SpeakButton
+              kind="pokemon"
+              slug={data.slug}
+              displayName={data.display_name}
+              locale={lang}
+              bundleHtml={data.summary_html}
+              summaryContainerRef={summaryRef}
+              narrativeBuilder={() => pokemonNarrative(data, lang)}
+            />
+          </>
         }
       >
         <div className="screen__hud">
           <div>
             <p className="hud-meta-row" role="group" aria-label="Identifiers">
-              <span><b>DEX</b>{dexPad}</span>
-              <span><b>GEN</b>{romanGeneration(data.species.generation)}</span>
-              <span><b>ORD</b>{orderPad}</span>
+              <span>
+                <b>DEX</b>
+                {dexPad}
+              </span>
+              <span>
+                <b>GEN</b>
+                {romanGeneration(data.species.generation)}
+              </span>
+              <span>
+                <b>ORD</b>
+                {orderPad}
+              </span>
             </p>
             <h1 className="hud-name">{data.display_name}</h1>
             <p className="hud-genus">{data.species.genus || "—"}</p>
@@ -102,14 +139,20 @@ function PokemonDetailPage() {
               ))}
             </ul>
             {data.species.flavor_html ? (
-              <p
-                className="hud-flavor"
-                dangerouslySetInnerHTML={{
-                  __html: data.species.flavor_html
-                    .replace(/^<p>/, "")
-                    .replace(/<\/p>$/, ""),
-                }}
-              />
+              <p className="hud-flavor hud-flavor--with-speaker">
+                <InlineSpeakButton
+                  text={data.species.flavor_html}
+                  locale={lang}
+                  label={lang === "es" ? "Leer entrada" : "Play entry"}
+                  stopLabel={lang === "es" ? "Detener" : "Stop"}
+                  speakKey={`pokemon-${data.slug}:flavor`}
+                />
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: data.species.flavor_html.replace(/^<p>/, "").replace(/<\/p>$/, ""),
+                  }}
+                />
+              </p>
             ) : null}
           </div>
 
@@ -148,7 +191,7 @@ function PokemonDetailPage() {
                   <span>DAMAGE TAKEN · 18 TYPES</span>
                   <span>CLICK A CELL</span>
                 </div>
-                <WeaknessGrid defenders={data.defenders} />
+                <WeaknessGrid defenders={data.defenders} locale={lang} />
               </div>
             ) : null}
           </div>
@@ -215,25 +258,61 @@ function PokemonDetailPage() {
           </div>
         </div>
 
-        {data.summary_html ? (
+        {resolvedSummaryHtml ? (
           <div className="panel">
-            <div className="panel__title">ENTRY</div>
-            <PokemonSummary ref={summaryRef} summaryHtml={data.summary_html} />
+            <div className="panel__title panel__title--with-action">
+              <span>{lang === "es" ? "ENTRADA" : "ENTRY"}</span>
+              <InlineSpeakButton
+                text={resolvedSummaryHtml}
+                locale={lang}
+                label={lang === "es" ? "Leer entrada" : "Play entry"}
+                stopLabel={lang === "es" ? "Detener" : "Stop"}
+                speakKey={`pokemon-${data.slug}`}
+              />
+            </div>
+            {summarySource === "client" ? (
+              <p className="summary-pop__source">{onDeviceLabel}</p>
+            ) : null}
+            <PokemonSummary ref={summaryRef} summaryHtml={resolvedSummaryHtml} />
           </div>
         ) : null}
       </ConsoleDevice>
 
-      <div className="nav-buttons" style={{ marginTop: "2rem" }}>
-        <Pager
-          locale={lang}
-          prev={data.pager.prev}
-          next={data.pager.next}
-          prevLabel={`${t("detail_pager_prev")} ${data.pager.prev ? `#${padDex(data.pager.prev.id).replace("#", "")}` : ""}`.trim()}
-          nextLabel={`${t("detail_pager_next")} ${data.pager.next ? `#${padDex(data.pager.next.id).replace("#", "")}` : ""}`.trim()}
-          labelText={`#${padDex(data.id).replace("#", "")} · ${data.display_name}`}
-          to="/$lang/pokemon/$name"
-        />
-      </div>
+      <Pager
+        locale={lang}
+        prev={
+          data.pager.prev
+            ? {
+                ...data.pager.prev,
+                iconSrc: pokemonArtwork(data.pager.prev.id),
+                iconPixel: false,
+              }
+            : null
+        }
+        next={
+          data.pager.next
+            ? {
+                ...data.pager.next,
+                iconSrc: pokemonArtwork(data.pager.next.id),
+                iconPixel: false,
+              }
+            : null
+        }
+        prevLabel={t("detail_pager_prev")}
+        nextLabel={t("detail_pager_next")}
+        prevName={
+          data.pager.prev
+            ? `#${padDex(data.pager.prev.id).replace("#", "")} · ${data.pager.prev.display_name ?? data.pager.prev.name}`
+            : undefined
+        }
+        nextName={
+          data.pager.next
+            ? `#${padDex(data.pager.next.id).replace("#", "")} · ${data.pager.next.display_name ?? data.pager.next.name}`
+            : undefined
+        }
+        labelText={`#${padDex(data.id).replace("#", "")} · ${data.display_name}`}
+        to="/$lang/pokemon/$name"
+      />
     </>
   );
 }

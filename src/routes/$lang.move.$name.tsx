@@ -3,18 +3,22 @@ import { useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { isLocale } from "~/types/locales";
-import { moveBundleQuery } from "~/lib/queries";
+import { moveBundleQuery, moveIndexQuery } from "~/lib/queries";
 import { BundleError } from "~/lib/bundles";
 import { padDex } from "~/lib/formatters";
 import { ConsoleDevice } from "~/components/ConsoleDevice";
 import { TypeCartridge } from "~/components/TypeCartridge";
 import { DossierField } from "~/components/DossierField";
+import { EntityPager } from "~/components/EntityPager";
 
 export const Route = createFileRoute("/$lang/move/$name")({
   loader: async ({ context, params }) => {
     if (!isLocale(params.lang)) throw notFound();
     try {
-      await context.queryClient.ensureQueryData(moveBundleQuery(params.lang, params.name));
+      await Promise.all([
+        context.queryClient.ensureQueryData(moveBundleQuery(params.lang, params.name)),
+        context.queryClient.ensureQueryData(moveIndexQuery(params.lang)),
+      ]);
     } catch (err) {
       if (err instanceof BundleError && err.status === 404) throw notFound();
       throw err;
@@ -30,6 +34,7 @@ function MoveDetailPage() {
   const { lang, name } = Route.useParams();
   if (!isLocale(lang)) return null;
   const { data } = useSuspenseQuery(moveBundleQuery(lang, name));
+  const { data: index } = useSuspenseQuery(moveIndexQuery(lang));
   const [page, setPage] = useState(0);
 
   const totalPages = Math.max(1, Math.ceil(data.learned_by.length / PAGE_SIZE));
@@ -132,6 +137,14 @@ function MoveDetailPage() {
           ) : null}
         </div>
       ) : null}
+
+      <EntityPager
+        locale={lang}
+        entries={index.entries}
+        currentSlug={data.slug}
+        to="/$lang/move/$name"
+        labelText={data.display_name}
+      />
     </>
   );
 }

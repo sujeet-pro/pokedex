@@ -1,8 +1,8 @@
 import type { Locale } from "~/types/locales";
 import { en, type MessageKey, type Messages } from "./en";
-import { fr } from "./fr";
+import { es } from "./es";
 
-const MESSAGES: Record<Locale, Messages> = { en, fr };
+const MESSAGES: Record<Locale, Messages> = { en, es };
 
 export function getMessages(locale: Locale): Messages {
   return MESSAGES[locale];

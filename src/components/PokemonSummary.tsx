@@ -18,7 +18,7 @@ export const PokemonSummary = forwardRef<HTMLDivElement, Props>(function Pokemon
   return (
     <div
       ref={ref}
-      className="hud-flavor summary"
+      className="summary"
       dangerouslySetInnerHTML={{ __html: summaryHtml }}
     />
   );

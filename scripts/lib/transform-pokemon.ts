@@ -117,7 +117,7 @@ function buildSpeciesBlock(sp: PokemonSpeciesRaw, fallbackName: string, lang: Lo
 }
 
 export type BuildContext = {
-  displayNames: Map<number, { en: string; fr: string }>;
+  displayNames: Map<number, { en: string; es: string }>;
   orderedIds: number[];
 };
 

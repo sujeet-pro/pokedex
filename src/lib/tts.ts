@@ -1,13 +1,25 @@
 import type { Locale } from "~/types/locales";
 
 /**
+ * Timestamped TTS logger. Every line starts with `[tts <hh:mm:ss.mmm>]` so
+ * events from speaker / button / summary paths can be correlated by time in
+ * the browser console. Filter the console with `[tts` to see only these.
+ */
+export function ttsLog(tag: string, ...rest: unknown[]): void {
+  if (typeof window === "undefined") return;
+  const now = new Date().toISOString().slice(11, 23);
+  // eslint-disable-next-line no-console
+  console.log(`[tts ${now}] ${tag}`, ...rest);
+}
+
+/**
  * Map our app locale to a BCP-47 tag preferred by SpeechSynthesis voices.
  * We keep this permissive — voice-matching code takes the prefix and falls
  * back to `startsWith`.
  */
 const LOCALE_TO_BCP47: Record<Locale, string> = {
   en: "en-US",
-  fr: "fr-FR",
+  es: "es-ES",
 };
 
 export function bcp47ForLocale(locale: Locale): string {

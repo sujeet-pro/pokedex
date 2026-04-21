@@ -12,10 +12,10 @@ function LandingPage() {
         <div className="container">
           <div className="landing-hero">
             <h1>Pokédex</h1>
-            <p>Select a language to continue · Choisissez votre langue</p>
+            <p>Select a language to continue · Elige un idioma para continuar</p>
             <div className="landing-hero__picker">
               <Link to="/$lang" params={{ lang: "en" }}>English</Link>
-              <Link to="/$lang" params={{ lang: "fr" }}>Français</Link>
+              <Link to="/$lang" params={{ lang: "es" }}>Español</Link>
             </div>
           </div>
         </div>

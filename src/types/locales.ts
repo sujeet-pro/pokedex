@@ -1,4 +1,4 @@
-export const LOCALES = ["en", "fr"] as const;
+export const LOCALES = ["en", "es"] as const;
 export type Locale = (typeof LOCALES)[number];
 
 export function isLocale(value: string): value is Locale {

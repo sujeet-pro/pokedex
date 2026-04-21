@@ -1,19 +1,23 @@
-import { pokemonArtwork } from "~/lib/sprites";
+import { itemArtwork, pokemonArtwork } from "~/lib/sprites";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { isLocale } from "~/types/locales";
-import { itemBundleQuery } from "~/lib/queries";
+import { itemBundleQuery, itemIndexQuery } from "~/lib/queries";
 import { BundleError } from "~/lib/bundles";
 import { padDex } from "~/lib/formatters";
 import { ConsoleDevice } from "~/components/ConsoleDevice";
 import { HudSprite } from "~/components/HudSprite";
 import { DossierField } from "~/components/DossierField";
+import { EntityPager } from "~/components/EntityPager";
 
 export const Route = createFileRoute("/$lang/item/$name")({
   loader: async ({ context, params }) => {
     if (!isLocale(params.lang)) throw notFound();
     try {
-      await context.queryClient.ensureQueryData(itemBundleQuery(params.lang, params.name));
+      await Promise.all([
+        context.queryClient.ensureQueryData(itemBundleQuery(params.lang, params.name)),
+        context.queryClient.ensureQueryData(itemIndexQuery(params.lang)),
+      ]);
     } catch (err) {
       if (err instanceof BundleError && err.status === 404) throw notFound();
       throw err;
@@ -28,6 +32,7 @@ function ItemDetailPage() {
   const { lang, name } = Route.useParams();
   if (!isLocale(lang)) return null;
   const { data } = useSuspenseQuery(itemBundleQuery(lang, name));
+  const { data: index } = useSuspenseQuery(itemIndexQuery(lang));
 
   return (
     <>
@@ -106,6 +111,15 @@ function ItemDetailPage() {
           </ul>
         </div>
       ) : null}
+
+      <EntityPager
+        locale={lang}
+        entries={index.entries}
+        currentSlug={data.slug}
+        to="/$lang/item/$name"
+        labelText={data.display_name}
+        iconResolver={(e) => itemArtwork(e.name ?? e.slug)}
+      />
     </>
   );
 }

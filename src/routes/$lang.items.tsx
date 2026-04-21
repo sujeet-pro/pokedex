@@ -4,8 +4,16 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { isLocale } from "~/types/locales";
 import { itemIndexQuery } from "~/lib/queries";
 import { CatalogShell } from "~/components/CatalogShell";
-import { FilterBar, NameFilter, SingleFilter } from "~/components/FilterBar";
+import {
+  ActiveFilters,
+  FilterBar,
+  NameFilter,
+  SingleFilter,
+  type ActiveFilterTag,
+} from "~/components/FilterBar";
+import { itemArtwork } from "~/lib/sprites";
 import { titleCase } from "~/lib/formatters";
+import { makeT } from "~/i18n";
 
 export const Route = createFileRoute("/$lang/items")({
   loader: async ({ context, params }) => {
@@ -25,6 +33,7 @@ const MAX_CATEGORY_OPTIONS = 30;
 function ItemListPage() {
   const { lang } = Route.useParams();
   if (!isLocale(lang)) return null;
+  const t = makeT(lang);
   const { data } = useSuspenseQuery(itemIndexQuery(lang));
 
   const [name, setName] = useState("");
@@ -62,32 +71,55 @@ function ItemListPage() {
     setCategory(null);
   };
 
+  const activeTags: ActiveFilterTag[] = [];
+  if (name.trim()) {
+    activeTags.push({
+      id: "name",
+      label: t("filter_name"),
+      value: name.trim(),
+      onRemove: () => setName(""),
+    });
+  }
+  if (category) {
+    const opt = categoryOptions.find((o) => o.value === category);
+    activeTags.push({
+      id: `category:${category}`,
+      label: t("filter_category"),
+      value: opt?.label ?? category,
+      onRemove: () => setCategory(null),
+    });
+  }
+
   return (
-    <CatalogShell title="Items" lede="All catalog items." count={data.total}>
+    <CatalogShell
+      title={t("list_items_heading")}
+      lede={t("list_items_subtitle")}
+      count={data.total}
+    >
       <FilterBar>
         <NameFilter
           value={name}
           onChange={setName}
-          placeholder={lang === "fr" ? "Filtrer par nom…" : "Filter by name…"}
+          placeholder={lang === "es" ? "Filtrar por nombre…" : "Filter by name…"}
         />
         <SingleFilter
-          label={lang === "fr" ? "Catégorie" : "Category"}
+          label={t("filter_category")}
           options={categoryOptions}
           value={category}
           onChange={setCategory}
         />
         {anyActive ? (
           <button type="button" className="pill-button" onClick={clearAll}>
-            {lang === "fr" ? "Effacer" : "Clear"}
+            {t("filter_clear_all")}
           </button>
         ) : null}
       </FilterBar>
 
-      <div className="filter-summary">
-        <span>
-          {filtered.length} / {data.total}
-        </span>
-      </div>
+      <ActiveFilters
+        tags={activeTags}
+        count={`${filtered.length} / ${data.total}`}
+        removeLabel={t("filter_remove")}
+      />
 
       {filtered.length > 0 ? (
         <ul className="grid-cards" aria-label="Items">
@@ -98,8 +130,11 @@ function ItemListPage() {
                 params={{ lang, name: entry.slug }}
                 className="pokemon-card"
               >
-                <div className="pokemon-card__name">{entry.display_name}</div>
+                <div className="pokemon-card__sprite pokemon-card__sprite--pixel">
+                  <img src={itemArtwork(entry.name)} alt="" loading="lazy" width={64} height={64} />
+                </div>
                 <div className="pokemon-card__id">{titleCase(entry.category)}</div>
+                <div className="pokemon-card__name">{entry.display_name}</div>
                 <div className="pokemon-card__id">¥{entry.cost}</div>
               </Link>
             </li>
@@ -107,7 +142,7 @@ function ItemListPage() {
         </ul>
       ) : (
         <div className="filter-empty">
-          {lang === "fr" ? "Aucun résultat. Ajustez les filtres." : "No results. Adjust filters."}
+          {lang === "es" ? "Sin resultados. Ajusta los filtros." : "No results. Adjust filters."}
         </div>
       )}
     </CatalogShell>

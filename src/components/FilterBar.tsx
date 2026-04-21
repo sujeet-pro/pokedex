@@ -164,3 +164,45 @@ type BarProps = {
 export function FilterBar({ children }: BarProps) {
   return <div className="filter-bar">{children}</div>;
 }
+
+export type ActiveFilterTag = {
+  id: string;
+  label: string;
+  value: string;
+  onRemove: () => void;
+};
+
+type ActiveFiltersProps = {
+  tags: ActiveFilterTag[];
+  count: string;
+  removeLabel: string;
+};
+
+/**
+ * Row rendering applied filters as `[Key]: Value ×` pills on the left and a
+ * count on the right. Renders nothing (except the count) when no filters are
+ * active — the count alone still conveys the list state.
+ */
+export function ActiveFilters({ tags, count, removeLabel }: ActiveFiltersProps) {
+  return (
+    <div className="filter-active-row">
+      <div className="filter-active-row__tags" role="list">
+        {tags.map((tag) => (
+          <span key={tag.id} className="filter-tag" role="listitem">
+            <span className="filter-tag__key">{tag.label}</span>
+            <span className="filter-tag__value">{tag.value}</span>
+            <button
+              type="button"
+              className="filter-tag__remove"
+              aria-label={`${removeLabel}: ${tag.label} ${tag.value}`}
+              onClick={tag.onRemove}
+            >
+              ×
+            </button>
+          </span>
+        ))}
+      </div>
+      <span className="filter-active-row__count">{count}</span>
+    </div>
+  );
+}

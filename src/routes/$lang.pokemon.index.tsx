@@ -6,7 +6,14 @@ import type { Rarity } from "~/types/bundles";
 import { abilityIndexQuery, pokemonIndexQuery, typeIndexQuery } from "~/lib/queries";
 import { PokemonCard } from "~/components/PokemonCard";
 import { CatalogShell } from "~/components/CatalogShell";
-import { FilterBar, MultiFilter, NameFilter, SingleFilter } from "~/components/FilterBar";
+import {
+  ActiveFilters,
+  FilterBar,
+  MultiFilter,
+  NameFilter,
+  SingleFilter,
+  type ActiveFilterTag,
+} from "~/components/FilterBar";
 import { makeT } from "~/i18n";
 
 export const Route = createFileRoute("/$lang/pokemon/")({
@@ -53,10 +60,10 @@ function PokemonListPage() {
   );
 
   const rarityOptions: Array<{ value: Rarity; label: string }> = [
-    { value: "standard", label: lang === "fr" ? "Standard" : "Standard" },
-    { value: "legendary", label: lang === "fr" ? "Légendaire" : "Legendary" },
-    { value: "mythical", label: lang === "fr" ? "Fabuleux" : "Mythical" },
-    { value: "baby", label: lang === "fr" ? "Bébé" : "Baby" },
+    { value: "standard", label: t("rarity_standard") },
+    { value: "legendary", label: t("rarity_legendary") },
+    { value: "mythical", label: t("rarity_mythical") },
+    { value: "baby", label: t("rarity_baby") },
   ];
 
   const filtered = useMemo(() => {
@@ -85,6 +92,43 @@ function PokemonListPage() {
     setRarity(null);
   };
 
+  const activeTags: ActiveFilterTag[] = [];
+  if (name.trim()) {
+    activeTags.push({
+      id: "name",
+      label: t("filter_name"),
+      value: name.trim(),
+      onRemove: () => setName(""),
+    });
+  }
+  for (const value of types) {
+    const opt = typeOptions.find((o) => o.value === value);
+    activeTags.push({
+      id: `type:${value}`,
+      label: t("filter_types"),
+      value: opt?.label ?? value,
+      onRemove: () => setTypes(types.filter((x) => x !== value)),
+    });
+  }
+  for (const value of abilities) {
+    const opt = abilityOptions.find((o) => o.value === value);
+    activeTags.push({
+      id: `ability:${value}`,
+      label: t("filter_abilities"),
+      value: opt?.label ?? value,
+      onRemove: () => setAbilities(abilities.filter((a) => a !== value)),
+    });
+  }
+  if (rarity) {
+    const opt = rarityOptions.find((o) => o.value === rarity);
+    activeTags.push({
+      id: `rarity:${rarity}`,
+      label: t("filter_rarity"),
+      value: opt?.label ?? rarity,
+      onRemove: () => setRarity(null),
+    });
+  }
+
   return (
     <CatalogShell
       title={t("list_pokemon_heading")}
@@ -95,7 +139,7 @@ function PokemonListPage() {
         <NameFilter
           value={name}
           onChange={setName}
-          placeholder={lang === "fr" ? "Filtrer par nom…" : "Filter by name…"}
+          placeholder={lang === "es" ? "Filtrar por nombre…" : "Filter by name…"}
         />
         <MultiFilter
           label={t("detail_types")}
@@ -110,23 +154,23 @@ function PokemonListPage() {
           onChange={setAbilities}
         />
         <SingleFilter
-          label={lang === "fr" ? "Rareté" : "Rarity"}
+          label={t("filter_rarity")}
           options={rarityOptions}
           value={rarity}
           onChange={setRarity}
         />
         {anyActive ? (
           <button type="button" className="pill-button" onClick={clearAll}>
-            {lang === "fr" ? "Effacer" : "Clear"}
+            {t("filter_clear_all")}
           </button>
         ) : null}
       </FilterBar>
 
-      <div className="filter-summary">
-        <span>
-          {filtered.length} / {data.total}
-        </span>
-      </div>
+      <ActiveFilters
+        tags={activeTags}
+        count={`${filtered.length} / ${data.total}`}
+        removeLabel={t("filter_remove")}
+      />
 
       {filtered.length > 0 ? (
         <ul className="grid-cards" aria-label="Pokémon list">
@@ -138,7 +182,7 @@ function PokemonListPage() {
         </ul>
       ) : (
         <div className="filter-empty">
-          {lang === "fr" ? "Aucun résultat. Ajustez les filtres." : "No results. Adjust filters."}
+          {lang === "es" ? "Sin resultados. Ajusta los filtros." : "No results. Adjust filters."}
         </div>
       )}
     </CatalogShell>

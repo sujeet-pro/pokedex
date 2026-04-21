@@ -61,17 +61,17 @@ function AbilityListPage() {
         <NameFilter
           value={name}
           onChange={setName}
-          placeholder={lang === "fr" ? "Filtrer par nom…" : "Filter by name…"}
+          placeholder={lang === "es" ? "Filtrar por nombre…" : "Filter by name…"}
         />
         <SingleFilter
-          label={lang === "fr" ? "Génération" : "Generation"}
+          label={lang === "es" ? "Generación" : "Generation"}
           options={generationOptions}
           value={generation}
           onChange={setGeneration}
         />
         {anyActive ? (
           <button type="button" className="pill-button" onClick={clearAll}>
-            {lang === "fr" ? "Effacer" : "Clear"}
+            {lang === "es" ? "Limpiar" : "Clear"}
           </button>
         ) : null}
       </FilterBar>
@@ -99,7 +99,7 @@ function AbilityListPage() {
         </ul>
       ) : (
         <div className="filter-empty">
-          {lang === "fr" ? "Aucun résultat. Ajustez les filtres." : "No results. Adjust filters."}
+          {lang === "es" ? "Sin resultados. Ajusta los filtros." : "No results. Adjust filters."}
         </div>
       )}
     </CatalogShell>

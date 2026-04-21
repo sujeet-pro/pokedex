@@ -22,7 +22,7 @@ export function Settings({ locale }: Props) {
   const t = makeT(locale);
   const { prefs, setPref } = usePreferences();
   const voices = useVoices();
-  const langPrefix = locale === "fr" ? "fr" : "en";
+  const langPrefix = locale === "es" ? "es" : "en";
   const localeVoices = voices.filter((v) => v.lang.toLowerCase().startsWith(langPrefix));
 
   return (
@@ -30,10 +30,15 @@ export function Settings({ locale }: Props) {
       <Popover.Trigger asChild>
         <button
           type="button"
-          className="pill-button"
+          className="icon-button"
           aria-label={t("settings_title")}
         >
-          {t("settings_title")}
+          <svg viewBox="0 0 24 24" aria-hidden>
+            <path
+              fill="currentColor"
+              d="M12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Zm7.43-2.47.02-1.06 2.05-1.6a.5.5 0 0 0 .12-.64l-1.94-3.36a.5.5 0 0 0-.6-.22l-2.42.97a7.6 7.6 0 0 0-1.83-1.06l-.37-2.58a.5.5 0 0 0-.5-.42h-3.88a.5.5 0 0 0-.5.42l-.37 2.58a7.6 7.6 0 0 0-1.83 1.06l-2.42-.97a.5.5 0 0 0-.6.22L2.38 9.73a.5.5 0 0 0 .12.64l2.05 1.6c-.05.35-.08.7-.08 1.06s.03.71.08 1.06l-2.05 1.6a.5.5 0 0 0-.12.64l1.94 3.36a.5.5 0 0 0 .6.22l2.42-.97c.55.43 1.17.78 1.83 1.06l.37 2.58a.5.5 0 0 0 .5.42h3.88a.5.5 0 0 0 .5-.42l.37-2.58a7.6 7.6 0 0 0 1.83-1.06l2.42.97a.5.5 0 0 0 .6-.22l1.94-3.36a.5.5 0 0 0-.12-.64l-2.05-1.6c.05-.35.08-.7.08-1.06Z"
+            />
+          </svg>
         </button>
       </Popover.Trigger>
       <Popover.Portal>

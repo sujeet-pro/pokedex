@@ -3,14 +3,16 @@
  * AI summary generator for the v3 Pokédex.
  *
  * Reads each Pokémon's pre-built bundle (or raw PokéAPI data as a fallback),
- * asks Anthropic's Claude to produce a 3-paragraph narration in English plus a
- * faithful French translation, and writes both locales to
- * `data_generated/summary/<id>_{en,fr}.txt`.
+ * asks the local `claude` CLI (Claude Code) to produce a 5-paragraph 3-to-5
+ * minute narration in English plus a faithful Spanish translation, and writes
+ * both locales to `data_generated/summary/<id>_{en,es}.txt`.
  *
- * See redo.md §9 for the full spec.
+ * Uses the `claude --print` non-interactive mode, so no ANTHROPIC_API_KEY is
+ * required — it relies on the credentials your local Claude Code session is
+ * already using.
  */
 
-import Anthropic from "@anthropic-ai/sdk";
+import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
@@ -31,12 +33,16 @@ const OUT_DIR = resolve(ROOT, "data_generated", "summary");
 /* Models                                                                     */
 /* -------------------------------------------------------------------------- */
 
-const DEFAULT_MODEL_ID = "claude-haiku-4-5-20251001";
-const SONNET_MODEL_ID = "claude-sonnet-4-6";
+// Claude CLI defaults to the configured model unless `--model` is passed.
+// "" means "let Claude CLI decide" (i.e. use whatever the user has set up).
+const DEFAULT_MODEL_ID = "";
 
 function resolveModel(flag: string): string {
-  if (flag === "sonnet" || flag === "Sonnet") return SONNET_MODEL_ID;
-  if (flag === "haiku" || flag === "Haiku") return DEFAULT_MODEL_ID;
+  // Friendly aliases — the CLI accepts "haiku"/"sonnet"/"opus" too, but the
+  // exact id makes intent explicit in the dry-run dump.
+  if (flag === "sonnet" || flag === "Sonnet") return "claude-sonnet-4-6";
+  if (flag === "haiku" || flag === "Haiku") return "claude-haiku-4-5";
+  if (flag === "opus" || flag === "Opus") return "claude-opus-4-7";
   return flag;
 }
 
@@ -50,6 +56,7 @@ type Args = {
   model: string;
   only: Set<number> | null;
   limit: number | null;
+  target: number | null;
   dryRun: boolean;
 };
 
@@ -60,6 +67,7 @@ function parseArgs(argv: string[]): Args {
     model: DEFAULT_MODEL_ID,
     only: null,
     limit: null,
+    target: null,
     dryRun: false,
   };
   for (let i = 0; i < argv.length; i++) {
@@ -90,6 +98,10 @@ function parseArgs(argv: string[]): Args {
       const n = Number(argv[++i]);
       if (!Number.isFinite(n) || n < 1) throw new Error(`--limit expects a positive integer`);
       out.limit = Math.floor(n);
+    } else if (a === "--target") {
+      const n = Number(argv[++i]);
+      if (!Number.isFinite(n) || n < 1) throw new Error(`--target expects a positive integer`);
+      out.target = Math.floor(n);
     } else {
       throw new Error(`Unknown arg: ${a}`);
     }
@@ -339,7 +351,7 @@ function buildContextForEntry(entry: IdEntry): RichContext | null {
 /* Prompt                                                                     */
 /* -------------------------------------------------------------------------- */
 
-const SYSTEM_PROMPT = `You are a warm, knowledgeable Pokédex narrator. You write spoken-style prose meant to be read aloud by a text-to-speech engine. Your voice is second-person, present-tense, and friendly. You never use markdown, bullet lists, headings, or numerals; spell any small numbers out as words only when strictly necessary. You never wrap your output in quotes or preambles — you return only the two narrations separated by the required delimiters. You may use the web_search tool when available to double-check folklore, regional habitat, or design trivia, but you never cite URLs inside the prose.`;
+const SYSTEM_PROMPT = `You are a knowledgeable, factual Pokédex narrator writing informational prose meant to be read aloud by a text-to-speech engine for three to five minutes per Pokémon. Your voice is neutral third person, present tense, clear and encyclopedic. You convey what the Pokémon is, what it does, where it is found, how it behaves, how it fights, and how it fits into its evolutionary line — all in flowing paragraphs, not lists. You never use markdown, bullet lists, headings, numerals, parentheses, em-dash sequences, or quoted speech; you spell any unavoidable small numbers out as words. You do not wrap your output in quotes or preambles — you return only the two narrations separated by the required delimiters. You may use the web_search tool when available to double-check regional habitat, ability behaviour, or design origin, but you never cite URLs inside the prose.`;
 
 function buildPrompt(ctx: RichContext): string {
   return `Here is the structured profile of a Pokémon:
@@ -348,16 +360,22 @@ ${ctx.richContext}
 
 Write two things:
 
-1) An English narration of this Pokémon meant for a read-aloud Pokédex entry. Exactly three paragraphs, separated by single blank lines. Target length: between 320 and 400 words. Second person, present tense, natural spoken prose. Cover, in order: what the Pokémon is like and how fans recognise it (appearance, demeanour, its typing); its habitat, behaviour, and notable lore; and its abilities explained in plain language plus how its typing shapes its matchups in battle. Do not read any numeric stats aloud. No markdown, no bullet lists, no headings, no quotes, no preamble, no URLs.
+1) An English informational Pokédex narration meant for a three-to-five-minute read-aloud entry. Target length: between six hundred and eight hundred words, in exactly five paragraphs separated by single blank lines. Use neutral third person and present tense, writing clear factual prose that reads naturally aloud. The five paragraphs, in order, must cover:
+   • Identity — what this Pokémon is: species category, primary and secondary typing, generation of origin, physical description (silhouette, colouring, size and build relative to a human), and any defining feature such as an organ, crest, tail shape, or signature marking.
+   • Habitat and range — where it lives in the world: regions, biomes, climate, typical locations, how population density varies, whether it is solitary or social, and any migration or time-of-day pattern worth noting.
+   • Behaviour and diet — what it does day to day: sleep/wake cycle, feeding habits, communication, temperament toward humans and other Pokémon, notable instincts, mating or nesting behaviour, any folklore or field lore trainers report.
+   • Abilities and battle role — what it can do in combat: its standard and hidden abilities explained in plain language (what each ability actually does), what its typing means for offensive and defensive matchups, its speed and physical or special leanings, and the situations in which it excels or struggles.
+   • Evolution and significance — where it sits in its evolutionary line, what it evolves from and into with the method (level, stone, trade, happiness, etc.), its place in the wider Pokédex, and a closing factual note on why trainers and researchers care about this species.
+Do not read any numeric stats, percentages, or dex numbers aloud. No markdown, no bullet lists, no headings, no quotes, no preamble, no URLs.
 
-2) A faithful French translation of the exact same narration, preserving the three-paragraph structure (same paragraph boundaries). The French version must read as natural spoken French, not a stiff machine translation, but it must cover the same facts and paragraph order as the English.
+2) A faithful Spanish translation of the exact same narration, preserving the five-paragraph structure (same paragraph boundaries, same target length of six hundred to eight hundred Spanish words). The Spanish version must read as natural spoken Spanish, not a stiff machine translation, but it must cover the same facts and paragraph order as the English.
 
 Emit your response in exactly this delimited format, with nothing before "--- EN ---" and nothing after "--- END ---":
 
 --- EN ---
-<English narration, three paragraphs separated by blank lines>
---- FR ---
-<French narration, three paragraphs separated by blank lines>
+<English narration, five paragraphs separated by blank lines>
+--- ES ---
+<Spanish narration, five paragraphs separated by blank lines>
 --- END ---
 `;
 }
@@ -366,124 +384,89 @@ Emit your response in exactly this delimited format, with nothing before "--- EN
 /* Response parsing                                                           */
 /* -------------------------------------------------------------------------- */
 
-function extractTextFromResponse(blocks: unknown): string {
-  if (!Array.isArray(blocks)) return "";
-  const parts: string[] = [];
-  for (const b of blocks) {
-    if (b && typeof b === "object") {
-      const block = b as { type?: unknown; text?: unknown };
-      if (block.type === "text" && typeof block.text === "string") {
-        parts.push(block.text);
-      }
-    }
-  }
-  return parts.join("\n").trim();
-}
-
-type Parsed = { en: string; fr: string };
+type Parsed = { en: string; es: string };
 
 function parseDelimited(text: string): Parsed | null {
   const enStart = text.indexOf("--- EN ---");
-  const frStart = text.indexOf("--- FR ---", enStart + 1);
-  const endMark = text.indexOf("--- END ---", frStart + 1);
-  if (enStart === -1 || frStart === -1 || endMark === -1) return null;
-  const en = text.slice(enStart + "--- EN ---".length, frStart).trim();
-  const fr = text.slice(frStart + "--- FR ---".length, endMark).trim();
-  if (!en || !fr) return null;
-  return { en, fr };
+  const esStart = text.indexOf("--- ES ---", enStart + 1);
+  const endMark = text.indexOf("--- END ---", esStart + 1);
+  if (enStart === -1 || esStart === -1 || endMark === -1) return null;
+  const en = text.slice(enStart + "--- EN ---".length, esStart).trim();
+  const es = text.slice(esStart + "--- ES ---".length, endMark).trim();
+  if (!en || !es) return null;
+  return { en, es };
 }
 
 /* -------------------------------------------------------------------------- */
-/* API call with retries                                                      */
+/* Claude Code CLI invocation                                                 */
 /* -------------------------------------------------------------------------- */
 
-type ApiResult =
+type CliResult =
   | { ok: true; text: string }
   | { ok: false; fatal: boolean; message: string };
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
-function shouldBackoff(err: unknown): boolean {
-  if (!err || typeof err !== "object") return false;
-  const e = err as { status?: unknown; message?: unknown; error?: { type?: unknown } };
-  if (e.status === 429 || e.status === 529 || e.status === 503) return true;
-  const msg = typeof e.message === "string" ? e.message.toLowerCase() : "";
-  if (/overloaded|rate[ -]?limit|too many requests/i.test(msg)) return true;
-  const errType = e.error && typeof e.error === "object" ? (e.error.type as unknown) : undefined;
-  if (typeof errType === "string" && /overloaded|rate_limit/i.test(errType)) return true;
-  return false;
-}
-
-function isAuthError(err: unknown): boolean {
-  if (!err || typeof err !== "object") return false;
-  const e = err as { status?: unknown; message?: unknown };
-  if (e.status === 401 || e.status === 403) return true;
-  const msg = typeof e.message === "string" ? e.message : "";
-  return /invalid[_ ]?api[_ ]?key|authentication|unauthor/i.test(msg);
-}
-
-type CreateArgs = Anthropic.MessageCreateParamsNonStreaming;
-
-async function callAnthropic(
-  client: Anthropic,
+/**
+ * Spawn `claude --print` in non-interactive mode, push the user prompt as a
+ * positional argument, and append the storyteller system prompt. The CLI
+ * inherits whatever credentials the local Claude Code session is using.
+ */
+async function callClaudeCli(
+  userPrompt: string,
+  systemPrompt: string,
   model: string,
-  prompt: string,
-): Promise<ApiResult> {
-  const baseArgs: CreateArgs = {
-    model,
-    max_tokens: 2000,
-    temperature: 0.7,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: prompt }],
-  };
-  // web_search tool (best-effort; not all Haiku variants expose it — fall back on 400).
-  const webTool = {
-    type: "web_search_20250305" as const,
-    name: "web_search" as const,
-    max_uses: 3,
-  };
+): Promise<CliResult> {
+  const args: string[] = ["--print", userPrompt, "--append-system-prompt", systemPrompt];
+  if (model) args.push("--model", model);
 
-  const delays = [1000, 2000, 4000];
-  let triedWithoutTools = false;
-
-  for (let attempt = 0; attempt <= delays.length; attempt++) {
+  return new Promise((resolveResult) => {
+    let proc: ReturnType<typeof spawn>;
     try {
-      const args: CreateArgs = triedWithoutTools
-        ? baseArgs
-        : { ...baseArgs, tools: [webTool] as CreateArgs["tools"] };
-      const res: Anthropic.Message = await client.messages.create(args);
-      const text = extractTextFromResponse(res.content as unknown);
-      if (!text) {
-        return { ok: false, fatal: true, message: "empty response" };
-      }
-      return { ok: true, text };
+      proc = spawn("claude", args, { stdio: ["ignore", "pipe", "pipe"] });
     } catch (err) {
-      if (isAuthError(err)) {
-        return { ok: false, fatal: true, message: `auth error: ${(err as Error).message}` };
-      }
-      // Tool-not-supported? Retry immediately without tools.
-      const msg = err instanceof Error ? err.message : String(err);
-      if (!triedWithoutTools && /tool|web_search|unsupported|unknown parameter/i.test(msg)) {
-        triedWithoutTools = true;
-        continue;
-      }
-      if (shouldBackoff(err) && attempt < delays.length) {
-        await sleep(delays[attempt]!);
-        continue;
-      }
-      return { ok: false, fatal: false, message: msg };
+      resolveResult({
+        ok: false,
+        fatal: true,
+        message: `cannot spawn claude: ${err instanceof Error ? err.message : String(err)}`,
+      });
+      return;
     }
-  }
-  return { ok: false, fatal: false, message: "retries exhausted" };
+
+    let stdout = "";
+    let stderr = "";
+    proc.stdout?.on("data", (chunk: Buffer) => {
+      stdout += chunk.toString("utf-8");
+    });
+    proc.stderr?.on("data", (chunk: Buffer) => {
+      stderr += chunk.toString("utf-8");
+    });
+    proc.on("error", (err) => {
+      resolveResult({
+        ok: false,
+        fatal: true,
+        message: `cannot spawn claude (${err.message}). Install Claude Code: https://claude.com/code`,
+      });
+    });
+    proc.on("close", (code) => {
+      const text = stdout.trim();
+      if (code === 0 && text.length > 0) {
+        resolveResult({ ok: true, text });
+        return;
+      }
+      const errMsg = stderr.trim() || "no stderr output";
+      resolveResult({
+        ok: false,
+        fatal: code === 127,
+        message: `claude exit ${code}: ${errMsg}`,
+      });
+    });
+  });
 }
 
 /* -------------------------------------------------------------------------- */
 /* Output                                                                     */
 /* -------------------------------------------------------------------------- */
 
-function outPath(id: number, lang: "en" | "fr"): string {
+function outPath(id: number, lang: "en" | "es"): string {
   return join(OUT_DIR, `${id}_${lang}.txt`);
 }
 
@@ -495,7 +478,7 @@ function writeAtomic(path: string, body: string): void {
 }
 
 function bothExist(id: number): boolean {
-  return existsSync(outPath(id, "en")) && existsSync(outPath(id, "fr"));
+  return existsSync(outPath(id, "en")) && existsSync(outPath(id, "es"));
 }
 
 /* -------------------------------------------------------------------------- */
@@ -508,11 +491,13 @@ async function runPool<T>(
   items: T[],
   concurrency: number,
   worker: (item: T, index: number) => Promise<Outcome>,
+  shouldStop?: () => boolean,
 ): Promise<Outcome[]> {
   const results: Outcome[] = Array.from({ length: items.length });
   let cursor = 0;
   async function loop(): Promise<void> {
     while (true) {
+      if (shouldStop?.()) return;
       const i = cursor++;
       if (i >= items.length) return;
       results[i] = await worker(items[i]!, i);
@@ -560,8 +545,9 @@ async function main(): Promise<void> {
       return;
     }
     const prompt = buildPrompt(ctx);
+    const modelLabel = args.model || "(claude CLI default)";
     process.stdout.write(
-      `[dry-run] model=${args.model} concurrency=${args.concurrency} force=${args.force}\n` +
+      `[dry-run] transport=claude-cli model=${modelLabel} concurrency=${args.concurrency} force=${args.force}\n` +
         `[dry-run] first Pokémon: ${ctx.displayName} (id=${ctx.id}, slug=${ctx.name})\n` +
         `[dry-run] system prompt (${SYSTEM_PROMPT.length} chars):\n${SYSTEM_PROMPT}\n` +
         `[dry-run] user prompt (${prompt.length} chars):\n${prompt}\n`,
@@ -569,72 +555,89 @@ async function main(): Promise<void> {
     return;
   }
 
-  /* ---- API key check ---- */
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    process.stdout.write("Set ANTHROPIC_API_KEY to run. Skipping.\n");
-    process.exit(0);
-  }
-
-  const client = new Anthropic();
-
   let written = 0;
   let skipped = 0;
   let failed = 0;
   const total = entries.length;
+  const target = args.target;
+  // When `--target N` is set: skipped entries don't count toward N; we walk
+  // the id list forward and only stop once `written` reaches N. Workers that
+  // are mid-generation when the target is hit still finish (the claude call
+  // has already been paid for), so final `written` may exceed N by up to
+  // concurrency-1. That's deliberate — correctness over pedantry.
+  const progressLabel = (): string =>
+    target != null ? `${written}/${target} new` : `${written + skipped + failed}/${total}`;
 
-  await runPool(entries, args.concurrency, async (entry, i) => {
-    const idx = i + 1;
-    if (!args.force && bothExist(entry.id)) {
-      skipped++;
-      process.stdout.write(`[${idx}/${total}] ${entry.name} — skipped (both locales exist)\n`);
-      return "skipped";
-    }
-    const ctx = buildContextForEntry(entry);
-    if (!ctx) {
-      failed++;
-      process.stdout.write(
-        `[${idx}/${total}] ${entry.name} — no data available (run bundles:build or data:sync); skip\n`,
-      );
-      return "failed";
-    }
-    const prompt = buildPrompt(ctx);
-    const result = await callAnthropic(client, args.model, prompt);
-    if (!result.ok) {
-      if (result.fatal && /auth error/i.test(result.message)) {
-        process.stderr.write(`FATAL auth error: ${result.message}\n`);
-        process.exit(1);
+  await runPool(
+    entries,
+    args.concurrency,
+    async (entry, i) => {
+      const idx = i + 1;
+      // Skipped-for-existing: does NOT count toward --target.
+      if (!args.force && bothExist(entry.id)) {
+        skipped++;
+        process.stdout.write(
+          `[${progressLabel()}] ${entry.name} (id ${entry.id}) — skipped (both locales exist)\n`,
+        );
+        return "skipped";
       }
-      failed++;
+      // Bail before starting a fresh generation if we've already hit target.
+      if (target != null && written >= target) {
+        return "skipped";
+      }
+      const ctx = buildContextForEntry(entry);
+      if (!ctx) {
+        failed++;
+        process.stdout.write(
+          `[${progressLabel()}] ${entry.name} (id ${entry.id}) — no data available (run bundles:build or data:sync); skip\n`,
+        );
+        return "failed";
+      }
+      const prompt = buildPrompt(ctx);
+      const result = await callClaudeCli(prompt, SYSTEM_PROMPT, args.model);
+      if (!result.ok) {
+        if (result.fatal) {
+          process.stderr.write(`FATAL: ${result.message}\n`);
+          process.exit(1);
+        }
+        failed++;
+        process.stdout.write(
+          `[${progressLabel()}] ${entry.name} (id ${entry.id}) — claude error: ${result.message}\n`,
+        );
+        return "failed";
+      }
+      const parsed = parseDelimited(result.text);
+      if (!parsed) {
+        failed++;
+        process.stdout.write(
+          `[${progressLabel()}] ${entry.name} (id ${entry.id}) — malformed response (missing delimiters); skip\n`,
+        );
+        return "failed";
+      }
+      try {
+        writeAtomic(outPath(entry.id, "en"), parsed.en + "\n");
+        writeAtomic(outPath(entry.id, "es"), parsed.es + "\n");
+      } catch (err) {
+        failed++;
+        const msg = err instanceof Error ? err.message : String(err);
+        process.stdout.write(
+          `[${progressLabel()}] ${entry.name} (id ${entry.id}) — write failed: ${msg}\n`,
+        );
+        return "failed";
+      }
+      written++;
       process.stdout.write(
-        `[${idx}/${total}] ${entry.name} — API error: ${result.message}\n`,
+        `[${progressLabel()}] ${entry.name} (id ${entry.id}) — EN ok, ES ok\n`,
       );
-      return "failed";
-    }
-    const parsed = parseDelimited(result.text);
-    if (!parsed) {
-      failed++;
-      process.stdout.write(
-        `[${idx}/${total}] ${entry.name} — malformed response (missing delimiters); skip\n`,
-      );
-      return "failed";
-    }
-    try {
-      writeAtomic(outPath(entry.id, "en"), parsed.en + "\n");
-      writeAtomic(outPath(entry.id, "fr"), parsed.fr + "\n");
-    } catch (err) {
-      failed++;
-      const msg = err instanceof Error ? err.message : String(err);
-      process.stdout.write(`[${idx}/${total}] ${entry.name} — write failed: ${msg}\n`);
-      return "failed";
-    }
-    written++;
-    process.stdout.write(`[${idx}/${total}] ${entry.name} — EN ok, FR ok\n`);
-    return "written";
-  });
+      return "written";
+    },
+    () => target != null && written >= target,
+  );
 
   process.stdout.write(
-    `\nDone. written=${written} skipped=${skipped} failed=${failed} total=${total}\n`,
+    `\nDone. written=${written} skipped=${skipped} failed=${failed}${
+      target != null ? ` target=${target}` : ` total=${total}`
+    }\n`,
   );
 }
 
