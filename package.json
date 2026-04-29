@@ -23,7 +23,7 @@
     "summaries:build": "tsx scripts/summarize.ts --concurrency 2"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.90.0",
+    "@anthropic-ai/sdk": "^0.91.1",
     "@tanstack/react-hotkeys": "^0.9.1",
     "@tanstack/react-query": "^5.99.0",
     "@tanstack/react-router": "^1.168.0",
